@@ -12,7 +12,9 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useNavigate } from 'react-router-dom';
+import { redirect, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { Alert } from '@mui/material';
 
 function Copyright(props) {
     return (
@@ -30,19 +32,57 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function MyLogin() {
+    const [isError, setIsError] = React.useState();
+    const [errMsg, setErrMsg] = React.useState()
+
+
     const navigate = useNavigate()
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         console.log({
             email: data.get('email'),
             password: data.get('password'),
         });
+
+        try {
+            const res = await axios.post('/auth/login', {
+                email: data.get('email'),
+                password: data.get('password'),
+            })
+
+            if (res.data.codeMessage === 'SUCCESS') {
+                localStorage.setItem('access_token', res.headers.authorization)
+                navigate('/')
+            }
+
+        } catch (error) {
+            console.log(error)
+            console.log(error.response.data.codeMessage)
+            if (error.response.data.codeMessage) {
+                setIsError(true)
+                setErrMsg(error.response.data.message)
+            }
+        }
     };
+
+    const checkIsLogin = async () => {
+        if (localStorage['access_token'] !== undefined) {
+            navigate('/')
+        } else {
+            navigate('/login')
+        }
+    }
+
+    React.useEffect(
+        () => {
+            checkIsLogin()
+        }, []
+    )
 
     return (
         <ThemeProvider theme={theme}>
-            <Grid container component="main" sx={{ height: '100vh' }}>
+            <Grid container justifyContent='center' component="main" sx={{ height: '100vh' }}>
                 <CssBaseline />
                 <Grid
                     item
@@ -50,14 +90,20 @@ export default function MyLogin() {
                     sm={4}
                     md={7}
                     sx={{
-                        backgroundImage: 'url(https://source.unsplash.com/random)',
+                        // backgroundImage: 'url(https://rumage.com/wp-content/uploads/2020/08/second-hand-2353682_1920.png)',
+                        backgroundImage: 'url(logo-login.png)',
                         backgroundRepeat: 'no-repeat',
-                        backgroundColor: (t) =>
-                            t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
-                        backgroundSize: 'cover',
+                        // backgroundColor: (t) =>
+                        //     t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
                         backgroundPosition: 'center',
+                        backgroundSize: 800,
+                        backgroundColor: "white"
                     }}
-                />
+                >
+                    <div style={{ color: 'red', width: 200, height: 50 }}>
+                        <img alt='' width={600} height={100} src='logo.png'></img>
+                    </div>
+                </Grid>
                 <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
                     <Box
                         sx={{
@@ -74,6 +120,8 @@ export default function MyLogin() {
                         <Typography component="h1" variant="h5">
                             Sign in
                         </Typography>
+                        {isError && <Alert variant="filled" severity="error">{errMsg}</Alert>}
+
                         <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
                             <TextField
                                 margin="normal"
@@ -95,10 +143,7 @@ export default function MyLogin() {
                                 id="password"
                                 autoComplete="current-password"
                             />
-                            <FormControlLabel
-                                control={<Checkbox value="remember" color="primary" />}
-                                label="Remember me"
-                            />
+
                             <Button
                                 type="submit"
                                 fullWidth

@@ -1,7 +1,7 @@
 import { Box, Grid } from '@material-ui/core'
 import { Stack } from '@mui/system';
 import React from 'react'
-import useWindowDimensions from '../helps/useWindowDimensions';
+import useWindowDimensions from '../../helps/useWindowDimensions';
 
 function MyFooter() {
   const { height, width } = useWindowDimensions();

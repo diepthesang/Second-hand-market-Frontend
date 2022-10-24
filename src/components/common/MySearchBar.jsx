@@ -1,0 +1,221 @@
+import * as React from 'react';
+import { styled } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import InputBase from '@mui/material/InputBase';
+
+import SearchIcon from '@mui/icons-material/Search';
+
+import { Stack } from '@mui/material';
+import { Avatar, Button, Divider, Fade, Menu, MenuItem } from '@material-ui/core';
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import axios from 'axios';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+
+
+const Search = styled('div')(({ theme }) => ({
+    height: 35,
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    color: '#7b35ba',
+    // backgroundColor: alpha(theme.palette.common.white, 0.15),
+    backgroundColor: 'white',
+    '&:hover': {
+        // backgroundColor: alpha(theme.palette.common.white, 0.25),
+
+    },
+    marginRight: theme.spacing(2),
+    marginLeft: 0,
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+        marginLeft: theme.spacing(3),
+        width: 'auto',
+    },
+}));
+
+const SearchIconWrapper = styled('div')(({ theme }) => ({
+    padding: theme.spacing(0, 2),
+    height: '100%',
+    // height: 20,
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+
+}));
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+    height: 35,
+    color: 'inherit',
+    '& .MuiInputBase-input': {
+        padding: theme.spacing(1, 1, 1, 0),
+        // vertical padding + font size from searchIcon
+        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+        transition: theme.transitions.create('width'),
+        width: '100%',
+        [theme.breakpoints.up('md')]: {
+            // dai cua thanh searhc
+            width: '60ch',
+        },
+    },
+}));
+
+export default function MySearchBar() {
+
+    const [isLogin, setIsLogin] = useState(false);
+
+    const navigate = useNavigate();
+    const [userName, setUserName] = useState('')
+    const [avt, setAvt] = useState('');
+
+    const changeStatusLogin = () => {
+        if (localStorage['access_token'] !== undefined) {
+            setIsLogin(true)
+        } else {
+            setIsLogin(false)
+        }
+    }
+
+    const setAvtandUsername = async () => {
+
+        try {
+            const { data } = await axios.get('/user/userInfo', {
+                headers: {
+                    Authorization: localStorage['access_token'],
+                }
+            })
+            const fullName = data.data.firstName + ' ' + data.data.lastName
+            setUserName(fullName)
+            setAvt(data.data.avatarImg)
+        } catch (error) {
+
+        }
+    }
+
+    const handleLogOut = () => {
+        localStorage.removeItem("access_token")
+        navigate('/login')
+    }
+
+    // more
+
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const open = Boolean(anchorEl);
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+
+
+    React.useEffect(
+        () => {
+            setAvtandUsername()
+            changeStatusLogin()
+        }, []
+    )
+
+
+
+    return (
+        <Box display='space-around' paddingBottom={1}  >
+            <Stack direction='row' justifyContent='space-between' marginRight={3} >
+                <Search className=''>
+                    <SearchIconWrapper>
+                        <SearchIcon style={{ fill: '#7b35ba' }} />
+                    </SearchIconWrapper>
+                    <StyledInputBase
+                        placeholder="Search…"
+                        inputProps={{ 'aria-label': 'search' }}
+                    />
+                </Search>
+
+                {isLogin ?
+                    <div style={{ cursor: 'pointer' }} >
+                        <Stack direction='row' spacing={5} >
+                            <div style={{ width: 12, height: 12, marginTop: -4 }}>
+                                <Avatar
+                                    alt="Remy Sharp"
+                                    src={avt}
+                                    sx={{ width: 12, height: 12 }}
+                                />
+                            </div>
+                            <div style={{ marginTop: 6 }}>
+                                <p>
+                                    {userName}
+                                </p>
+                            </div>
+
+                        </Stack>
+                    </div>
+                    :
+                    <div style={{ cursor: 'pointer' }} >
+                        <Stack direction='row' spacing={5} >
+                            <div style={{ width: 12, height: 12, marginTop: -4 }}>
+                                <Avatar
+                                    alt="Remy Sharp"
+                                    src="/static/images/avatar/1.jpg"
+                                    sx={{ width: 12, height: 12 }}
+                                />
+                            </div>
+                            <div style={{ marginTop: 6 }} onClick={() => { navigate('/login') }}>
+                                <p>
+                                    Login
+                                </p>
+                            </div>
+
+                        </Stack>
+                    </div>
+                }
+
+                <div style={{ marginLeft: -20 }}>
+                    {isLogin &&
+                        <>
+                            <Button
+
+                                id="fade-button"
+                                aria-controls={open ? 'fade-menu' : undefined}
+                                aria-haspopup="true"
+                                aria-expanded={open ? 'true' : undefined}
+                                onClick={handleClick}
+                            >
+                                More  <ExpandMoreIcon />
+                            </Button>
+                            <Menu
+                                id="fade-menu"
+                                MenuListProps={{
+                                    'aria-labelledby': 'fade-button',
+                                }}
+                                anchorEl={anchorEl}
+                                open={open}
+                                onClose={handleClose}
+                                TransitionComponent={Fade}
+                            >
+                                <MenuItem style={{ color: '#7b35ba ' }} onClick={handleClose}>Profile</MenuItem>
+                                <Divider />
+                                <MenuItem style={{ color: '#7b35ba ' }} onClick={handleClose}>My account</MenuItem>
+                                <Divider />
+                                <MenuItem style={{ color: '#7b35ba ' }} onClick={() => { handleLogOut() }}>Logout</MenuItem>
+                            </Menu>
+                        </>}
+                </div>
+
+
+
+                <Button style={{ width: 150, height: 35, backgroundImage: 'linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%)' }} color='#ffff' variant='contained' size='small'
+                    onClick={() => { navigate('/post') }}>
+                    Post
+                </Button>
+            </Stack>
+        </Box >
+        // { renderMobileMenu }
+        // { renderMenu }
+        // </Box>
+    );
+}
+
+// background - color: #4158D0;
+// background - image: linear - gradient(43deg, #4158D0 0 %, #C850C0 46 %, #FFCC70 100 %);

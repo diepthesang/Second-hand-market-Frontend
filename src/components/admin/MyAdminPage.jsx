@@ -1,12 +1,13 @@
 import React from 'react'
-import MyFooter from './MyFooter'
-import MyHeader from './MyHeader'
+import MyFooter from '../common/MyFooter'
+import MyHeader from '../common/MyHeader'
+
 
 function MyAdminPage() {
     return (
         <>
             <MyHeader />
-            
+
             <MyFooter />
         </>
     )

@@ -1,5 +1,5 @@
 
-import { Badge, Button, Grid, InputBase, makeStyles, styled, TextField } from '@material-ui/core'
+import { Badge, Button, Divider, Fade, Grid, InputBase, makeStyles, Menu, MenuItem, styled, TextField } from '@material-ui/core'
 import { Search } from '@mui/icons-material'
 import { Autocomplete } from '@mui/material'
 import { Box, Stack } from '@mui/system'
@@ -7,13 +7,16 @@ import React from 'react'
 import SearchIcon from '@mui/icons-material/Search';
 import MySearchBar from './MySearchBar'
 import { useNavigate } from 'react-router-dom'
-import useWindowDimensions from '../helps/useWindowDimensions'
+import useWindowDimensions from '../../helps/useWindowDimensions'
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import ChatIcon from '@mui/icons-material/Chat';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import HomeIcon from '@mui/icons-material/Home';
+import { alpha } from '@mui/material/styles';
+// import { Menu } from '@mui/material/Menu';
+import AdbIcon from '@mui/icons-material/Adb';
 
 
 const SearchIconWrapper = styled('div')(({ theme }) => ({
@@ -62,6 +65,9 @@ const useStyles = makeStyles((theme) => ({
 
 
 
+
+
+
 function MyHeader() {
     const classes = useStyles();
 
@@ -74,7 +80,19 @@ function MyHeader() {
     const handBtnHome = () => {
         navigate('/')
     }
-    const { height, width } = useWindowDimensions();
+
+    ///////////////////////
+
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const open = Boolean(anchorEl);
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+
 
     return (
         <Grid container justifyContent='center'>
@@ -97,7 +115,7 @@ function MyHeader() {
                                     </div>
 
                                     <div >
-                                        <Button size='small'  >
+                                        <Button size='small' onClick={() => { navigate('/managePosting') }}  >
                                             <FormatListBulletedIcon />
                                             <Box width={4}></Box>
                                             <div>  Manage postting</div>
@@ -131,11 +149,42 @@ function MyHeader() {
                                         </Button>
                                     </div>
                                     <div >
-                                        <Button onClick={() => { handleBtnChat() }} size='small' >
+                                        {/* <Button onClick={() => { handleBtnChat() }} size='small' >
                                             <ExpandMoreIcon />
                                             <Box width={4}></Box>
                                             More
-                                        </Button>
+                                        </Button> */}
+
+
+                                        <div>
+                                            <Button
+
+                                                id="fade-button"
+                                                aria-controls={open ? 'fade-menu' : undefined}
+                                                aria-haspopup="true"
+                                                aria-expanded={open ? 'true' : undefined}
+                                                onClick={handleClick}
+                                            >
+                                                More  <ExpandMoreIcon />
+                                            </Button>
+                                            <Menu
+                                                id="fade-menu"
+                                                MenuListProps={{
+                                                    'aria-labelledby': 'fade-button',
+                                                }}
+                                                anchorEl={anchorEl}
+                                                open={open}
+                                                onClose={handleClose}
+                                                TransitionComponent={Fade}
+                                            >
+                                                <MenuItem onClick={handleClose}>Profile</MenuItem>
+                                                <MenuItem onClick={handleClose}>My account</MenuItem>
+                                                <MenuItem onClick={handleClose}>Logout</MenuItem>
+                                            </Menu>
+                                        </div>
+
+
+
                                     </div>
 
                                 </div>

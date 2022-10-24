@@ -45,7 +45,7 @@ export default function MyRegister() {
             lastName: data.get('lastName'),
         });
 
-        let res = await axios.post('http://localhost:8080/auth/register', {
+        let res = await axios.post('/auth/register', {
             email: data.get('email'),
             password: data.get('password'),
             confirmPassword: data.get('confirmPassword'),
@@ -59,6 +59,25 @@ export default function MyRegister() {
         }
 
     };
+
+
+    const checkIsLogin = async () => {
+
+        console.log('localStorage ', localStorage['access_token'])
+
+        if (localStorage['access_token'] !== undefined) {
+            navigate('/')
+        } else {
+            navigate('/register')
+        }
+    }
+
+    React.useEffect(
+        () => {
+            checkIsLogin()
+        },[]
+    )
+
 
     return (
         <ThemeProvider theme={theme}>

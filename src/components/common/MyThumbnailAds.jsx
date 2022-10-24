@@ -2,7 +2,7 @@ import { Container, Grid, ListItem, makeStyles } from "@material-ui/core";
 import { Box } from "@mui/system";
 import { useEffect, useLayoutEffect, useState } from "react";
 import SimpleImageSlider from "react-simple-image-slider";
-import useWindowDimensions from "../helps/useWindowDimensions";
+import useWindowDimensions from "../../helps/useWindowDimensions";
 // import useWindowDimensions from "../Helps/useWindowDimensions";
 
 const images = [

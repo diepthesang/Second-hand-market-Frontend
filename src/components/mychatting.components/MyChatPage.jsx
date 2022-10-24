@@ -1,7 +1,6 @@
-import { Box, Grid } from '@material-ui/core'
+import { Grid } from '@material-ui/core'
 import React, { useEffect, useState, useRef } from 'react'
 import useWindowDimensions from '../../helps/useWindowDimensions'
-import MyFooter from '../MyFooter'
 import MyHeader from '../MyHeader'
 import ChatBar from './ChatBar'
 import ChatBody from './ChatBody'
