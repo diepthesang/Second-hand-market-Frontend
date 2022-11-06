@@ -76,15 +76,17 @@ function MyChildCategory(id) {
         <div style={{ display: 'inline-flex' }} className='cate'>
           {cateArr.map(item => {
             return (
-              <div className={classes.paper_cus} onClick={() => {
+              <div key={item.id} className={classes.paper_cus} onClick={() => {
                 dispatch(getCategoryChildId(item.id));
               }} >
                 <Stack direction='column' alignItems='center'>
                   {/* <div className='hover'> */}
-                  <img alt='' src='https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&w=350&dpr=2' style={{
+                  <img alt='' src={item.cateLogoImg} style={{
                     width: 80,
                     height: 80,
                     borderRadius: 12,
+                    boxShadow: " rgba(0, 0, 0, 0.24) 0px 3px 8px",
+
                   }} />
                   {/* </div> */}
                   <Typography className={classes.typography_cus} >

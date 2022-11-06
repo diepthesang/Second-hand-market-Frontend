@@ -15,6 +15,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { redirect, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Alert } from '@mui/material';
+import { useSelector } from 'react-redux';
 
 function Copyright(props) {
     return (
@@ -33,7 +34,10 @@ const theme = createTheme();
 
 export default function MyLogin() {
     const [isError, setIsError] = React.useState();
-    const [errMsg, setErrMsg] = React.useState()
+    const [errMsg, setErrMsg] = React.useState();
+
+    const pageUrl = useSelector((state) => state.pageUrl.search);
+
 
 
     const navigate = useNavigate()
@@ -51,9 +55,12 @@ export default function MyLogin() {
                 password: data.get('password'),
             })
 
+            console.log('ressss:::', res)
+
             if (res.data.codeMessage === 'SUCCESS') {
-                localStorage.setItem('access_token', res.headers.authorization)
-                navigate('/')
+                localStorage.setItem('access_token', res.headers.authorization);
+                window.location.replace(localStorage['page_url'] || 'http://localhost:3000/');
+                localStorage.removeItem("page_url");
             }
 
         } catch (error) {
@@ -145,6 +152,9 @@ export default function MyLogin() {
                             />
 
                             <Button
+                                onClick={() => {
+                                    // window.location.reload(false);
+                                }}
                                 type="submit"
                                 fullWidth
                                 variant="contained"

@@ -1,11 +1,11 @@
 import { Button, Divider, Grid, makeStyles } from '@material-ui/core'
 import axios from 'axios';
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
 import SimpleImageSlider from "react-simple-image-slider";
 import useWindowDimensions from '../../helps/useWindowDimensions';
-import { useParams } from 'react-router-dom';
-import { Avatar, Rating, Stack } from '@mui/material';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Avatar, Box, IconButton, Modal, Rating, Stack, Typography } from '@mui/material';
 import BuildCircleIcon from '@mui/icons-material/BuildCircle';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import ApartmentIcon from '@mui/icons-material/Apartment';
@@ -13,7 +13,11 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { getCart } from '../../redux/cartSlice';
+import { getPageUrl } from '../../redux/pageUrlSlice';
+
+
 
 
 
@@ -23,15 +27,22 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 function MyBodyDetail() {
+  // const [open, setOpen] = React.useState(false);
+  // const handleOpen = () => setOpen(true);
+  // const handleClose = () => setOpen(false);
+
   const classes = useStyles();
   const { width } = useWindowDimensions();
-  const [arrPost, setArrPost] = useState([]);
+  const [listPost, setListPost] = useState([]);
   const [value, setValue] = React.useState(2);
-  const [images, setImages] = useState();
+  const [images, setImages] = React.useState([]);
   const [like, setLike] = useState(false);
-  const { postId } = useParams()
-  // const dispatch = useDispatch()
-  const _postId = useSelector((state) => state.postId.postId)
+  const [time, setTime] = useState('')
+  const { _postId } = useParams()
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  // const _postId = useSelector((state) => state.postId.postId)
   // const _like = useSelector((state) => state.likePost.likePost)
   // const categoryChildId = useSelector((state) => state.categoryChildId.categoryChildId)
 
@@ -39,103 +50,199 @@ function MyBodyDetail() {
 
   const getPostByPostId = async () => {
     try {
-      const { data } = await axios.get(`/common/post/${_postId || postId}`);
-      setArrPost(data.data)
-      setLike(data.data[0].liked)
-      // console.log('like', data.data[0].liked);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-
-  // GET IMAGES PRODUCT
-
-  const getImagesProduct = async () => {
-    try {
-      const data = await axios.get(`/common/imagesProduct/${_postId || postId}`)
-      const listImage = data.data.data.map(item => {
+      const { data } = await axios.get(`/common/post/${_postId}`);
+      console.log("data.data", data.data)
+      const _listPost = [];
+      _listPost.push(data.data)
+      console.log('listPost:::', _listPost[0]);
+      setListPost(_listPost)
+      setValue(_listPost[0].User.starRating)
+      const _listImage = _listPost[0].listImage.map(item => {
         return (
           {
-            url: item.proImg
+            url: item.imagePath,
           }
         )
-      })
-      setImages(listImage)
+      });
+      setImages(_listImage);
+      console.log('time:::::', data.data.createdAt);
+      var d = new Date(data.data.createdAt);
+      console.log('Today is: ' + d.toLocaleString());
+      const _time = d.toUTCString()
+      setTime(_time)
+
+
+
     } catch (error) {
       console.log(error);
     }
   }
 
-  // UPDATE LIKE FOR POST 
-  const updateLikeForPost = async (liked, postId) => {
+
+  //  MUA
+
+  const handleBuy = async () => {
+    if (!localStorage['access_token']) {
+      localStorage.setItem('page_url', window.location.href);
+      navigate('/login')
+    }
+
     try {
-      await axios.put('/user/updateLikePost/', {
-        liked,
-        postId,
-      }, {
-        headers: {
-          Authorization: localStorage['access_token'],
-        }
-      })
+      const { data } = await axios.post('/user/addPostToCart', {
+        postId: _postId,
+      },
+        {
+          headers: {
+            Authorization: localStorage['access_token'],
+          }
+        });
+      console.log('data_handlebuy', data.data);
+      if (data.data) {
+        dispatch(getCart());
+      } else {
+
+      }
+
+    } catch (error) {
+      console.log('Err_handle_buy:::', error);
+    };
+
+  }
+
+  //Like Post
+  const likePost = async (postId) => {
+    try {
+      if (localStorage['access_token'] === undefined) {
+        navigate('/login')
+      } else {
+
+        const { data } = await axios.post('/user/likePost',
+          {
+            postId,
+          },
+          {
+            headers: {
+              Authorization: localStorage['access_token'],
+            }
+          }
+        );
+
+        console.log('like:::', data.data)
+      }
     } catch (error) {
       console.log(error);
     }
-  }
+  };
+
+  //unlikePost
+  const unlikePost = async (postId) => {
+    try {
+      if (localStorage['access_token'] === undefined) {
+        navigate('/login')
+      } else {
+
+        const { data } = await axios.post('/user/unlikePost',
+          {
+            postId,
+          },
+          {
+            headers: {
+              Authorization: localStorage['access_token'],
+            }
+          }
+        );
+
+        console.log('unlike:::', data.data)
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
 
-  //common/imagesProduct/161
+  //getCurrent Like Post
+  const getCurrentLikePost = async (postId) => {
+    try {
+      if (localStorage['access_token'] === undefined) {
+        setLike(false);
+      } else {
+        const { data } = await axios.get(`/user/currentLikePost/${_postId}`,
+          {
+            headers: {
+              Authorization: localStorage['access_token'],
+            }
+          });
+        console.log('like:::', data);
+        if (data.data === null) {
+          setLike(false);
+        } else {
+          setLike(true);
+        }
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  };
+
 
   useEffect(
     () => {
-      console.log(postId);
-      getPostByPostId()
-      getImagesProduct()
-    }, [postId]
-  )
-
-  useEffect(
-    () => {
-      updateLikeForPost(like, postId)
-      getPostByPostId()
-      console.log('alo');
+      getPostByPostId();
+      getCurrentLikePost();
     }, [like]
   )
 
 
 
-  return (
 
-    arrPost.map(item => {
+
+
+  return (
+    listPost.map(item => {
       return (
-        <div key={item.id} style={{ marginTop: 110, marginBottom: 24, }}>
+        <div key={item.id}>
           <Grid container justifyContent='center'  >
             <Grid item xs={8} style={{ backgroundColor: '#F1ECF5' }}>
               <Grid container justifyContent='center' style={{ padding: 30 }} >
                 <Grid item xs={8}>
-                  <div className={classes.image_cus}>
-                    <SimpleImageSlider autoPlay='true'
-                      width={width * 5 / 15}
-                      height={width * 4 / 15}
-                      images={images}
-                      showBullets={false}
-                      showNavs={true}
-                    />
+                  <div >
+                    <div style={{ position: 'relative' }} >
+                      <SimpleImageSlider autoPlay='true'
+                        width={width * 5 / 15}
+                        height={width * 4 / 15}
+                        images={images}
+                        showBullets={false}
+                        showNavs={true}
+                      />
+                      <div
+                        style={{ position: 'absolute', bottom: 10, right: 180 }}
+                      >{time}</div>
+                    </div>
+
                     <div style={{ marginTop: 20 }}>
                       <Stack spacing={2}>
                         <div style={{ display: 'inline-flex', justifyContent: 'space-between' }}>
                           <div style={{ marginRight: 20 }}>
                             <p style={{ color: 'blue', fontSize: 20, fontWeight: 'bold' }}>
-                              {item.name}
+                              {item.title}
                             </p>
                           </div>
-                          <div style={{ marginRight: 150, cursor: 'pointer' }} onClick={() => {
-                            setLike(!like)
-                            console.log(item.liked);
-                          }}>
-                            {item.liked ? <ThumbUpAltIcon fontSize='large' style={{ fill: '#4676E4' }} />
+                          <div style={{ marginRight: 150, cursor: 'pointer' }}>
+                            {like ?
+                              <IconButton onClick={() => {
+                                setLike(false);
+                                unlikePost(item.id);
+                              }}>
+                                <ThumbUpAltIcon fontSize='large' style={{ fill: '#4676E4' }} />
+                              </IconButton>
                               :
-                              <ThumbUpAltIcon fontSize='large' style={{ fill: 'white' }} />}
+                              <IconButton onClick={() => {
+                                setLike(true);
+                                likePost(item.id);
+                              }} >
+                                <ThumbUpAltIcon fontSize='large' style={{ fill: 'white' }} />
+                              </IconButton>
+                            }
                           </div>
                         </div>
                         <p style={{ color: '#C90927', fontWeight: 'bold' }}>{item.price} đ</p>
@@ -147,7 +254,7 @@ function MyBodyDetail() {
                           <Stack direction='row' spacing={1}>
                             <BuildCircleIcon style={{ fill: '#7b35ba' }} />
                             <p style={{ color: 'blue' }}>
-                              Status: {item.StatusCurrentProduct.status}
+                              Tình trạng: {item.PostCondition.status}
                             </p>
                           </Stack>
                           <Stack direction='row' spacing={1}>
@@ -158,12 +265,12 @@ function MyBodyDetail() {
                         </Stack>
                         <Stack direction='row' spacing={1}>
                           <ApartmentIcon style={{ fill: '#7b35ba' }} />
-                          <p style={{ color: 'blue' }}>Made In: {item.MadeIn.countryName}</p>
+                          <p style={{ color: 'blue' }}>Sản xuất tại: {item.Origin.countryName}</p>
                         </Stack>
                         <Divider style={{ backgroundColor: '#7b35ba' }} />
                         <Stack direction='row' spacing={1}>
                           <LocationOnIcon style={{ fill: '#7b35ba' }} />
-                          <p style={{ color: 'blue' }}>{item.address} - {item.ward} - {item.district} - {item.province}</p>
+                          <p style={{ color: 'blue' }}>{item.street} - {item.ward} - {item.district} - {item.province}</p>
                         </Stack>
                       </Stack>
                     </div>
@@ -179,7 +286,7 @@ function MyBodyDetail() {
                           <div>
                             <Avatar
                               alt="Remy Sharp"
-                              // src={'htt'}
+                              src={item.User.avatarImg}
                               sx={{ width: 48, height: 48 }}
                             />
                           </div>
@@ -191,7 +298,11 @@ function MyBodyDetail() {
                           </div>
 
                           <div style={{ marginTop: 10 }}>
-                            <Button style={{ fill: 'red' }} variant="outlined" size='small' sx={{ width: 50, }}>
+                            <Button style={{ fill: 'red' }} variant="outlined" size='small'
+                              sx={{ width: 50, }} onClick={() => {
+                                navigate(`/profile/user/${item.User.userId}`)
+                                console.log('..... alo ', item.User.userId)
+                              }}>
                               Xem trang
                             </Button>
                           </div>
@@ -217,18 +328,24 @@ function MyBodyDetail() {
                           <QuestionAnswerIcon style={{ marginRight: 8 }} />
                           Chat voi nguoi ban
                         </Button>
+                        <Stack direction='row' spacing={2}>
+                          <Button fullWidth size='small' style={{ backgroundColor: '#FFD600', boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px" }} onClick={handleBuy}>
+                            MUA
+                          </Button>
+                          <Button fullWidth size='small' style={{ backgroundColor: '#33A837', boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px" }}>
+                            MUA
+                          </Button>
+                        </Stack>
                       </Stack>
                     </div>
                   </div>
                 </Grid>
-
               </Grid>
             </Grid>
           </Grid >
         </div >
       )
     })
-
   )
 }
 

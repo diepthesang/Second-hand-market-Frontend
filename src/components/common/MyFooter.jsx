@@ -7,9 +7,9 @@ function MyFooter() {
   const { height, width } = useWindowDimensions();
 
   return (
-    <Grid container justifyContent='center'>
+    <Grid container justifyContent='center' style={{ paddingTop: 14,}}>
       <Grid item xs={12} >
-        <div style={{ backgroundColor: 'white', width: width, height: height / 4, bottom: 0 }}>
+        <div style={{ backgroundColor: 'white', width: width, maxHeight: height / 4, bottom: 0 }}>
           <div style={{
             backgroundImage: 'linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%)',
             // width: width,
@@ -28,9 +28,9 @@ function MyFooter() {
                   </div>
                   <div style={{ textAlign: 'center' }}>
                     <Stack direction='row' justifyContent='center' spacing={4}>
-                      <div><img src="https://img.icons8.com/color/24/000000/facebook-new.png" /></div>
-                      <div><img src="https://img.icons8.com/fluency/24/000000/instagram-new.png" /></div>
-                      <div><img src="https://img.icons8.com/color/24/000000/twitter--v1.png" /></div>
+                      <div><img alt='' src="https://img.icons8.com/color/24/000000/facebook-new.png" /></div>
+                      <div><img alt='' src="https://img.icons8.com/fluency/24/000000/instagram-new.png" /></div>
+                      <div><img alt='' src="https://img.icons8.com/color/24/000000/twitter--v1.png" /></div>
                     </Stack>
                   </div>
                   <div style={{ justifyContent: 'center', textAlign: 'center', color: 'black', paddingBottom: 8 }}>

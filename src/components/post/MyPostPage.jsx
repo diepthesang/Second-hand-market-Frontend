@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
 import MyBodyPost from './MyBodyPost'
 import MyHeader from '../common/MyHeader'
 import { useNavigate } from 'react-router-dom';
@@ -8,7 +8,6 @@ import { useNavigate } from 'react-router-dom';
 
 
 function MyPostPage() {
-    const [isLogin, setIsLogin] = useState(false);
     const navigate = useNavigate()
     const checkIsLogin = async () => {
         if (localStorage['access_token'] !== undefined) {
@@ -17,7 +16,7 @@ function MyPostPage() {
             navigate('/login')
         }
     }
-    React.useEffect(
+    useEffect(
         () => {
             checkIsLogin()
         }, []
@@ -25,7 +24,6 @@ function MyPostPage() {
 
     return (
         <>
-            <MyHeader />
             <MyBodyPost />
         </>
 

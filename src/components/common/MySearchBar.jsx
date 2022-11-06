@@ -4,13 +4,15 @@ import Box from '@mui/material/Box';
 import InputBase from '@mui/material/InputBase';
 
 import SearchIcon from '@mui/icons-material/Search';
-
+import PostAddIcon from '@mui/icons-material/PostAdd';
 import { Stack } from '@mui/material';
 import { Avatar, Button, Divider, Fade, Menu, MenuItem } from '@material-ui/core';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import axios from 'axios';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { useDispatch } from 'react-redux';
+import { getSearch } from '../../redux/searchSlice';
 
 
 const Search = styled('div')(({ theme }) => ({
@@ -64,10 +66,13 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 export default function MySearchBar() {
 
     const [isLogin, setIsLogin] = useState(false);
+    const dispatch = useDispatch()
 
     const navigate = useNavigate();
     const [userName, setUserName] = useState('')
     const [avt, setAvt] = useState('');
+    const [userId, setUserId] = useState('');
+    const [search, setSearch] = useState();
 
     const changeStatusLogin = () => {
         if (localStorage['access_token'] !== undefined) {
@@ -88,14 +93,15 @@ export default function MySearchBar() {
             const fullName = data.data.firstName + ' ' + data.data.lastName
             setUserName(fullName)
             setAvt(data.data.avatarImg)
+            setUserId(data.data.userId)
         } catch (error) {
 
         }
     }
 
     const handleLogOut = () => {
-        localStorage.removeItem("access_token")
-        navigate('/login')
+        localStorage.removeItem("access_token");
+        navigate('/login');
     }
 
     // more
@@ -123,7 +129,17 @@ export default function MySearchBar() {
     return (
         <Box display='space-around' paddingBottom={1}  >
             <Stack direction='row' justifyContent='space-between' marginRight={3} >
-                <Search className=''>
+                <Search
+                    onChange={(e) => {
+                        console.log('value:::', e.target.value);
+                        let _search = e.target.value.replace(/^\s+|\s+$/gm, '')
+                        dispatch(getSearch(_search))
+                        navigate('/search')
+                        if (e.target.value === '' || e.target.value === null) {
+                            navigate('/')
+                        }
+                    }}
+                >
                     <SearchIconWrapper>
                         <SearchIcon style={{ fill: '#7b35ba' }} />
                     </SearchIconWrapper>
@@ -134,7 +150,7 @@ export default function MySearchBar() {
                 </Search>
 
                 {isLogin ?
-                    <div style={{ cursor: 'pointer' }} >
+                    <div style={{ cursor: 'pointer', }} onClick={() => { navigate(`/profile/user/${userId}`) }}>
                         <Stack direction='row' spacing={5} >
                             <div style={{ width: 12, height: 12, marginTop: -4 }}>
                                 <Avatar
@@ -161,7 +177,10 @@ export default function MySearchBar() {
                                     sx={{ width: 12, height: 12 }}
                                 />
                             </div>
-                            <div style={{ marginTop: 6 }} onClick={() => { navigate('/login') }}>
+                            <div style={{ marginTop: 6 }} onClick={() => {
+                                navigate('/login');
+                                console.log('su kien login')
+                            }}>
                                 <p>
                                     Login
                                 </p>
@@ -175,7 +194,6 @@ export default function MySearchBar() {
                     {isLogin &&
                         <>
                             <Button
-
                                 id="fade-button"
                                 aria-controls={open ? 'fade-menu' : undefined}
                                 aria-haspopup="true"
@@ -185,6 +203,7 @@ export default function MySearchBar() {
                                 More  <ExpandMoreIcon />
                             </Button>
                             <Menu
+                                disableScrollLock={true}
                                 id="fade-menu"
                                 MenuListProps={{
                                     'aria-labelledby': 'fade-button',
@@ -194,20 +213,23 @@ export default function MySearchBar() {
                                 onClose={handleClose}
                                 TransitionComponent={Fade}
                             >
-                                <MenuItem style={{ color: '#7b35ba ' }} onClick={handleClose}>Profile</MenuItem>
-                                <Divider />
-                                <MenuItem style={{ color: '#7b35ba ' }} onClick={handleClose}>My account</MenuItem>
+                                <MenuItem style={{ color: '#7b35ba ' }} onClick={() => {
+                                    handleClose();
+                                    navigate(`/profile/user/${userId}`)
+                                }}>Profile</MenuItem>
                                 <Divider />
                                 <MenuItem style={{ color: '#7b35ba ' }} onClick={() => { handleLogOut() }}>Logout</MenuItem>
                             </Menu>
-                        </>}
+                        </>
+                    }
                 </div>
 
-
-
-                <Button style={{ width: 150, height: 35, backgroundImage: 'linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%)' }} color='#ffff' variant='contained' size='small'
+                <Button style={{ width: 150, height: 35, backgroundImage: 'linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%)' }} variant='contained' size='small'
                     onClick={() => { navigate('/post') }}>
-                    Post
+
+                    <PostAddIcon />
+                    <div style={{ width: 4 }}></div>
+                    <div>Post</div>
                 </Button>
             </Stack>
         </Box >

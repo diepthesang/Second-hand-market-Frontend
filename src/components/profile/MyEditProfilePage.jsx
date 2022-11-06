@@ -1,15 +1,15 @@
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import MyBodyManagePosting from './MyBodyManagePosting'
+import MyBodyEditProfile from './MyBodyEditProfile'
 
-function MyManagePostingPage() {
+function MyEditProfilePage() {
 
   const navigate = useNavigate()
   const checkIsLogin = async () => {
     if (localStorage['access_token'] !== undefined) {
-      navigate('/managePosting');
+      // navigate('/edit/post/')
     } else {
-      navigate('/login');
+      navigate('/login')
     }
   }
   useEffect(
@@ -19,10 +19,11 @@ function MyManagePostingPage() {
   )
 
   return (
-    <>
-      <MyBodyManagePosting />
-    </>
+
+    <div>
+      <MyBodyEditProfile />
+    </div>
   )
 }
 
-export default MyManagePostingPage
+export default MyEditProfilePage

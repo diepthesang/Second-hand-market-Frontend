@@ -1,23 +1,20 @@
 
-import { Badge, Button, Divider, Fade, Grid, InputBase, makeStyles, Menu, MenuItem, styled, TextField } from '@material-ui/core'
-import { Search } from '@mui/icons-material'
-import { Autocomplete } from '@mui/material'
-import { Box, Stack } from '@mui/system'
-import React from 'react'
-import SearchIcon from '@mui/icons-material/Search';
+import { Badge, Button, Fade, Grid, InputBase, makeStyles, Menu, MenuItem, styled } from '@material-ui/core'
+import { Box } from '@mui/system'
+import React, { useState } from 'react'
 import MySearchBar from './MySearchBar'
 import { useNavigate } from 'react-router-dom'
-import useWindowDimensions from '../../helps/useWindowDimensions'
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import ChatIcon from '@mui/icons-material/Chat';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import HomeIcon from '@mui/icons-material/Home';
-import { alpha } from '@mui/material/styles';
 // import { Menu } from '@mui/material/Menu';
-import AdbIcon from '@mui/icons-material/Adb';
-
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import { useSelector } from 'react-redux'
+import axios from 'axios'
+import { useEffect } from 'react';
 
 const SearchIconWrapper = styled('div')(({ theme }) => ({
     padding: theme.spacing(0, 2),
@@ -70,8 +67,10 @@ const useStyles = makeStyles((theme) => ({
 
 function MyHeader() {
     const classes = useStyles();
-
     const navigate = useNavigate();
+    const [qtyCart, setQtyCart] = useState(0);
+    let cartQty = useSelector((state) => state.cart.cart)
+
 
     const handleBtnChat = () => {
         navigate('/chat')
@@ -81,7 +80,28 @@ function MyHeader() {
         navigate('/')
     }
 
-    ///////////////////////
+    const handleCart = () => {
+        navigate('/cart')
+    }
+
+    // GET QTY CART
+
+    const getQtyCart = async () => {
+        try {
+            const { data } = await axios.get('/user/postCart/1',
+                {
+                    headers: {
+                        Authorization: localStorage['access_token']
+                    }
+                }
+            );
+            console.log('data_getQTYCart::::', data.data.count);
+            setQtyCart(data.data.count);
+        } catch (error) {
+            console.log('err_getQtyCart:::', error);
+        };
+        console.log('cartQty::', cartQty)
+    }
 
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
@@ -92,10 +112,16 @@ function MyHeader() {
         setAnchorEl(null);
     };
 
+    useEffect(
+        () => {
+            getQtyCart()
+        }, [cartQty]
+    )
+
 
 
     return (
-        <Grid container justifyContent='center'>
+        <Grid container justifyContent='center' style={{ marginBottom: 114 }}>
             <Grid item xs={12}>
                 <div className={classes.make_position} >
                     <Grid container justifyContent='center'>
@@ -141,9 +167,9 @@ function MyHeader() {
                                     </div>
 
                                     <div >
-                                        <Button onClick={() => { handleBtnChat() }} size='small' >
-                                            <Badge badgeContent={4} color="secondary">
-                                                <NotificationsIcon />
+                                        <Button onClick={handleCart} size='small' >
+                                            <Badge badgeContent={qtyCart} color="secondary" overlap='rectangular'>
+                                                <ShoppingCartIcon />
                                             </Badge>
 
                                         </Button>

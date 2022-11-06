@@ -5,7 +5,6 @@ import MyHeader from '../common/MyHeader'
 function MyCategoryPage() {
   return (
     <>
-      <MyHeader />
       <MyBodyCategory />
     </>
   )

@@ -1,5 +1,4 @@
 import {
-    Box,
     Button,
     Checkbox,
     Grid,
@@ -9,11 +8,12 @@ import {
     TextField,
     Typography,
 } from "@material-ui/core";
-import { Alert, Autocomplete } from "@mui/material";
+import { Alert } from "@mui/material";
 import { Stack } from "@mui/system";
 import axios from "axios";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import location from "../../helps/location";
+import { useNavigate } from 'react-router-dom';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -40,27 +40,27 @@ function MyBodyPost() {
     // const { height, width } = useWindowDimensions();
     const [districtData, setDistrictData] = useState([]);
     const [wardData, setWardData] = useState([]);
-    const [codeProvince, setCodeProvince] = useState("-1");
-    const [codeDistrict, setCodeDistrict] = useState("-1");
     const [countryArr, setCountryArr] = useState([]);
     const [warrantyArr, setWarrantyArr] = useState([]);
     const [categoryParentArr, setCategoryParentArr] = useState([]);
-    const [categoryParentId, setCategoryParentId] = useState("-1");
     const [categoryChildArr, setCategoryChildArr] = useState([]);
     const [statusCurrentProduct, setStatusCurrentProduct] = useState([]);
     const [isFreeProduct, setIsFreeProduct] = useState(false);
     const [images, setImages] = useState([]);
     const [imageURLS, setImageURLs] = useState([]);
-    const [errMsg, setErrMsg] = useState('')
+    const [errMsg, setErrMsg] = useState('');
+
+    const navigate = useNavigate();
 
     // const [cookies, setCookie, removeCookie] = useCookies();
     const classes = useStyles();
 
     //HANDLE SUBMIT
     const handleSubmit = async (event) => {
-
         event.preventDefault();
         const data = new FormData(event.currentTarget);
+        // const data = new FormData(form);
+
         console.log({
             cateParentId: data.get("categoryParent"),
             cateId: data.get("categoryChild"),
@@ -75,52 +75,97 @@ function MyBodyPost() {
             ward: data.get("ward"),
             address: data.get("address"),
             free: data.get("freeProduct"),
-            image: data.get('file'),
-            images: document.querySelector('#file').files,
+            // images: data.get('file'),
+            // images: document.querySelector('#file').files,
+            // images: data.get('file')
 
-            // cookie: cookies.get('access_token')
         });
 
+        // data.append('cateParentId', data.get("categoryParent"));
+        data.append('cateId', data.get("cateId"));
+        data.append('name', data.get("name"));
+        data.append('statusId', data.get("statusId"));
+        data.append('warrantyId', data.get("warrantyId"));
+        data.append('madeInId', data.get("madeInId"));
+        data.append('description', data.get("description"));
+        data.append('price', data.get("price"));
+        data.append('district', data.get("district"));
+        data.append('ward', data.get("ward"));
+        data.append('address', data.get("address"));
+        data.append('free', data.get("free"));
 
-        console.log('images[]::::', images)
+
+        images.forEach(async (file) => {
+            data.append('images', file);
+        });
+
+        for (const value of data.values()) {
+            console.log(value);
+        }
+
+        console.log('formData:::', data.keys())
 
 
-        // for (let i = 0; i < images.length; i++) {
-        //     images.push(images[i]);
+        const _data = {
+            // cateParentId: data.get("categoryParent"),
+            cateId: data.get("cateId"),
+            name: data.get("name"),
+            statusId: data.get("statusId"),
+            warrantyId: data.get("warrantyId"),
+            madeInId: data.get("madeInId"),
+            description: data.get("description"),
+            free: data.get("free"),
+            price: data.get("price"),
+            province: data.get("province"),
+            district: data.get("district"),
+            ward: data.get("ward"),
+            address: data.get("address"),
+            // images: objImage,
+            images: document.querySelector('#file').files[0],
+            // images: images,
+        };
+
+
+
+        console.log('listImage1::::', document.querySelector('#file').files);
+        console.log('listImage2:::', images);
+
+        // let listImage = [];
+        // const objImage = document.querySelector('#file').files;
+
+        // for (const key in objImage) {
+        //     if (objImage.hasOwnProperty(key)) {
+        //         var value = objImage[key];
+        //         //do something with value;
+        //         data.append('images', value);
+        //     }
         // }
-        // data.append('images', images);
 
-        // console.log('data', data)
+        // console.log('data::::', data);
+
+
+
+        // console.log('dataa:::', _data);
+
 
 
         try {
-            const res = await axios.post('/user/createPost', {
-                cateId: data.get("categoryChild"),
-                name: data.get("productName"),
-                statusId: data.get("productState"),
-                warrantyId: data.get("warranty"),
-                madeInId: data.get("madeIn"),
-                description: data.get("describe"),
-                free: data.get("freeProduct"),
-                price: data.get("price"),
-                province: data.get("province"),
-                district: data.get("district"),
-                ward: data.get("ward"),
-                address: data.get("address"),
-                images: data.get('file'),
-                // images: document.querySelector('#file').files[0],
-                // images: images,
-            },
+            const res = await axios.post('/user/createPost',
+                { ..._data },
                 {
                     headers: {
                         Authorization: localStorage['access_token'],
-                        'Content-type': 'multipart/form-data',
-                    }
+                        'Content-type': `multipart/form-data`,
+                    },
+                    // transformRequest: (data) => {
+                    //     return data; // thats enough
+                    // },
                 }
             )
             setErrMsg('')
             handleClick()
-            console.log('ressss:::', res);
+            console.log('ressss:::', res.data.data.id);
+            // navigate(`/post/${res.data.data.id}`);
 
         } catch (error) {
             console.log('error::::', error.response.data);
@@ -128,6 +173,7 @@ function MyBodyPost() {
 
 
         }
+
 
     };
 
@@ -160,15 +206,17 @@ function MyBodyPost() {
         setCategoryParentArr(data.data);
     };
 
-    const getAllCategoryChild = async () => {
+    const getAllCategoryChild = async (categoryParentId) => {
         let { data } = await axios.get(
             `/common/categoryParent/${categoryParentId}/allCategoryChild`
         );
         setCategoryChildArr(data.data);
+        console.log('cateChild:::', data.data)
     };
 
     const getAllStatusCurrentProduct = async () => {
         let { data } = await axios.get("/common/allStatusCurrentProduct");
+        console.log('PostCondition::::', data)
         setStatusCurrentProduct(data.data);
     };
 
@@ -185,25 +233,13 @@ function MyBodyPost() {
         setImageURLs(newImageUrls);
     }, [images]);
 
-    useLayoutEffect(() => {
-        getDistrictByCodeProvince(codeProvince);
-    }, [codeProvince]);
-
-    useLayoutEffect(() => {
-        getWardByCodeDistrict(codeDistrict);
-    }, [codeDistrict]);
-
-    useLayoutEffect(() => {
-        getAllCategoryChild();
-    }, [categoryParentId]);
-
-    useLayoutEffect(() => {
+    useEffect(() => {
         getAllCountry();
         getAllWarrantyStatus();
         getAllCategoryParrent();
         getAllStatusCurrentProduct();
-
     }, []);
+
 
     // show message cussess
     const [open, setOpen] = React.useState(false);
@@ -221,7 +257,7 @@ function MyBodyPost() {
     };
 
     return (
-        <div style={{ marginTop: 110 }}>
+        <div>
 
 
             <Grid container justifyContent="center">
@@ -265,7 +301,7 @@ function MyBodyPost() {
                                         }}
                                         >
                                             {imageURLS.map((imageSrc) => (
-                                                <div className={classes.image_frame_cus} >
+                                                <div key={imageSrc} className={classes.image_frame_cus} >
                                                     <img
                                                         src={imageSrc}
                                                         alt="not fount"
@@ -281,8 +317,8 @@ function MyBodyPost() {
                                     <div style={{ marginLeft: 40 }}>
                                         <Stack spacing={1} justifyContent="center">
                                             <TextField
-                                                name="categoryParent"
-                                                color="black"
+                                                SelectProps={{ MenuProps: { disableScrollLock: true } }}
+                                                name="cateParentId"
                                                 id="standard-size-small"
                                                 select
                                                 label="Category"
@@ -293,7 +329,8 @@ function MyBodyPost() {
                                                     <MenuItem key={item.id} value={item.id}>
                                                         <div
                                                             onClick={() => {
-                                                                setCategoryParentId(item.id);
+                                                                // setCategoryParentId(item.id);
+                                                                getAllCategoryChild(item.id)
                                                             }}
                                                             style={{ color: "black" }}
                                                         >
@@ -304,11 +341,11 @@ function MyBodyPost() {
                                             </TextField>
 
                                             <TextField
-                                                name="categoryChild"
-                                                color="black"
+                                                SelectProps={{ MenuProps: { disableScrollLock: true } }}
+                                                name="cateId"
                                                 id="standard-size-small"
                                                 select
-                                                label="Category"
+                                                label="Category Child"
                                                 size="small"
                                                 variant="outlined"
                                             >
@@ -322,7 +359,8 @@ function MyBodyPost() {
                                             </TextField>
 
                                             <TextField
-                                                name="productName"
+                                                SelectProps={{ MenuProps: { disableScrollLock: true } }}
+                                                name="name"
                                                 label="Product's name"
                                                 d="standard-size-small"
                                                 size="small"
@@ -330,11 +368,11 @@ function MyBodyPost() {
                                             />
 
                                             <TextField
-                                                name="productState"
-                                                color="black"
+                                                SelectProps={{ MenuProps: { disableScrollLock: true } }}
+                                                name="statusId"
                                                 id="filled-select-currency"
                                                 select
-                                                label="Product'state"
+                                                label="Product condition"
                                                 size="small"
                                                 variant="outlined"
                                             >
@@ -346,8 +384,8 @@ function MyBodyPost() {
                                             </TextField>
 
                                             <TextField
-                                                name="warranty"
-                                                color="black"
+                                                SelectProps={{ MenuProps: { disableScrollLock: true } }}
+                                                name="warrantyId"
                                                 id="filled-select-currency"
                                                 select
                                                 label="Warranty status"
@@ -362,8 +400,8 @@ function MyBodyPost() {
                                             </TextField>
 
                                             <TextField
-                                                name="madeIn"
-                                                color="black"
+                                                SelectProps={{ MenuProps: { disableScrollLock: true } }}
+                                                name="madeInId"
                                                 select
                                                 label="Made in: "
                                                 variant="outlined"
@@ -382,17 +420,20 @@ function MyBodyPost() {
                                             </TextField>
 
                                             <TextField
-                                                name="describe"
+                                                name="description"
                                                 id="outlined-multiline-static"
                                                 label="Describe"
                                                 multiline
-                                                rows={4}
+                                                minRows={4}
                                                 variant="outlined"
                                             />
 
                                             <Stack direction="row" alignContent="center">
                                                 <Checkbox
-                                                    name="freeProduct"
+                                                    style={{
+                                                        color: "#7b35ba",
+                                                    }}
+                                                    name="free"
                                                     size="small"
                                                     value={true}
                                                     color="secondary"
@@ -417,8 +458,8 @@ function MyBodyPost() {
                                             {/* TINH  */}
 
                                             <TextField
+                                                SelectProps={{ MenuProps: { disableScrollLock: true } }}
                                                 name="province"
-                                                color="black"
                                                 select
                                                 label="Pronvince"
                                                 size="small"
@@ -428,7 +469,7 @@ function MyBodyPost() {
                                                     <MenuItem key={item.name} value={item.name}>
                                                         <div
                                                             onClick={() => {
-                                                                setCodeProvince(item.code);
+                                                                getDistrictByCodeProvince(item.code);
                                                             }}
                                                             style={{ color: "black" }}
                                                         >
@@ -441,8 +482,8 @@ function MyBodyPost() {
                                             {/* HUYEN */}
 
                                             <TextField
+                                                SelectProps={{ MenuProps: { disableScrollLock: true } }}
                                                 name="district"
-                                                color="black"
                                                 id="filled-select-currency"
                                                 select
                                                 label="District"
@@ -453,7 +494,7 @@ function MyBodyPost() {
                                                     <MenuItem key={item.name} value={item.name}>
                                                         <div
                                                             onClick={() => {
-                                                                setCodeDistrict(item.code);
+                                                                getWardByCodeDistrict(item.code)
                                                             }}
                                                             style={{ color: "black" }}
                                                         >
@@ -466,8 +507,8 @@ function MyBodyPost() {
                                             {/* XA */}
 
                                             <TextField
+                                                SelectProps={{ MenuProps: { disableScrollLock: true } }}
                                                 name="ward"
-                                                color="black"
                                                 select
                                                 label="ward"
                                                 size="small"

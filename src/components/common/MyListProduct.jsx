@@ -1,14 +1,13 @@
-import { Avatar, FormControl, Grid, makeStyles, MenuItem, Select } from '@material-ui/core'
-import { Paper, Stack, Typography } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import { Avatar, Grid, makeStyles } from '@material-ui/core'
+import { Pagination, Paper, Stack, Typography } from '@mui/material'
+import React, { useState } from 'react'
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import axios from 'axios';
 import useWindowDimensions from '../../helps/useWindowDimensions';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { getPostId } from '../../redux/postSlice'
-import { FamilyRestroomRounded } from '@mui/icons-material';
-import { getLikePost } from '../../redux/likePostSlice';
+import { getPaging } from '../../redux/pagingSlice';
 
 
 
@@ -61,132 +60,93 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const API_key = 'c47231de5e38b0bc5444abf05e6e9973'
 
 
-const top100Films = () => [
-    { title: 'The Shawshank Redemption', year: 1994 },
-    { title: 'The Godfather', year: 1972 },
-    { title: 'The Godfather: Part II', year: 1974 },
-    { title: 'The Dark Knight', year: 2008 },
-    { title: '12 Angry Men', year: 1957 },
-    { title: "Schindler's List", year: 1993 },
-    { title: 'Pulp Fiction', year: 1994 },]
 
-function MyListProduct() {
+
+
+function MyListProduct({ listPost, totalPage }) {
     const classes = useStyles();
     const { width } = useWindowDimensions();
     const [listProduct, setListProduct] = useState([]);
-    const [pageURL, setPageURL] = useState(0);
-    const [latitude, setLatitude] = useState('');
-    const [longitude, setLongitude] = useState('')
-    const [like, setLike] = useState(false)
     const dispatch = useDispatch()
     const navigate = useNavigate()
-
-    const categoryChildId = useSelector((state) => state.categoryChildId.categoryChildId)
-    const _like = useSelector((state) => state.likePost.likePost)
-
-    const getListProductByCategoryChildId = async () => {
-        const { data } = await axios.get(`/common/categoryChild/${categoryChildId || 1}/post`)
-        setListProduct(data.data)
-
-        // dispatch(getLikePost(data.data))
-        console.log(data.data)
-    }
+    const [page, setPage] = React.useState(1);
 
 
 
-
-    // const getListProductByCityName = async () => {
-    //     const { data } = await axios.get('')
-    // }
-
-    const [age, setAge] = React.useState('');
-    const handleChange = (event) => {
-        setAge(event.target.value);
+    const handleChange = (event, value) => {
+        console.log(value);
+        setPage(value);
+        dispatch(getPaging(value));
     };
 
 
+    const categoryChildId = useSelector((state) => state.categoryChildId.categoryChildId)
 
-
-    useEffect(() => {
-        setPageURL(window.location.href);
-        if (window.location.href === 'http://localhost:3000/') {
-            navigator.geolocation.getCurrentPosition(position => {
-                console.log(position)
-                setLatitude(position.coords.latitude)
-                setLongitude(position.coords.longitude)
-            })
-
-
-
-
-
+    const getListProductByCategoryChildId = async () => {
+        try {
+            const { data } = await axios.get(`/common/categoryChild/${categoryChildId}/post`)
+            setListProduct(data.data)
+            console.log(data.data)
+        } catch (error) {
+            console.log(error);
         }
-    }, [])
+    }
 
 
+    // const [age, setAge] = React.useState('');
+    // const handleChange = (event) => {
+    //     setAge(event.target.value);
+    // };
 
-    useEffect(
-        () => {
-            getListProductByCategoryChildId()
-        }, [categoryChildId]
-    )
+    console.log('listPostforList::::', listPost);
+    // setListProduct(listPost)
+
+
+    // useEffect(() => {
+    //     setListProduct(listPost)
+    // }, [])
+
+    // useEffect(
+    //     () => {
+    //         getListProductByCategoryChildId();
+    //     }, [categoryChildId]
+    // )
+
+
 
 
     return (
         <div>
-            <div>
-                <FormControl sx={{ m: 1, minWidth: 180 }} size="small">
-                    {/* <InputLabel id="demo-select-small">Age</InputLabel> */}
-                    <Select
-                        color='red'
-                        labelId="demo-select-small"
-                        id="demo-select-small"
-                        value={age}
-                        label="Age"
-                        onChange={handleChange}
-                    >
-                        <MenuItem value="">
-                            <em>None</em>
-                        </MenuItem>
-                        <MenuItem value={10}>Ten</MenuItem>
-                        <MenuItem value={20}>Twenty</MenuItem>
-                        <MenuItem value={30}>Thirty</MenuItem>
-                    </Select>
-                </FormControl>
-            </div>
-
-
-            <Stack spacing={2} bgcolor='#F1ECF5' paddingBottom={1} >
+            <Stack spacing={2} bgcolor='#F1ECF5' paddingBottom={1} justifyContent='center' justifyItems='center' >
                 <Typography style={{ color: '#7b35ba', margin: 8 }}>
                     Products for you
                 </Typography>
                 <Grid container alignItems='flex-start'>
-                    {listProduct.map(item => {
+                    {listPost.map(item => {
                         return (
-                            <Grid item xs={2} sm={2} >
+                            <Grid key={item.id} item xs={2} sm={2} >
                                 <div onClick={() => {
-                                    dispatch(getPostId(item.id))
                                     navigate(`/post/${item.id}`)
+                                    dispatch(getPostId(item.id))
                                 }} className='hover'>
                                     <Paper className={classes.paper_cus}  >
                                         <Stack direction='column' alignItems='center' >
                                             <div style={{ paddingTop: 8, position: "relative" }}>
-                                                <Avatar variant={"rounded"} src={`http://localhost:8080/${item.image.proImg}`} alt="The image" style={{
+                                                <Avatar variant={"rounded"} src={`http://localhost:8080/${item.image.imagePath}`} alt="The image" style={{
                                                     width: width / 11,
                                                     height: width / 11,
                                                 }} />
                                                 <div
                                                 >
-                                                    {item.liked ? <ThumbUpIcon className={classes.iconHeart_cus} />
+                                                    {/* {item.liked ? <ThumbUpIcon className={classes.iconHeart_cus} />
                                                         :
-                                                        <ThumbUpIcon className={classes.iconHeart_cus} style={{ fill: 'white' }} />}
+                                                        <ThumbUpIcon className={classes.iconHeart_cus} style={{ fill: 'white' }} />} */}
                                                 </div>
 
                                             </div>
-                                            <p className={classes.title_cus} >{item.name}</p>
+                                            <p className={classes.title_cus} >{item.title}</p>
                                             <p className={classes.price_cus}>{item.price} đ</p>
                                             <div style={{ display: 'inline-flex', justifyContent: 'flex-start' }}>
                                                 <div style={{ marginBottom: 8, display: 'block' }}>
@@ -210,9 +170,12 @@ function MyListProduct() {
                     })
                     }
                 </Grid>
+                <div style={{ display: 'inline-flex', justifyContent: 'center' }}>
+                    <Pagination count={totalPage} page={page} onChange={handleChange} />
+                </div>
             </Stack >
 
-        </div>
+        </div >
 
     )
 }

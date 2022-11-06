@@ -1,8 +1,8 @@
-import { makeStyles, Typography } from '@material-ui/core'
+import { makeStyles, Paper, Typography } from '@material-ui/core'
 import { Stack } from '@mui/system'
-import React, { useEffect, useState } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 import axios from 'axios';
-import { useSelector, useDispatch } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { getCategoryChildId } from '../../redux/categorySlice'
 import { useNavigate } from 'react-router-dom';
 
@@ -18,6 +18,7 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: 12,
         marginRight: 12,
         borderRadius: 12,
+
     },
 
     typography_cus: {
@@ -43,7 +44,8 @@ const useStyles = makeStyles((theme) => ({
         width: 100,
         height: 100,
         borderRadius: 16,
-        paddingTop: 4
+        paddingTop: 4,
+        boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px'
     }
 
 }));
@@ -60,6 +62,7 @@ function MyCategory() {
 
     const getDataCate = async () => {
         const { data } = await axios.get('common/allCategoryParent')
+        console.log('list category');
         setCateArr(data.data)
     }
 
@@ -75,21 +78,22 @@ function MyCategory() {
     return (
         <div className={classes.category}>
             <Stack>
-                <Typography style={{ color: '#7b35ba', margin: 10 }} color='#7b35ba' variant='h6' align='left'>Category</Typography>
+                <Typography style={{ color: '#7b35ba', margin: 10 }} variant='h6' align='left'>Category</Typography>
 
-                <div style={{ display: 'inline-flex' }} className='cate' onClick={() => { }}>
+                <div style={{ display: 'inline-flex', justifyContent: 'center' }} className='cate' onClick={() => { }}>
                     {cateArr.map(item => {
                         return (
-                            <div className={classes.paper_cus}
+                            <div key={item.id} className={classes.paper_cus}
                                 onClick={() => {
                                     dispatch(getCategoryChildId(item.id));
                                     navigate(`/category/${item.id}`)
                                 }} >
                                 <Stack direction='column' alignItems='center'>
-                                    <img alt='' src='http://localhost:8080/src/public/upload/1666023076868-873403902-logo-login.jpg' style={{
+                                    <img alt='' src={item.cateLogoImg} style={{
                                         width: 100,
                                         height: 100,
                                         borderRadius: 16,
+                                        boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px'
                                     }} />
                                     <Typography className={classes.typography_cus} >
                                         {item.cateName}
@@ -106,4 +110,4 @@ function MyCategory() {
     )
 }
 
-export default MyCategory
+export default memo(MyCategory)

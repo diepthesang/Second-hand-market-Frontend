@@ -7,9 +7,7 @@ import MyBodyDetail from './MyBodyDetail'
 function MyDetail() {
   return (
     <>
-      <MyHeader />
       <MyBodyDetail />
-      <MyFooter />
     </>
 
   )

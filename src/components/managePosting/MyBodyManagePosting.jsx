@@ -1,52 +1,87 @@
-import { Avatar, Box, Button, Grid, Switch, Tab } from '@material-ui/core'
-import { Paper, Tabs } from '@mui/material';
+import { Box, Button, Grid, Menu, MenuItem, Switch, Tab } from '@material-ui/core'
+import { Pagination, Paper, Tabs } from '@mui/material';
 import { Stack } from '@mui/system'
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
-
+import { useNavigate } from 'react-router-dom';
+import EditIcon from '@mui/icons-material/Edit';
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
+import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
 
 function MyBodyManagePosting() {
-  const [activeId, setActiveId] = useState(1);
-  const [listPost, setListPost] = useState([])
+  const [listPostShow, setListPostShow] = useState([])
+  const [listPostHide, setListPostHide] = useState([])
   const [value, setValue] = React.useState('1');
-  const [checked, setChecked] = React.useState();
-  const [postId, setPostId] = useState();
-
-  const handleChangeChecked = (event) => {
-    console.log('event.target.checked', event.target.checked);
-    // updateActiveForPost(postId, activeId)
-    if (event.target.checked) {
-      setActiveId(1)
-    } else {
-      setActiveId(4)
-    }
-
-    setChecked(!event.target.checked);
-    console.log('checked::::', checked);
-
-  };
+  const [hidePost, setHidePost] = useState(false);
+  const [showPost, setShowPost] = useState(false)
+  const [userInfo, setUserInfo] = useState({})
+  const [page, setPage] = React.useState(1);
+  const [totalPage, setTotalPage] = useState(0);
+  const navigate = useNavigate()
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
-  const getAllPostByUserId = async () => {
+  const handleChangePage = (event, value) => {
+    setPage(value);
+  };
+
+
+
+  const getUserInfoByUser = async () => {
     try {
-      const { data } = await axios.get('/user/allPost', {
+      const { data } = await axios.get('/user/userInfo', {
         headers: {
           Authorization: localStorage['access_token']
         }
       });
+
       console.log(data.data);
-      setListPost(data.data)
+
+      setUserInfo(data.data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const getPostIsShowingByUserId = async () => {
+    try {
+      const { data } = await axios.get(`/user/post/activeId/1/page/${page}`, {
+        headers: {
+          Authorization: localStorage['access_token']
+        }
+      });
+      console.log('post is showing :::: ', data)
+      setListPostShow(data.data);
+      setTotalPage(data.totalPage)
+      console.log(data.data);
     } catch (error) {
       console.log(error);
     }
   }
 
-  const updateActiveForPost = async () => {
+
+  const getPostIsHidingByUserId = async () => {
     try {
-      await axios.put('/user/updateActiveIdPost',
+      const { data } = await axios.get(`/user/post/activeId/4/page/${page}`, {
+        headers: {
+          Authorization: localStorage['access_token']
+        }
+      });
+
+      setListPostHide(data.data);
+      setTotalPage(data.totalPage)
+      console.log(data.data);
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+
+  const hidePostByPostId = async (postId, activeId) => {
+    try {
+      const { data } = await axios.put('/user/updateActiveIdPost',
         {
           postId,
           activeId,
@@ -57,44 +92,94 @@ function MyBodyManagePosting() {
           }
         }
       )
+      console.log(data)
+
     } catch (error) {
       console.log(error);
     }
   }
 
+  const showPostByPostId = async (postId, activeId) => {
+    try {
+      const { data } = await axios.put('/user/updateActiveIdPost',
+        {
+          postId,
+          activeId,
+        },
+        {
+          headers: {
+            Authorization: localStorage['access_token']
+          }
+        }
+      )
+      console.log(data)
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
   useEffect(
     () => {
-      getAllPostByUserId()
-    }, [value]
+      getPostIsShowingByUserId()
+    }, [hidePost]
+  );
+
+  useEffect(
+    () => {
+      if (value === "1") {
+        getPostIsShowingByUserId();
+      }
+      if (value === '2') {
+        getPostIsHidingByUserId();
+      }
+    }, [value, page]
   )
 
   useEffect(
     () => {
-      updateActiveForPost()
-      getAllPostByUserId()
-    }, [checked]
+      getUserInfoByUser()
+    }, []
   )
+
+  useEffect(
+    () => {
+      getPostIsHidingByUserId()
+    }, [showPost]
+  )
+
 
 
   return (
-    <div style={{ marginTop: 110 }}>
-      <Grid container justifyContent='center' >
-        <Grid item xs={6} style={{ backgroundColor: '#F1ECF5' }}>
-          <div style={{ color: 'red', backgroundColor: 'blue', marginBottom: 12 }}>
+    <div>
+      <Grid container justifyContent='center' style={{ minHeight: '70vh' }}  >
+        <Grid item xs={5} style={{ backgroundColor: '#F1ECF5' }} >
+          <Paper style={{ padding: 8, marginBottom: 12, margin: 12 }}>
             <Stack direction='row' spacing={4}>
-              <Avatar
-                alt="Remy Sharp"
-                src={'/static/images/avatar/1.jpg'}
-                sx={{ width: 100, height: 100 }}
+              <img src={userInfo.avatarImg} alt="Avatar"
+                style={
+                  {
+                    border: ' 2px solid #7b35ba',
+                    verticalAlign: "middle",
+                    width: 75,
+                    height: 75,
+                    borderRadius: '50%'
+                  }
+                }
               />
-              <p style={{ fontSize: 24 }}>Diep The Sang</p>
-              <Button variant="outlined" size='small'>
-                Trang cá nhân
-              </Button>
+              <Stack direction='column'>
+                <p style={{ fontSize: 24 }}>{userInfo.firstName} {userInfo.lastName}</p>
+                <Button variant="outlined" size='small'
+                  onClick={() => {
+                    navigate(`/profile/user/${userInfo.userId}`)
+                  }}>
+                  Trang cá nhân
+                </Button>
+              </Stack>
             </Stack>
-
-          </div>
-          <Paper>
+          </Paper>
+          <Paper style={{ margin: 12 }}>
             <Box sx={{ width: '100%' }}>
               <Tabs
                 value={value}
@@ -111,46 +196,86 @@ function MyBodyManagePosting() {
               </Tabs>
             </Box>
           </Paper>
-          <div style={{ paddingTop: 12 }}>
-            {listPost.map(item => {
-              return (
-                <Paper key={item.id} style={{ marginLeft: 12, marginRight: 12, marginBottom: 12 }}>
-                  <Stack direction='row' spacing={2} padding={1}>
-                    <img alt='' width={100} height={100} src={item.image.proImg}></img>
-                    <Stack direction='column' spacing={1} justifyContent='start'>
-                      <p>{item.name}</p>
-                      <p>{item.price}</p>
-                      <p>{item.updatedAt}</p>
+          <div>
+            {value === "1"
+              &&
+              listPostShow.map(item => {
+                return (
+                  <Paper key={item.id} style={{ marginLeft: 12, marginRight: 12, marginBottom: 12 }}>
+                    <Stack direction='row' spacing={2} padding={1} justifyContent='space-between' alignItems='center'>
+                      <Stack direction='row' spacing={2}>
+                        <img style={{ cursor: 'pointer' }} onClick={() => { navigate(`/post/${item.id}`) }} alt='' width={100} height={100} src={item.image.imagePath}></img>
+                        <Stack direction='column' spacing={1} justifyContent='start'>
+                          <p>{item.title}</p>
+                          <p>{item.price}</p>
+                          <p>{item.createdAt}</p>
+                        </Stack>
+                      </Stack>
+                      <div style={{ display: 'inline-flex', justifyContent: 'flex-end' }}>
+
+                        <Button size='small' variant="outlined" style={{ borderColor: 'red', marginRight: 4, boxShadow: ' rgba(0, 0, 0, 0.24) 0px 3px 8px ' }}
+                          onClick={() => {
+                            navigate(`/edit/post/${item.id}`)
+                          }}>
+                          <EditIcon style={{ paddingRight: 4 }} />
+                          Edit
+                        </Button>
+                        <Button size='small' variant="outlined" style={{ borderColor: 'red', marginRight: 4, boxShadow: ' rgba(0, 0, 0, 0.24) 0px 3px 8px ' }}
+                          onClick={() => {
+                            console.log(item.id);
+                            hidePostByPostId(item.id, 4)
+                            setHidePost(!hidePost)
+                          }}
+                        >
+                          <VisibilityOffOutlinedIcon style={{ paddingRight: 4 }} />
+                          Hide
+                        </Button>
+                      </div>
                     </Stack>
-                    <div style={{ marginLeft: 300, display: 'inline-flex' }}>
-                      {item.activeId === 1 ? <Switch
-                        color='primary'
-                        defaultChecked
-                        // checked={checked}
-                        onChange={handleChangeChecked}
-                        onClick={() => { setPostId(item.id) }}
-                        inputProps={{ 'aria-label': 'controlled' }}
-                      />
-                        :
-                        <Switch
-                          color='primary'
-                          // checked={checked}
-                          onClick={() => { setPostId(item.id) }}
-                          onChange={handleChangeChecked}
-                          inputProps={{ 'aria-label': 'controlled' }}
-                        />}
-                      <p style={{ marginTop: 6 }}>{item.activeId === 1 ? 'Show' : 'Hide'}</p>
-                    </div>
-                  </Stack>
-                </Paper>
-              )
-            })}
+                  </Paper>
+                )
+              })
+            }
+
+            {value === "2"
+              &&
+              listPostHide.map(item => {
+                return (
+                  <Paper key={item.id} style={{ marginLeft: 12, marginRight: 12, marginBottom: 12 }}>
+                    <Stack direction='row' spacing={2} padding={1} justifyContent='space-between' alignItems='center' >
+                      <Stack direction='row' spacing={2}>
+                        <img style={{ filter: "grayscale(100%)", cursor: 'not-allowed' }} alt='' width={100} height={100} src={item.image.imagePath}></img>
+                        <Stack direction='column' spacing={1} justifyContent='start'>
+                          <p>{item.title}</p>
+                          <p>{item.price}</p>
+                          <p>{item.createdAt}</p>
+                        </Stack>
+                      </Stack>
+                      <div style={{ display: 'inline-flex', justifyContent: 'flex-end' }}>
+                        <Button size='small' variant="outlined" style={{ borderColor: 'red', marginRight: 4, boxShadow: ' rgba(0, 0, 0, 0.24) 0px 3px 8px ' }}
+                          onClick={() => {
+                            showPostByPostId(item.id, 1)
+                            setShowPost(!showPost)
+                          }}>
+                          <RemoveRedEyeOutlinedIcon style={{ paddingRight: 4 }} />
+                          Show
+                        </Button>
+                      </div>
+                    </Stack>
+                  </Paper>
+                )
+              })
+            }
 
           </div>
-        </Grid>
-      </Grid>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <Pagination count={totalPage} page={page} onChange={handleChangePage} />
+          </div>
+        </Grid >
+      </Grid >
     </div >
   )
 }
+
 
 export default MyBodyManagePosting

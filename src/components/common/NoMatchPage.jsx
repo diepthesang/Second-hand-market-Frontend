@@ -5,9 +5,9 @@ import MyFooter from './MyFooter';
 
 function NoMatchPage() {
   return (
-    <>
+    <div style={{ position: 'relative' }}>
       <MyHeader />
-      <Grid container justifyContent='center'>
+      <Grid container justifyContent='center' style={{ backgroundColor: 'red', padding: 10, paddingBottom: 60 }}>
         <Grid item xs={8}>
           <div style={{ paddingTop: 110, color: 'red', textAlign: 'center' }}>
             404 not found
@@ -15,8 +15,10 @@ function NoMatchPage() {
 
         </Grid>
       </Grid>
-      <MyFooter />
-    </>
+      <div style={{ position: 'absolute', bottom: 0, height: 60 }}>
+        <MyFooter />
+      </div>
+    </div>
   )
 }
 
