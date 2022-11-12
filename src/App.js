@@ -9,7 +9,7 @@ import socketIO from "socket.io-client"
 import MyOTPInputPage from './components/OTP/MyOTPInputPage';
 import MyCategoryPage from './components/categoryChild/MyCategoryPage';
 import MyAdminPage from './components/admin/MyAdminPage';
-import MyTestPage from "./components/test/MyTestPage";
+import MyCountdownTimer from "./components/test/MyCountdownTimer";
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -25,6 +25,9 @@ import MyCartPage from "./components/order/MyCartPage";
 import MyRedirectPage from "./components/common/MyRedirectPage";
 import MyBodyHome from "./components/home/MyBodyHome";
 import MyModalLogin from "./components/common/MyModalLogin";
+import MyCheckoutPage from "./components/checkout/MyCheckoutPage";
+import MyPaymentSuccess from "./components/payment/MyPaymentSuccess";
+// import NativePickers from "./components/test/MyTestPage";
 
 const socket = socketIO.connect("http://localhost:8088")
 
@@ -75,7 +78,7 @@ function App() {
         {/* <Route path="/test" element={<MyTestGrid />}></Route> */}
         {/* <Route exact path="/managePosting" element={<MyManagePostingPage />}></Route> */}
         {/* <Route path="/category/:categoryParentId" element={<MyCategoryPage />}> </Route> */}
-        <Route path="/test" element={<BasicLayout />}>
+        {/* <Route path="/test" element={<BasicLayout />}>
           <Route index element={<MyTestPage />} />
         </Route>
         <Route path="/" element={<BasicLayout />}>
@@ -107,21 +110,38 @@ function App() {
         </Route>
         <Route path="/cart" element={<BasicLayout />}>
           <Route index element={localStorage['access_token'] ? <MyCartPage /> : <MyLogin />} />
-        </Route>
+        </Route> */}
 
 
         {/* <Route path="*" element={<BasicLayout />}>
           <Route index element={<NoMatchPage />} />
         </Route> */}
 
+        <Route path="/" element={<BasicLayout />}>
+          <Route path='/' element={<MyHomePage />} />
+          <Route path="/post" element={<MyPostPage />} />
+          <Route path="/post/:_postId" element={<MyDetailPage />} />
+          <Route path="/category/:categoryParentId" element={<MyCategoryPage />} />
+          <Route path="managePosting" element={localStorage['access_token'] ? <MyManagePostingPage /> : <MyLogin />} />
+          <Route path="/cart" element={localStorage['access_token'] ? <MyCartPage /> : <MyLogin />} />
+          <Route path="/edit/post/:postId" element={localStorage['access_token'] ? <MyEditPostPage /> : <MyLogin />} />
+          <Route path="/profile/user/:userId" element={<MyProfilePage />} />
+          <Route path="/search" element={<MyListPostBySearch />} />
+          <Route path="/editProfile" element={localStorage['access_token'] ? <MyEditProfilePage /> : <MyLogin />} />
+          <Route path="/cart" element={localStorage['access_token'] ? <MyCartPage /> : <MyLogin />} />
+          <Route path="*" element={<NoMatchPage />} />
+          <Route path="/checkout" element={<MyCheckoutPage />} />
+          <Route path="/payment/success" element={<MyPaymentSuccess />} />
+        </Route>
+
 
 
 
         <Route path="/redirect" element={<MyRedirectPage />}></Route>
-        <Route path="/modal" element={<MyModalLogin />}></Route>
+        {/* <Route path="/date" element={<NativePickers />}></Route> */}
 
 
-        <Route path="*" element={<NoMatchPage />}></Route>
+        {/* <Route path="*" element={<NoMatchPage />}></Route> */}
         <Route path="/admin" element={<MyAdminPage />}></Route>
       </Routes>
 

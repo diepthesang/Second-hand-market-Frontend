@@ -14,6 +14,13 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import location from "../../helps/location";
 import { useNavigate } from 'react-router-dom';
+import dayjs from 'dayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -49,6 +56,7 @@ function MyBodyPost() {
     const [images, setImages] = useState([]);
     const [imageURLS, setImageURLs] = useState([]);
     const [errMsg, setErrMsg] = useState('');
+    const [isBidProduct, setIsBidProduct] = useState(false);
 
     const navigate = useNavigate();
 
@@ -61,38 +69,43 @@ function MyBodyPost() {
         const data = new FormData(event.currentTarget);
         // const data = new FormData(form);
 
-        console.log({
-            cateParentId: data.get("categoryParent"),
-            cateId: data.get("categoryChild"),
-            name: data.get("productName"),
-            statusId: data.get("productState"),
-            warrantyId: data.get("warranty"),
-            madeInId: data.get("madeIn"),
-            description: data.get("describe"),
-            price: data.get("price"),
-            province: data.get("province"),
-            district: data.get("district"),
-            ward: data.get("ward"),
-            address: data.get("address"),
-            free: data.get("freeProduct"),
-            // images: data.get('file'),
-            // images: document.querySelector('#file').files,
-            // images: data.get('file')
+        // console.log({
+        //     cateParentId: data.get("categoryParent"),
+        //     cateId: data.get("categoryChild"),
+        //     name: data.get("productName"),
+        //     statusId: data.get("productState"),
+        //     warrantyId: data.get("warranty"),
+        //     madeInId: data.get("madeIn"),
+        //     description: data.get("describe"),
+        //     price: data.get("price") || null,
+        //     province: data.get("province"),
+        //     district: data.get("district"),
+        //     ward: data.get("ward"),
+        //     address: data.get("address"),
+        //     free: data.get("freeProduct"),
+        //     bidOption: data.get("bidOption"),
 
-        });
+        //     // images: data.get('file'),
+        //     // images: document.querySelector('#file').files,
+        //     // images: data.get('file')
 
-        // data.append('cateParentId', data.get("categoryParent"));
+        // });
+
+        data.append('cateParentId', data.get("categoryParent"));
         data.append('cateId', data.get("cateId"));
         data.append('name', data.get("name"));
         data.append('statusId', data.get("statusId"));
         data.append('warrantyId', data.get("warrantyId"));
         data.append('madeInId', data.get("madeInId"));
         data.append('description', data.get("description"));
-        data.append('price', data.get("price"));
+        data.append('price', data.get("price") || -1);
         data.append('district', data.get("district"));
         data.append('ward', data.get("ward"));
         data.append('address', data.get("address"));
         data.append('free', data.get("free"));
+        data.append('bidOption', data.get("bidOption"));
+        data.append('startPrice', data.get("startPrice"));
+
 
 
         images.forEach(async (file) => {
@@ -120,7 +133,9 @@ function MyBodyPost() {
             district: data.get("district"),
             ward: data.get("ward"),
             address: data.get("address"),
-            // images: objImage,
+            bidOption: data.get("bidOption"),
+            startPrice: data.get("startPrice"),
+            bidEndTime: timer,
             images: document.querySelector('#file').files[0],
             // images: images,
         };
@@ -256,10 +271,20 @@ function MyBodyPost() {
         setOpen(false);
     };
 
+
+    //  timeover for auction
+
+    const [timer, setTimer] = React.useState(Date.now());
+
+    const handleChangeTimer = (timer) => {
+        // const _timer = new Date(timer).getTime();
+        console.log('timer:::', timer);
+        setTimer(timer);
+    };
+
+
     return (
         <div>
-
-
             <Grid container justifyContent="center">
                 <Grid item xs={8}>
                     <div
@@ -277,7 +302,7 @@ function MyBodyPost() {
                                             <div className={classes.input_file_cus} >
                                                 {/* <AddAPhoto style={{ color: 'red' }}></AddAPhoto> */}
                                                 <img alt="" style={{ marginTop: 15 }} src="https://img.icons8.com/color/48/000000/camera.png" />
-                                                <p style={{ color: "#6f6c70" }}>Add Image</p>
+                                                <p style={{ color: "#6f6c70", fontSize: 14 }}>Thêm hình ảnh</p>
                                             </div>
                                         </label>
                                         <input
@@ -361,7 +386,7 @@ function MyBodyPost() {
                                             <TextField
                                                 SelectProps={{ MenuProps: { disableScrollLock: true } }}
                                                 name="name"
-                                                label="Product's name"
+                                                label="Tên sản phẩm"
                                                 d="standard-size-small"
                                                 size="small"
                                                 variant="outlined"
@@ -372,7 +397,7 @@ function MyBodyPost() {
                                                 name="statusId"
                                                 id="filled-select-currency"
                                                 select
-                                                label="Product condition"
+                                                label="Trạng thái sản phẩm"
                                                 size="small"
                                                 variant="outlined"
                                             >
@@ -388,7 +413,7 @@ function MyBodyPost() {
                                                 name="warrantyId"
                                                 id="filled-select-currency"
                                                 select
-                                                label="Warranty status"
+                                                label="Bảo hành"
                                                 size="small"
                                                 variant="outlined"
                                             >
@@ -403,7 +428,7 @@ function MyBodyPost() {
                                                 SelectProps={{ MenuProps: { disableScrollLock: true } }}
                                                 name="madeInId"
                                                 select
-                                                label="Made in: "
+                                                label="Sản xuất tại"
                                                 variant="outlined"
                                                 size="small"
                                             >
@@ -422,7 +447,7 @@ function MyBodyPost() {
                                             <TextField
                                                 name="description"
                                                 id="outlined-multiline-static"
-                                                label="Describe"
+                                                label="Mô tả"
                                                 multiline
                                                 minRows={4}
                                                 variant="outlined"
@@ -442,18 +467,64 @@ function MyBodyPost() {
                                                     }}
                                                 />
                                                 <Typography style={{ paddingTop: 8, color: "black" }}>
-                                                    Products for free giveaways{" "}
+                                                    Sản phẩm dùng để cho tặng{" "}
                                                 </Typography>
+
                                             </Stack>
 
-                                            <TextField
-                                                name="price"
-                                                disabled={isFreeProduct}
-                                                label="Price *"
-                                                d="standard-size-small"
-                                                size="small"
-                                                variant="outlined"
-                                            />
+
+                                            <Stack direction="row" alignContent="center">
+                                                <Checkbox
+                                                    style={{
+                                                        color: "#7b35ba",
+                                                    }}
+                                                    name="bidOption"
+                                                    size="small"
+                                                    value={true}
+                                                    color="secondary"
+                                                    onChange={() => {
+                                                        setIsBidProduct(!isBidProduct);
+                                                    }}
+                                                />
+                                                <Typography style={{ paddingTop: 8, color: "black" }}>
+                                                    Đấu giá{" "}
+                                                </Typography>
+
+                                            </Stack>
+
+                                            {/* timeover */}
+
+                                            {isBidProduct ?
+                                                <>
+                                                    <div style={{ justifyContent: "center" }}>
+                                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                            <DateTimePicker
+                                                                label="Thời gian kết thúc đấu giá"
+                                                                value={timer}
+                                                                onChange={handleChangeTimer}
+                                                                renderInput={(params) => <TextField {...params} />}
+                                                            />
+                                                        </LocalizationProvider>
+                                                    </div>
+                                                    <TextField
+                                                        name="startPrice"
+                                                        disabled={!isBidProduct}
+                                                        label="Giá khởi điểm *"
+                                                        d="standard-size-small"
+                                                        size="small"
+                                                        variant="outlined"
+                                                    />
+                                                </>
+                                                :
+                                                <TextField
+                                                    name="price"
+                                                    disabled={isFreeProduct}
+                                                    label="Price *"
+                                                    d="standard-size-small"
+                                                    size="small"
+                                                    variant="outlined"
+                                                />
+                                            }
 
                                             {/* TINH  */}
 
@@ -461,7 +532,7 @@ function MyBodyPost() {
                                                 SelectProps={{ MenuProps: { disableScrollLock: true } }}
                                                 name="province"
                                                 select
-                                                label="Pronvince"
+                                                label="Tỉnh/Thành phố"
                                                 size="small"
                                                 variant="outlined"
                                             >
@@ -486,7 +557,7 @@ function MyBodyPost() {
                                                 name="district"
                                                 id="filled-select-currency"
                                                 select
-                                                label="District"
+                                                label="Huyện/Quận"
                                                 size="small"
                                                 variant="outlined"
                                             >
@@ -510,7 +581,7 @@ function MyBodyPost() {
                                                 SelectProps={{ MenuProps: { disableScrollLock: true } }}
                                                 name="ward"
                                                 select
-                                                label="ward"
+                                                label="Xã/Phường"
                                                 size="small"
                                                 variant="outlined"
                                             >
@@ -523,7 +594,7 @@ function MyBodyPost() {
 
                                             <TextField
                                                 name="address"
-                                                label="Address"
+                                                label="Đường"
                                                 d="standard-size-small"
                                                 size="small"
                                                 variant="outlined"
@@ -536,7 +607,7 @@ function MyBodyPost() {
                                                 style={{ backgroundColor: "#7b35ba" }}
                                                 onClick={() => { }}
                                             >
-                                                Submit
+                                                <p style={{ color: 'white' }}>Tạo bài viết</p>
                                             </Button>
                                             <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
                                                 <Alert style={{ backgroundColor: '#08DB3C' }} onClose={handleClose} severity="success" sx={{ width: '100%' }}>

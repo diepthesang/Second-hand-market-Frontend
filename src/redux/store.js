@@ -6,6 +6,7 @@ import searchReducer from './searchSlice'
 import pagingReducer from './pagingSlice'
 import cartReducer from './cartSlice'
 import pageUrlReducer from './pageUrlSlice'
+import timeOverReducer from './timeOverSice'
 
 
 
@@ -17,6 +18,7 @@ export default configureStore(
       postId: postIdReducer,
       categoryChildId: categoryChildIdReducer,
       likePost: likePostReducer,
+      timeOver: timeOverReducer,
       search: searchReducer,
       paging: pagingReducer,
       cart: cartReducer,

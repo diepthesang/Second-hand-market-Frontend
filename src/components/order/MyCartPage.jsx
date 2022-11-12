@@ -7,6 +7,8 @@ import ClearIcon from '@mui/icons-material/Clear';
 import axios from 'axios';
 import { useState } from 'react';
 import { Pagination } from '@mui/material';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+
 
 
 
@@ -17,7 +19,10 @@ function MyCartPage() {
   const [totalPage, setTotalPage] = useState(0);
   const [postId, setPostId] = useState(0);
   const [checked, setChecked] = useState(true);
+  const [amount, setAmount] = useState(0);
   const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
+
+  const navigate = useNavigate();
 
   //  GET POST
   const getPostCart = async () => {
@@ -70,17 +75,46 @@ function MyCartPage() {
           }
         }
       );
-      setChecked(!checked);
     } catch (error) {
       console.log(error);
     }
   };
+
+  // GET LISTPOST CHECKED;
+
+  const getListPostChecked = async () => {
+    try {
+      const { data } = await axios.get('/user/postCart/checked/1',
+        {
+          headers: {
+            Authorization: localStorage['access_token'],
+          }
+        });
+      console.log('getListPostBychecked:::', data.data);
+      const listAmount = [];
+      data.data.forEach(item => {
+        listAmount.push(item.Post.price)
+      });
+      const amount = listAmount.reduce((a, b) => a + b, 0);
+      console.log('amount:::', amount);
+      setAmount(amount);
+    } catch (error) {
+      console.log('error_getListPostChecked:::', error);
+    }
+  }
+
+  // HANDLE BUY TO CHECKOUT
+
+  const hanleBuyToCheckout = async () => {
+    navigate('/checkout');
+  }
 
 
 
   useEffect(
     () => {
       getPostCart();
+      getListPostChecked();
     }, [page, postId, checked]
   );
 
@@ -88,13 +122,17 @@ function MyCartPage() {
 
 
 
-  const navigate = useNavigate();
   return (
     <Grid container justifyContent='center' style={{ minHeight: '70vh' }}  >
       <Grid item xs={5} style={{ backgroundColor: '#F1ECF5' }}>
-        <Paper style={{ margin: 12 }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center' }}>
+          <ShoppingCartIcon style={{
+            width: 30,
+            height: 30,
+            margin: 12
+          }} />
           <p >Giỏ hàng</p>
-        </Paper>
+        </div>
         <Paper style={{ marginLeft: 12, marginRight: 12, marginBottom: 12, backgroundColor: '#7b35ba' }}>
           <Stack direction='row' spacing={2} padding={1} justifyContent='space-between' alignItems='center'>
             <div style={{ marginLeft: 40, color: 'white' }}>
@@ -116,8 +154,11 @@ function MyCartPage() {
                     <Checkbox {...label} checked={item.checked} style={{
                       color: "#7b35ba",
                     }} onChange={(event) => {
-                      handleCheckBox(event.target.checked, item.postId)
-                    }}
+                      handleCheckBox(event.target.checked, item.postId);
+
+                    }
+                    }
+                      onClick={() => { setChecked(!checked) }}
 
                     />
                     <img src={item.image.imagePath} style={{ cursor: 'pointer' }} onClick={() => { navigate(`/post/${item.postId}`) }} alt='' width={70} height={70} ></img>
@@ -128,7 +169,7 @@ function MyCartPage() {
                   </Stack>
                   <div style={{ display: 'inline-flex', justifyContent: 'flex-end' }}>
                     <div style={{ marginRight: 100, justifyContent: 'center' }}>
-                      <p>{item.Post.price}</p>
+                      <p>{item.Post.price} đ</p>
                     </div>
 
                     <IconButton onClick={() => {
@@ -148,12 +189,22 @@ function MyCartPage() {
         </Stack>
       </Grid>
       <Grid item xs={3} style={{ marginLeft: 12 }}>
-        <Stack direction="column" justifyContent='center'>
+        <Stack direction="column" justifyContent='center' spacing={2}>
           <Paper style={{ backgroundColor: '#7b35ba', display: 'inline-flex', justifyContent: 'center', color: 'white' }}>
             <p style={{ padding: 4 }}>
-              Toong tien
+              Tổng thanh toán
             </p>
           </Paper>
+          <div style={{ display: 'inline-flex', justifyContent: "center", backgroundColor: "#F1ECF5", borderRadius: 4 }}>
+            <p style={{ fontSize: 24 }}>{amount} đ</p>
+          </div>
+          <Button size='large' variant="contained" style={{ backgroundColor: "#FFD600" }}
+            onClick={hanleBuyToCheckout}
+          >
+            <p>
+              Mua hàng
+            </p>
+          </Button>
         </Stack>
       </Grid>
     </Grid >

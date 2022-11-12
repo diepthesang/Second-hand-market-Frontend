@@ -1,5 +1,7 @@
 import { Box, Button, Modal, Typography } from '@mui/material'
-import React from 'react'
+import React, { memo, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
+import { getTimeOver } from '../../redux/timeOverSice';
 
 const style = {
   position: 'absolute',
@@ -14,17 +16,18 @@ const style = {
 };
 
 function MyModalLogin() {
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => {
-    setOpen(true)
-    window.open("https://www.facebook.com", "_blank")
+  const dispatch = useDispatch();
+  const _timeOver = useSelector((state) => state.timeOver.timeOver);
+  const [open, setOpen] = useState(true)
+
+  const handleClose = () => {
+    dispatch(getTimeOver(false))
   };
-  const handleClose = () => setOpen(false);
   return (
     <div>
-      <Button onClick={handleOpen}>Open modal</Button>
+      {/* <Button onClick={handleOpen}>Open modal</Button> */}
       <Modal
-        open={open}
+        open={_timeOver}
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"

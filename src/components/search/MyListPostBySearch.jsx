@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 
-
 function MyListPostBySearch() {
 
   const [listPost, setListPost] = useState([]);
@@ -44,9 +43,9 @@ function MyListPostBySearch() {
                   <Paper key={item.id} style={{ marginLeft: 12, marginRight: 12, marginBottom: 12 }}>
                     <Stack direction='row' spacing={2} padding={1} justifyContent='space-between' alignItems='center'>
                       <Stack direction='row' spacing={2}>
-                        <img style={{ cursor: 'pointer' }} onClick={() => { navigate(`/post/${item.id}`) }} alt='' width={80} height={80} src={item.image.proImg}></img>
+                        <img style={{ cursor: 'pointer' }} onClick={() => { navigate(`/post/${item.id}`) }} alt='' width={80} height={80} src={item.image.imagePath}></img>
                         <Stack direction='column' spacing={0.5} justifyContent='start'>
-                          <p>{item.name}</p>
+                          <p>{item.title}</p>
                           <p>{item.price}</p>
                           <p>{item.createdAt}</p>
                         </Stack>
