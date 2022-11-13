@@ -1,7 +1,6 @@
 import { BrowserRouter, Outlet, Route, Routes, Switch } from "react-router-dom";
 import MyLogin from "./components/authentication/MyLoginPage";
 import MyRegister from "./components/authentication/MyRegisterPage";
-import MyTestGrid from "./components/common/MyTestGrid";
 import MyHomePage from "./components/home/MyHomePage";
 import MyPostPage from "./components/post/MyPostPage";
 import MyDetailPage from "./components/detail/MyDetailPage";
@@ -9,10 +8,8 @@ import socketIO from "socket.io-client"
 import MyOTPInputPage from './components/OTP/MyOTPInputPage';
 import MyCategoryPage from './components/categoryChild/MyCategoryPage';
 import MyAdminPage from './components/admin/MyAdminPage';
-import MyCountdownTimer from "./components/test/MyCountdownTimer";
 import { useState } from 'react';
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import NoMatchPage from './components/common/NoMatchPage';
 import MyManagePostingPage from "./components/managePosting/MyManagePostingPage";
 import MyHeader from './components/common/MyHeader';
@@ -23,8 +20,7 @@ import MyListPostBySearch from "./components/search/MyListPostBySearch";
 import MyEditProfilePage from "./components/profile/MyEditProfilePage";
 import MyCartPage from "./components/order/MyCartPage";
 import MyRedirectPage from "./components/common/MyRedirectPage";
-import MyBodyHome from "./components/home/MyBodyHome";
-import MyModalLogin from "./components/common/MyModalLogin";
+// import MyModalLogin from "./components/common/MyModalLogin";
 import MyCheckoutPage from "./components/checkout/MyCheckoutPage";
 import MyPaymentSuccess from "./components/payment/MyPaymentSuccess";
 // import NativePickers from "./components/test/MyTestPage";

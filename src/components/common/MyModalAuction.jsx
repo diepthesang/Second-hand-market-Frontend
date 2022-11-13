@@ -1,27 +1,29 @@
-import { Box, Button, Modal, Typography } from '@mui/material'
-import React, { memo, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
-import { getTimeOver } from '../../redux/timeOverSice';
+import { Box, Button, Modal, Typography } from "@mui/material";
+import React, { memo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getTimeOver } from "../../redux/timeOverSice";
 
 const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
   width: 400,
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
+  bgcolor: "background.paper",
+  border: "2px solid #000",
   boxShadow: 24,
   p: 4,
 };
 
-function MyModalLogin() {
+function MyModalAuction() {
   const dispatch = useDispatch();
   const _timeOver = useSelector((state) => state.timeOver.timeOver);
-  const [open, setOpen] = useState(true)
+  const [open, setOpen] = useState(true);
+
+  // const handleOpen = () => setOpen(true);
 
   const handleClose = () => {
-    dispatch(getTimeOver(false))
+    dispatch(getTimeOver(false));
   };
   return (
     <div>
@@ -37,12 +39,12 @@ function MyModalLogin() {
             Text in a modal
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+            Chúc mừng bạn đã đấu giá thành công, mời bạn vào thanh toán
           </Typography>
         </Box>
       </Modal>
     </div>
-  )
+  );
 }
 
-export default MyModalLogin
+export default MyModalAuction;
