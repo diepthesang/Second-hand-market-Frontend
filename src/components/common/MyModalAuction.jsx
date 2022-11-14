@@ -15,10 +15,11 @@ const style = {
   p: 4,
 };
 
-function MyModalAuction() {
+function MyModalAuction({ successfulAuction }) {
+  console.log("thanh cong or that bai", successfulAuction);
   const dispatch = useDispatch();
   const _timeOver = useSelector((state) => state.timeOver.timeOver);
-  const [open, setOpen] = useState(true);
+  // const [open, setOpen] = useState(true);
 
   // const handleOpen = () => setOpen(true);
 
@@ -27,22 +28,39 @@ function MyModalAuction() {
   };
   return (
     <div>
-      {/* <Button onClick={handleOpen}>Open modal</Button> */}
-      <Modal
-        open={_timeOver}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Text in a modal
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Chúc mừng bạn đã đấu giá thành công, mời bạn vào thanh toán
-          </Typography>
-        </Box>
-      </Modal>
+      {successfulAuction ? (
+        <Modal
+          open={_timeOver}
+          onClose={handleClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={style}>
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+              Text in a modal
+            </Typography>
+            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+              Chúc mừng bạn đã đấu giá thành công, mời bạn vào thanh toán
+            </Typography>
+          </Box>
+        </Modal>
+      ) : (
+        <Modal
+          open={_timeOver}
+          onClose={handleClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={style}>
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+              Text in a modal
+            </Typography>
+            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+              thaat bai
+            </Typography>
+          </Box>
+        </Modal>
+      )}
     </div>
   );
 }

@@ -1,54 +1,41 @@
-import {
-  Button,
-  Divider,
-  Grid,
-  InputAdornment,
-  makeStyles,
-  Paper,
-  TextField,
-} from "@material-ui/core";
+import { Button, Divider, Grid } from "@material-ui/core";
 import axios from "axios";
 
 import React, { useEffect, useState } from "react";
 import SimpleImageSlider from "react-simple-image-slider";
 import useWindowDimensions from "../../helps/useWindowDimensions";
 import { useNavigate, useParams } from "react-router-dom";
-import { Alert, Avatar, Box, IconButton, Rating, Stack } from "@mui/material";
+import { Avatar, Box, Rating, Stack } from "@mui/material";
 import BuildCircleIcon from "@mui/icons-material/BuildCircle";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import ApartmentIcon from "@mui/icons-material/Apartment";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
-import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
 import { useDispatch, useSelector } from "react-redux";
 import { getCart } from "../../redux/cartSlice";
-import MyCountdownTimer from "../test/MyCountdownTimer";
-import ClearIcon from "@mui/icons-material/Clear";
 import io from "socket.io-client";
-
+import MyListUserBid from "./MyListUserBid";
+import MyBidFeature from "./MyBidFeature";
+import MyLike from "../common/MyLike";
+const socket = io();
 function MyBodyDetail() {
   console.log("**rerender");
-
   const { width } = useWindowDimensions();
   const [listPost, setListPost] = useState([]);
   const [value, setValue] = React.useState(2);
   const [images, setImages] = React.useState([]);
-  const [like, setLike] = useState(false);
   const [time, setTime] = useState("");
-  const [priceBid, setPriceBid] = useState();
   const { _postId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [postAuction, setPostAuction] = useState(false);
   const [listUserBid, setListUserBid] = useState([]);
-  const [bid, setBid] = useState(false);
-  const [cursor, setCursor] = useState("no-drop");
-  const [errMsg, setErrMsg] = useState("");
-  const [showed, setShowed] = useState(false);
+  const [isBid, setIsBid] = useState(0);
   const [priceUserBid, setPriceUserBid] = useState("");
   const [bidOrderId, setBidOrderId] = useState("");
-  const [remove, setRemove] = useState(true);
+  const [isRemove, setIsRemove] = useState(true);
+  const [postAuctionId, setPostAutionId] = useState("");
 
   // const _postId = useSelector((state) => state.postId.postId)
   // const categoryChildId = useSelector((state) => state.categoryChildId.categoryChildId)
@@ -73,6 +60,7 @@ function MyBodyDetail() {
       var d = new Date(data.data.createdAt);
       const _time = d.toUTCString();
       setTime(_time);
+      setPostAutionId(data.data.PostAuction.id);
       await getListUserBid(data.data.PostAuction.id);
       if (data.data.price === -1) {
         setPostAuction(true);
@@ -83,7 +71,6 @@ function MyBodyDetail() {
   };
 
   //  MUA
-
   const handleBuy = async () => {
     if (!localStorage["access_token"]) {
       localStorage.setItem("page_url", window.location.href);
@@ -112,140 +99,17 @@ function MyBodyDetail() {
     }
   };
 
-  //Like Post
-  const likePost = async (postId) => {
+  const getListUserBid = async (postAuctionId) => {
     try {
-      if (!localStorage["access_token"]) {
-        localStorage.setItem("page_url", window.location.href);
-        navigate("/login");
-      } else {
-        const { data } = await axios.post(
-          "/user/likePost",
-          {
-            postId,
-          },
-          {
-            headers: {
-              Authorization: localStorage["access_token"],
-            },
-          }
-        );
-
-        console.log("like:::", data.data);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  //unlikePost
-  const unlikePost = async (postId) => {
-    try {
-      if (localStorage["access_token"] === undefined) {
-        navigate("/login");
-      } else {
-        const { data } = await axios.post(
-          "/user/unlikePost",
-          {
-            postId,
-          },
-          {
-            headers: {
-              Authorization: localStorage["access_token"],
-            },
-          }
-        );
-
-        console.log("unlike:::", data.data);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  //getCurrent Like Post
-  const getCurrentLikePost = async (postId) => {
-    try {
-      if (localStorage["access_token"] === undefined) {
-        setLike(false);
-      } else {
-        const { data } = await axios.get(`/user/currentLikePost/${_postId}`, {
-          headers: {
-            Authorization: localStorage["access_token"],
-          },
-        });
-        console.log("like:::", data);
-        if (data.data === null) {
-          setLike(false);
-        } else {
-          setLike(true);
-        }
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleBid = async (postId, postAuctionId, priceBid, priceStart) => {
-    setPriceBid("");
-    if (!localStorage["access_token"]) {
-      localStorage.setItem("page_url", window.location.href);
-      navigate("/login");
-      return;
-    }
-
-    if (priceBid === "" || isNaN(parseFloat(priceBid))) {
-      console.log("vo li the");
-      setShowed(true);
-      setErrMsg("Số tiền chỉ chấp nhận kiểu số");
-      return;
-    }
-    if (priceBid <= priceStart) {
-      setShowed(true);
-      setErrMsg("Số tiền phải trả phải lớn hơn giá khởi điểm!");
-      return;
-    }
-    console.log("PostId:::", postId);
-    const highestPrice = await getHighestBidder(postId, postAuctionId);
-    if (highestPrice === null) {
-      return;
-    } else {
-      if (priceBid <= highestPrice) {
-        setShowed(true);
-        setErrMsg("Số tiền bạn trả phải lớn hơn người đứng đầu");
-        return;
-      }
-    }
-
-    const { data } = await axios.post(
-      "/user/createPriceBid",
-      {
-        postId,
-        postAuctionId,
-        priceBid,
-      },
-      {
-        headers: {
-          Authorization: localStorage["access_token"],
-        },
-      }
-    );
-    setBid(!bid);
-    console.log("createBidPrice:::", data.data);
-  };
-
-  const getListUserBid = async (postAutionId) => {
-    try {
-      console.log("postAutionId:::", postAutionId);
       const { data } = await axios.get(
-        `/common/listBidPrice/postId/${_postId}/postAuctionId/${postAutionId}`
+        `/common/listBidPrice/postId/${_postId}/postAuctionId/${postAuctionId}`
       );
 
       data.data.forEach((item) => {
         if (item.userId === localStorage["userId"]) {
           setPriceUserBid(item.priceBid);
           setBidOrderId(item.id);
-          setRemove(true);
+          setIsRemove(true);
         }
       });
       setListUserBid(data.data);
@@ -255,63 +119,62 @@ function MyBodyDetail() {
   };
 
   // GET HIGHEST BIDDER PRICE
-  const getHighestBidder = async (postId, postAuctionId) => {
-    try {
-      const { data } = await axios.get(
-        `/user/highestBidder/postId/${postId}}/postAuctionId/${postAuctionId}`,
-        {
-          headers: {
-            Authorization: localStorage["access_token"],
-          },
-        }
-      );
-      console.log("data_getHighestBidder:::", data.data);
-      return data.data.priceBid;
-    } catch (error) {
-      console.log("error_getHighestBidder:::", error);
-    }
-  };
+  // const getHighestBidder = async (postId, postAuctionId) => {
+  //   try {
+  //     const { data } = await axios.get(
+  //       `/user/highestBidder/postId/${postId}}/postAuctionId/${postAuctionId}`,
+  //       {
+  //         headers: {
+  //           Authorization: localStorage["access_token"],
+  //         },
+  //       }
+  //     );
+  //     return data.data.priceBid;
+  //   } catch (error) {
+  //     console.log("error_getHighestBidder:::", error);
+  //   }
+  // };
 
   //REMOVE MONEY AUTION
-  const removeMoneyAution = async () => {
-    console.log("bidorderID...", bidOrderId);
-    try {
-      const { data } = await axios.delete(`/user/moneyAution/${bidOrderId}`, {
-        headers: {
-          Authorization: localStorage["access_token"],
-        },
-      });
-      console.log("data_removeMoneyAution:::", data.data);
-      setRemove(!remove);
-    } catch (error) {
-      console.log("err_removeMoneyAution", error);
-    }
-  };
+  // const removeMoneyAution = async () => {
+  //   console.log("bidorderID...", bidOrderId);
+  //   try {
+  //     const { data } = await axios.delete(`/user/moneyAution/${bidOrderId}`, {
+  //       headers: {
+  //         Authorization: localStorage["access_token"],
+  //       },
+  //     });
+  //     setRemove(!remove);
+  //   } catch (error) {
+  //     console.log("err_removeMoneyAution", error);
+  //   }
+  // };
 
-  const bidSoket = async () => {
-    try {
-    } catch (error) {}
-  };
+  // const bidSoket = async (bid) => {
+  //   try {
+  //     await axios.post("/createBid", {
+  //       bid,
+  //     });
+  //   } catch (error) {}
+  // };
 
   useEffect(() => {
     getPostByPostId();
-    getCurrentLikePost();
-  }, [like, bid, errMsg, remove]);
+    getListUserBid();
+  }, []);
 
-  const socket = io();
-  const [isConnected, setIsConnected] = useState(socket.connected);
+  // useEffect(() => {
+  //   getListUserBid();
+  // }, [isBid]);
+
   useEffect(() => {
     socket.on("userBid", (bid) => {
       console.log("biddddddd*******", bid);
-      setBid(bid);
+      getPostByPostId();
+      getListUserBid();
     });
-    socket.on("disconnect", () => {
-      setIsConnected(false);
-    });
-
     return () => {
       socket.off("userBid");
-      socket.off("disconnect");
     };
   }, []);
 
@@ -359,31 +222,7 @@ function MyBodyDetail() {
                           </p>
                         </div>
                         <div style={{ marginRight: 150, cursor: "pointer" }}>
-                          {like ? (
-                            <IconButton
-                              onClick={() => {
-                                setLike(false);
-                                unlikePost(item.id);
-                              }}
-                            >
-                              <ThumbUpAltIcon
-                                fontSize="large"
-                                style={{ fill: "#4676E4" }}
-                              />
-                            </IconButton>
-                          ) : (
-                            <IconButton
-                              onClick={() => {
-                                setLike(true);
-                                likePost(item.id);
-                              }}
-                            >
-                              <ThumbUpAltIcon
-                                fontSize="large"
-                                style={{ fill: "white" }}
-                              />
-                            </IconButton>
-                          )}
+                          <MyLike postId={item.id}></MyLike>
                         </div>
                       </div>
                       <p style={{ color: "#C90927", fontWeight: "bold" }}>
@@ -528,130 +367,20 @@ function MyBodyDetail() {
                       </Button>
 
                       {postAuction ? (
-                        <Stack spacing={2}>
-                          <div
-                            style={{
-                              display: "flex",
-                              direction: "column",
-                              justifyContent: "center",
-                              alignItem: "center",
-                            }}
-                          >
-                            <MyCountdownTimer
-                              time={"Sun, 13 Nov 2022 11:10:30 GMT+0700 "}
-                            />
-                          </div>
-                          <p>Giá khởi điểm: {item.PostAuction.priceStart} đ</p>
-                          <TextField
-                            size="small"
-                            startAdornment={
-                              <InputAdornment position="start">
-                                $
-                              </InputAdornment>
-                            }
-                            fullWidth
-                            value={priceBid}
-                            id="outlined-adornment-amount"
-                            name="description"
-                            label="Tôi trả"
-                            variant="outlined"
-                            onChange={(event) => {
-                              setPriceBid(event.target.value);
-                              setShowed(false);
-                              if (
-                                event.target.value <=
-                                item.PostAuction.priceStart
-                              ) {
-                                setCursor("no-drop");
-                                return;
-                              } else {
-                                setCursor("pointer");
-                              }
-                              console.log(event.target.value);
-                            }}
-                          />
-
-                          <p
-                            style={{
-                              color: "gray",
-                              fontSize: 12,
-                              marginTop: -1,
-                            }}
-                          >
-                            Số tiền bạn trả phải trên:{" "}
-                            {item.PostAuction.priceStart}{" "}
-                          </p>
-                          {showed && (
-                            <Alert variant="filled" severity="warning">
-                              {errMsg}
-                            </Alert>
-                          )}
-                          {remove && (
-                            <Stack
-                              direction="row"
-                              alignItems="center"
-                              spacing={2}
-                            >
-                              <p>Bạn đã ra giá: {priceUserBid}</p>
-                              <Button
-                                size="small"
-                                variant="outlined"
-                                onClick={() => {
-                                  removeMoneyAution();
-                                }}
-                              >
-                                Huỷ bỏ
-                              </Button>
-                            </Stack>
-                          )}
-                          <Button
-                            fullWidth
-                            size="small"
-                            style={{
-                              backgroundColor: "#33A837",
-                              boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
-                              cursor: `${cursor}`,
-                            }}
-                            onClick={() => {
-                              handleBid(
-                                item.id,
-                                item.PostAuction.id,
-                                priceBid,
-                                item.PostAuction.priceStart
-                              );
-                            }}
-                          >
-                            Đấu giá
-                          </Button>
+                        <Stack direction="column" spacing={2}>
+                          <MyBidFeature
+                            isRemove={isRemove}
+                            bidOrderId={bidOrderId}
+                            postId={item.id}
+                            postAuctionId={item.PostAuction.id}
+                            priceStart={item.PostAuction.priceStart}
+                            priceUserBid={priceUserBid}
+                            isBid={isBid}
+                          ></MyBidFeature>
                           <Divider />
-                          <Stack direction="column" spacing={1}>
-                            {listUserBid.map((item) => {
-                              return (
-                                <Paper
-                                  style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    padding: 4,
-                                    justifyContent: "space-between",
-                                  }}
-                                >
-                                  <img
-                                    src={item.User.avatarImg}
-                                    alt=""
-                                    width={30}
-                                    height={30}
-                                    style={{ borderRadius: "50%" }}
-                                  />
-                                  <p style={{ marginLeft: 16 }}>
-                                    {item.priceBid} đ
-                                  </p>
-                                  <ClearIcon
-                                    style={{ fill: "white" }}
-                                  ></ClearIcon>
-                                </Paper>
-                              );
-                            })}
-                          </Stack>
+                          <MyListUserBid
+                            listUserBid={listUserBid}
+                          ></MyListUserBid>
                         </Stack>
                       ) : (
                         <Button
