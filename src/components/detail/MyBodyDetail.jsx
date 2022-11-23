@@ -29,23 +29,22 @@ function MyBodyDetail() {
   const { _postId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [postAuction, setPostAuction] = useState(false);
+  const [isPostAuction, setIsPostAuction] = useState(false);
   const [listUserBid, setListUserBid] = useState([]);
   const [isBid, setIsBid] = useState(0);
   const [priceUserBid, setPriceUserBid] = useState("");
   const [bidOrderId, setBidOrderId] = useState("");
   const [isRemove, setIsRemove] = useState(true);
   const [postAuctionId, setPostAutionId] = useState("");
+  const [bidEndTime, setBidEndTime] = useState("");
 
-  // const _postId = useSelector((state) => state.postId.postId)
   // const categoryChildId = useSelector((state) => state.categoryChildId.categoryChildId)
-  const _timeOver = useSelector((state) => state.timeOver.timeOver);
-  console.log("timeOver:::", _timeOver);
+  const timeOver = useSelector((state) => state.timeOver.timeOver);
+  // console.log("timeOver:::", _timeOver);
 
   const getPostByPostId = async () => {
     try {
       const { data } = await axios.get(`/common/post/${_postId}`);
-      console.log("data.data", data.data);
       const _listPost = [];
       _listPost.push(data.data);
       console.log("listPost:::", _listPost[0]);
@@ -60,10 +59,14 @@ function MyBodyDetail() {
       var d = new Date(data.data.createdAt);
       const _time = d.toUTCString();
       setTime(_time);
+      // SET END TIME
+      setBidEndTime(data.data.PostAuction.bidEndTime);
       setPostAutionId(data.data.PostAuction.id);
-      await getListUserBid(data.data.PostAuction.id);
+      // await getListUserBid(data.data.PostAuction.id);
       if (data.data.price === -1) {
-        setPostAuction(true);
+        setIsPostAuction(true);
+      } else {
+        setIsPostAuction(false);
       }
     } catch (error) {
       console.log(error);
@@ -99,36 +102,19 @@ function MyBodyDetail() {
     }
   };
 
-  const getListUserBid = async (postAuctionId) => {
-    try {
-      const { data } = await axios.get(
-        `/common/listBidPrice/postId/${_postId}/postAuctionId/${postAuctionId}`
-      );
-
-      data.data.forEach((item) => {
-        if (item.userId === localStorage["userId"]) {
-          setPriceUserBid(item.priceBid);
-          setBidOrderId(item.id);
-          setIsRemove(true);
-        }
-      });
-      setListUserBid(data.data);
-    } catch (error) {
-      console.log("error_getListPostUserBid:::", error);
-    }
-  };
-
   // GET HIGHEST BIDDER PRICE
-  // const getHighestBidder = async (postId, postAuctionId) => {
+  // const getHighestBidder = async () => {
+  //   console.log({ _postId, postAuctionId });
   //   try {
   //     const { data } = await axios.get(
-  //       `/user/highestBidder/postId/${postId}}/postAuctionId/${postAuctionId}`,
+  //       `/user/highestBidder/postId/${_postId}}/postAuctionId/${postAuctionId}`,
   //       {
   //         headers: {
   //           Authorization: localStorage["access_token"],
   //         },
   //       }
   //     );
+  //     localStorage.setItem("highest_bid_user", data.data.userId);
   //     return data.data.priceBid;
   //   } catch (error) {
   //     console.log("error_getHighestBidder:::", error);
@@ -160,23 +146,26 @@ function MyBodyDetail() {
 
   useEffect(() => {
     getPostByPostId();
-    getListUserBid();
+    // getListUserBid();
+    // getHighestBidder();
   }, []);
 
   // useEffect(() => {
   //   getListUserBid();
   // }, [isBid]);
 
-  useEffect(() => {
-    socket.on("userBid", (bid) => {
-      console.log("biddddddd*******", bid);
-      getPostByPostId();
-      getListUserBid();
-    });
-    return () => {
-      socket.off("userBid");
-    };
-  }, []);
+  // useEffect(() => {
+  //   socket.on("userBid", (bid) => {
+  //     console.log("biddddddd*******", bid);
+  //     getPostByPostId();
+  //     // getListUserBid();
+  //     // getHighestBidder();
+  //     console.log("run cai nay chu <><><><><><><><><><><><><><><><><><><>");
+  //   });
+  //   return () => {
+  //     socket.off("userBid");
+  //   };
+  // }, []);
 
   return listPost.map((item) => {
     return (
@@ -226,7 +215,7 @@ function MyBodyDetail() {
                         </div>
                       </div>
                       <p style={{ color: "#C90927", fontWeight: "bold" }}>
-                        {item.price} đ
+                        {item.price === -1 ? "Đấu giá" : item.price + " đ"}
                       </p>
                       <p style={{ color: "blue" }}>
                         {item.description}
@@ -365,8 +354,8 @@ function MyBodyDetail() {
                         <QuestionAnswerIcon style={{ marginRight: 8 }} />
                         Chat voi nguoi ban
                       </Button>
-
-                      {postAuction ? (
+                      {/* đấu giá */}
+                      {isPostAuction ? (
                         <Stack direction="column" spacing={2}>
                           <MyBidFeature
                             isRemove={isRemove}
@@ -376,11 +365,8 @@ function MyBodyDetail() {
                             priceStart={item.PostAuction.priceStart}
                             priceUserBid={priceUserBid}
                             isBid={isBid}
+                            bidEndTime={bidEndTime}
                           ></MyBidFeature>
-                          <Divider />
-                          <MyListUserBid
-                            listUserBid={listUserBid}
-                          ></MyListUserBid>
                         </Stack>
                       ) : (
                         <Button

@@ -7,6 +7,9 @@ import pagingReducer from './pagingSlice'
 import cartReducer from './cartSlice'
 import pageUrlReducer from './pageUrlSlice'
 import timeOverReducer from './timeOverSice'
+import successfulAuctionReducer from './successfulAuctionSlice'
+import currentBidPriceReducer from './currentBidPriceSice'
+import highestPriceBidReducer from './highestPriceBidSlice'
 
 
 
@@ -23,7 +26,9 @@ export default configureStore(
       paging: pagingReducer,
       cart: cartReducer,
       pageUrl: pageUrlReducer,
-
+      successfulAuction: successfulAuctionReducer,
+      currentBidPrice: currentBidPriceReducer,
+      highestPriceBid: highestPriceBidReducer,
     }
   }
 )

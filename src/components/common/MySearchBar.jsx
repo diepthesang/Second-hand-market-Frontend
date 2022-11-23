@@ -11,6 +11,7 @@ import {
   Button,
   Divider,
   Fade,
+  IconButton,
   Menu,
   MenuItem,
 } from "@material-ui/core";
@@ -193,15 +194,16 @@ export default function MySearchBar() {
         <div style={{ marginLeft: -20 }}>
           {isLogin && (
             <>
-              <Button
+              <IconButton
+                size="small"
                 id="fade-button"
                 aria-controls={open ? "fade-menu" : undefined}
                 aria-haspopup="true"
                 aria-expanded={open ? "true" : undefined}
                 onClick={handleClick}
               >
-                More <ExpandMoreIcon />
-              </Button>
+                <ExpandMoreIcon style={{ fill: "white" }} />
+              </IconButton>
               <Menu
                 disableScrollLock={true}
                 id="fade-menu"
@@ -238,6 +240,7 @@ export default function MySearchBar() {
 
         <Button
           style={{
+            color: "white",
             width: 150,
             height: 35,
             backgroundImage:

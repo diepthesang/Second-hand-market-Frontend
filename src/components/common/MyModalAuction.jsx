@@ -15,7 +15,10 @@ const style = {
   p: 4,
 };
 
-function MyModalAuction({ successfulAuction }) {
+function MyModalAuction() {
+  const successfulAuction = useSelector(
+    (state) => state.successfulAuction.successfulAuction
+  );
   console.log("thanh cong or that bai", successfulAuction);
   const dispatch = useDispatch();
   const _timeOver = useSelector((state) => state.timeOver.timeOver);
@@ -37,10 +40,11 @@ function MyModalAuction({ successfulAuction }) {
         >
           <Box sx={style}>
             <Typography id="modal-modal-title" variant="h6" component="h2">
-              Text in a modal
+              Thời gian đấu giá kết thúc!
             </Typography>
             <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-              Chúc mừng bạn đã đấu giá thành công, mời bạn vào thanh toán
+              Chúc mừng bạn đã đấu giá thành công sản phẩm,
+              mới bạn đến giỏ hàng để thanh toán.
             </Typography>
           </Box>
         </Modal>
@@ -53,10 +57,10 @@ function MyModalAuction({ successfulAuction }) {
         >
           <Box sx={style}>
             <Typography id="modal-modal-title" variant="h6" component="h2">
-              Text in a modal
+              Thời gian đấu giá kết thúc!
             </Typography>
             <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-              thaat bai
+              Đấu giá thất bại!
             </Typography>
           </Box>
         </Modal>

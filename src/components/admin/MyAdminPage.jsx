@@ -1,16 +1,19 @@
-import React from 'react'
-import MyFooter from '../common/MyFooter'
-import MyHeader from '../common/MyHeader'
-
+import React from "react";
+import { Admin, Resource } from "react-admin";
+import { listPosts } from "./MyPost";
 
 function MyAdminPage() {
-    return (
-        <>
-            <MyHeader />
-
-            <MyFooter />
-        </>
-    )
+  return (
+    <div>
+      <Admin dataProvider={'http://localhost:8080/common/allPost'}>
+        <Resource name="posts" list={listPosts} />
+      </Admin>
+    </div>
+  );
 }
 
-export default MyAdminPage
+export default MyAdminPage;
+
+
+
+// const getListPosts = async axios.get('/')

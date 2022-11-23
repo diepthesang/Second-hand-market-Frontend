@@ -4,7 +4,7 @@ import MyRegister from "./components/authentication/MyRegisterPage";
 import MyHomePage from "./components/home/MyHomePage";
 import MyPostPage from "./components/post/MyPostPage";
 import MyDetailPage from "./components/detail/MyDetailPage";
-import socketIO from "socket.io-client"
+import socketIO, { io } from "socket.io-client"
 import MyOTPInputPage from './components/OTP/MyOTPInputPage';
 import MyCategoryPage from './components/categoryChild/MyCategoryPage';
 import MyAdminPage from './components/admin/MyAdminPage';
@@ -23,9 +23,15 @@ import MyRedirectPage from "./components/common/MyRedirectPage";
 // import MyModalLogin from "./components/common/MyModalLogin";
 import MyCheckoutPage from "./components/checkout/MyCheckoutPage";
 import MyPaymentSuccess from "./components/payment/MyPaymentSuccess";
+import MyModalAuction from "./components/common/MyModalAuction";
+import { useSelector } from "react-redux";
+import MyOrderBuyPage from "./components/order/MyOrderBuyPage";
+import axios from "axios";
 // import NativePickers from "./components/test/MyTestPage";
 
-const socket = socketIO.connect("http://localhost:8088")
+// const socket = socketIO.connect("http://localhost:8080")
+
+const socket = io();
 
 
 function BasicLayout() {
@@ -39,9 +45,11 @@ function BasicLayout() {
 }
 
 
+
 function App() {
 
   const [isLogin, setIsLogin] = useState(false);
+  const [isModal, setIsModal] = useState(false);
   // const navigate = useNavigate();
 
   // const navigate = useNavigate()
@@ -53,11 +61,27 @@ function App() {
     }
   }
 
+  // const testConnectSocket = async () => {
+  //   try {
+  //     await axios.get('/common/timeout')
+  //   } catch (error) {
+  //     console.log('err_testConnectSocket::', error);
+  //   }
+  // }
+
   useEffect(
     () => {
-      checkIsLogin()
+      checkIsLogin();
+      socket.on('test', (data) => {
+        setIsModal(true);
+        console.log('data from socket:::', data);
+      });
+      return () => {
+        socket.off('test');
+      }
     }, []
   )
+
 
 
 
@@ -65,6 +89,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route exact index path="/admin" element={<MyAdminPage />}></Route>
         <Route exact path="/register" element={<MyRegister />} ></Route>
         <Route path="/login" index element={
           <MyLogin />
@@ -125,12 +150,11 @@ function App() {
           <Route path="/search" element={<MyListPostBySearch />} />
           <Route path="/editProfile" element={localStorage['access_token'] ? <MyEditProfilePage /> : <MyLogin />} />
           <Route path="/cart" element={localStorage['access_token'] ? <MyCartPage /> : <MyLogin />} />
+          <Route path="/order/buy" element={localStorage['access_token'] ? <MyOrderBuyPage /> : <MyLogin />} />
           <Route path="*" element={<NoMatchPage />} />
           <Route path="/checkout" element={<MyCheckoutPage />} />
           <Route path="/payment/success" element={<MyPaymentSuccess />} />
         </Route>
-
-
 
 
         <Route path="/redirect" element={<MyRedirectPage />}></Route>
@@ -138,8 +162,10 @@ function App() {
 
 
         {/* <Route path="*" element={<NoMatchPage />}></Route> */}
-        <Route path="/admin" element={<MyAdminPage />}></Route>
       </Routes>
+      <MyModalAuction />
+
+
 
     </BrowserRouter>
   );

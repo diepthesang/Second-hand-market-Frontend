@@ -30,6 +30,7 @@
     "node-geocoder": "^4.2.0",
     "otp-input-react": "^0.3.0",
     "react": "^18.2.0",
+    "react-admin": "^4.5.2",
     "react-countdown": "^2.3.3",
     "react-date-countdown-timer": "^1.1.0",
     "react-dom": "^18.2.0",

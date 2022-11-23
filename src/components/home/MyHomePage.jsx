@@ -1,12 +1,14 @@
-import React from 'react'
-import MyBodyHome from './MyBodyHome'
+import React from "react";
+import MyBodyHome from "./MyBodyHome";
 
 function MyHomePage() {
-    return (
-        <div style={{ overflowX: 'hidden' }}>
-            <MyBodyHome />
-        </div>
-    )
+  return (
+    <div
+    // style={{ overflowX: "hidden" }}
+    >
+      <MyBodyHome />
+    </div>
+  );
 }
 
-export default MyHomePage
+export default MyHomePage;
