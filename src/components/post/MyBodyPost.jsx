@@ -21,6 +21,8 @@ import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import { MobileDatePicker } from "@mui/x-date-pickers/MobileDatePicker";
+import { useDispatch } from "react-redux";
+import { getCurrentBidPrice } from "../../redux/currentBidPriceSice";
 
 const useStyles = makeStyles((theme) => ({
   input_file_cus: {
@@ -56,121 +58,68 @@ function MyBodyPost() {
   const [errMsg, setErrMsg] = useState("");
   const [isBidProduct, setIsBidProduct] = useState(false);
 
-  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  // const [cookies, setCookie, removeCookie] = useCookies();
+  // formdata;
+  const [cateParentId, setCateParentId] = useState("");
+  const [cateId, setCateId] = useState("");
+  const [name, setName] = useState("");
+  const [statusId, setStatusId] = useState("");
+  const [warrantyId, setWarrantyId] = useState("");
+  const [madeInId, setMadeInId] = useState("");
+  const [price, setPrice] = useState("");
+  const [province, setProvince] = useState("");
+  const [district, setDistrict] = useState("");
+  const [ward, setWard] = useState("");
+  const [street, setStreet] = useState("");
+  // const [free, setFree] = useState("");
+  const [startPrice, setStartPrice] = useState("");
+  const [description, setDescription] = useState("");
+  const [showCateInput, setShowCateInput] = useState(false);
+  const [timer, setTimer] = React.useState(Date.now());
+
+  const navigate = useNavigate();
   const classes = useStyles();
 
   //HANDLE SUBMIT
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    // const data = new FormData(form);
+  const handleSubmit = async () => {
+    let data = new FormData();
 
-    // console.log({
-    //     cateParentId: data.get("categoryParent"),
-    //     cateId: data.get("categoryChild"),
-    //     name: data.get("productName"),
-    //     statusId: data.get("productState"),
-    //     warrantyId: data.get("warranty"),
-    //     madeInId: data.get("madeIn"),
-    //     description: data.get("describe"),
-    //     price: data.get("price") || null,
-    //     province: data.get("province"),
-    //     district: data.get("district"),
-    //     ward: data.get("ward"),
-    //     address: data.get("address"),
-    //     free: data.get("freeProduct"),
-    //     bidOption: data.get("bidOption"),
+    data.append("cateParentId", cateId);
+    data.append("cateId", cateId);
+    data.append("name", name);
+    data.append("statusId", statusId);
+    data.append("warrantyId", warrantyId);
+    data.append("madeInId", madeInId);
+    data.append("description", description);
+    data.append("province", province);
+    data.append("district", district);
+    data.append("ward", ward);
+    data.append("address", street);
+    data.append("startPrice", startPrice);
+    data.append("bidEndTime", timer);
+    data.append("isFree", isFreeProduct);
+    data.append("isBid", isBidProduct);
+    data.append("price", price);
 
-    //     // images: data.get('file'),
-    //     // images: document.querySelector('#file').files,
-    //     // images: data.get('file')
-
-    // });
-
-    data.append("cateParentId", data.get("categoryParent"));
-    data.append("cateId", data.get("cateId"));
-    data.append("name", data.get("name"));
-    data.append("statusId", data.get("statusId"));
-    data.append("warrantyId", data.get("warrantyId"));
-    data.append("madeInId", data.get("madeInId"));
-    data.append("description", data.get("description"));
-    data.append("price", data.get("price") || -1);
-    data.append("district", data.get("district"));
-    data.append("ward", data.get("ward"));
-    data.append("address", data.get("address"));
-    data.append("free", data.get("free"));
-    data.append("bidOption", data.get("bidOption"));
-    data.append("startPrice", data.get("startPrice"));
-
-    images.forEach(async (file) => {
-      data.append("images", file);
+    Array.from(images).forEach((item) => {
+      data.append("images", item);
     });
 
-    for (const value of data.values()) {
-      console.log(value);
-    }
-
-    console.log("formData:::", data.keys());
-
-    const _data = {
-      // cateParentId: data.get("categoryParent"),
-      cateId: data.get("cateId"),
-      name: data.get("name"),
-      statusId: data.get("statusId"),
-      warrantyId: data.get("warrantyId"),
-      madeInId: data.get("madeInId"),
-      description: data.get("description"),
-      free: data.get("free"),
-      price: data.get("price"),
-      province: data.get("province"),
-      district: data.get("district"),
-      ward: data.get("ward"),
-      address: data.get("address"),
-      bidOption: data.get("bidOption"),
-      startPrice: data.get("startPrice"),
-      bidEndTime: timer,
-      images: document.querySelector("#file").files[0],
-      // images: images,
-    };
-
-    console.log("listImage1::::", document.querySelector("#file").files);
-    console.log("listImage2:::", images);
-
-    // let listImage = [];
-    // const objImage = document.querySelector('#file').files;
-
-    // for (const key in objImage) {
-    //     if (objImage.hasOwnProperty(key)) {
-    //         var value = objImage[key];
-    //         //do something with value;
-    //         data.append('images', value);
-    //     }
-    // }
-
-    // console.log('data::::', data);
-
-    // console.log('dataa:::', _data);
-
     try {
-      const res = await axios.post(
-        "/user/createPost",
-        { ..._data },
-        {
-          headers: {
-            Authorization: localStorage["access_token"],
-            "Content-type": `multipart/form-data`,
-          },
-          // transformRequest: (data) => {
-          //     return data; // thats enough
-          // },
-        }
-      );
+      const res = await axios.post("/user/createPost", data, {
+        headers: {
+          Authorization: localStorage["access_token"],
+        },
+      });
+
       setErrMsg("");
       handleClick();
       console.log("ressss:::", res.data.data.id);
-      // navigate(`/post/${res.data.data.id}`);
+      // setTimeout(() => {
+      //   navigate(`/post/${res.data.data.id}`);
+      // }, 1000);
+      dispatch(getCurrentBidPrice(false));
     } catch (error) {
       console.log("error::::", error.response.data);
       setErrMsg(error.response.data.message);
@@ -223,7 +172,7 @@ function MyBodyPost() {
   //CHANGE IMAGE
 
   const onImageChange = async (event) => {
-    setImages([...event.currentTarget.files]);
+    setImages([...event.target.files]);
   };
 
   useEffect(() => {
@@ -257,12 +206,11 @@ function MyBodyPost() {
 
   //  timeover for auction
 
-  const [timer, setTimer] = React.useState(Date.now());
 
   const handleChangeTimer = (timer) => {
     // const _timer = new Date(timer).getTime();
     console.log("timer:::", timer.$d);
-    setTimer(timer.$d + "");
+    setTimer(timer.$d);
   };
 
   return (
@@ -274,348 +222,417 @@ function MyBodyPost() {
               backgroundColor: "#F1ECF5",
               justifyContent: "center",
               padding: 20,
+              borderRadius: 8,
             }}
           >
-            <form
+            {/* <form
               method="post"
               encType="multipart/form-data"
               onSubmit={handleSubmit}
-            >
-              <Grid container justifyContent="center">
-                <Grid item xs={6}>
-                  <div style={{ marginTop: 8 }}>
-                    <label htmlFor="file">
-                      <div className={classes.input_file_cus}>
-                        {/* <AddAPhoto style={{ color: 'red' }}></AddAPhoto> */}
-                        <img
-                          alt=""
-                          style={{ marginTop: 15 }}
-                          src="https://img.icons8.com/color/48/000000/camera.png"
-                        />
-                        <p style={{ color: "#6f6c70", fontSize: 14 }}>
-                          Thêm hình ảnh
-                        </p>
-                      </div>
-                    </label>
-                    <input
-                      name="file"
-                      accept="image/*"
-                      type="file"
-                      id="file"
-                      hidden
-                      multiple
-                      onChange={onImageChange}
-                    ></input>
+            > */}
+            <Grid container justifyContent="center">
+              <Grid item xs={6}>
+                <div style={{ marginTop: 8 }}>
+                  <label htmlFor="file">
+                    <div className={classes.input_file_cus}>
+                      {/* <AddAPhoto style={{ color: 'red' }}></AddAPhoto> */}
+                      <img
+                        alt=""
+                        style={{ marginTop: 15 }}
+                        src="https://img.icons8.com/color/48/000000/camera.png"
+                      />
+                      <p style={{ color: "#6f6c70", fontSize: 14 }}>
+                        Thêm hình ảnh
+                      </p>
+                    </div>
+                  </label>
+                  <input
+                    name="file"
+                    accept="image/*"
+                    type="file"
+                    id="file"
+                    hidden
+                    multiple
+                    onChange={onImageChange}
+                  ></input>
 
-                    <div
-                      style={{
-                        marginTop: 16,
-                        display: "flex",
-                        flexWrap: "wrap",
-                        backgroundColor: "white",
+                  <div
+                    style={{
+                      marginTop: 16,
+                      display: "flex",
+                      flexWrap: "wrap",
+                      backgroundColor: "white",
+                    }}
+                  >
+                    {imageURLS.map((imageSrc) => (
+                      <div key={imageSrc} className={classes.image_frame_cus}>
+                        <img
+                          src={imageSrc}
+                          alt="not fount"
+                          width={120}
+                          height={120}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </Grid>
+              <Grid item xs={6}>
+                <div style={{ marginLeft: 40 }}>
+                  <Stack spacing={1} justifyContent="center">
+                    <TextField
+                      SelectProps={{ MenuProps: { disableScrollLock: true } }}
+                      name="cateParentId"
+                      id="standard-size-small"
+                      select
+                      label="Thể loại"
+                      size="small"
+                      variant="outlined"
+                      onChange={(e) => {
+                        setCateParentId(e.target.value);
                       }}
                     >
-                      {imageURLS.map((imageSrc) => (
-                        <div key={imageSrc} className={classes.image_frame_cus}>
-                          <img
-                            src={imageSrc}
-                            alt="not fount"
-                            width={120}
-                            height={120}
-                          />
-                        </div>
+                      {categoryParentArr.map((item) => (
+                        <MenuItem key={item.id} value={item.id}>
+                          <div
+                            onClick={() => {
+                              setCateId(item.id);
+                              getAllCategoryChild(item.id);
+                              setShowCateInput(true);
+                            }}
+                            style={{ color: "black" }}
+                          >
+                            {item.cateName}
+                          </div>
+                        </MenuItem>
                       ))}
-                    </div>
-                  </div>
-                </Grid>
-                <Grid item xs={6}>
-                  <div style={{ marginLeft: 40 }}>
-                    <Stack spacing={1} justifyContent="center">
-                      <TextField
-                        SelectProps={{ MenuProps: { disableScrollLock: true } }}
-                        name="cateParentId"
-                        id="standard-size-small"
-                        select
-                        label="Category"
-                        size="small"
-                        variant="outlined"
-                      >
-                        {categoryParentArr.map((item) => (
-                          <MenuItem key={item.id} value={item.id}>
-                            <div
-                              onClick={() => {
-                                // setCategoryParentId(item.id);
-                                getAllCategoryChild(item.id);
-                              }}
-                              style={{ color: "black" }}
-                            >
-                              {item.cateName}
-                            </div>
-                          </MenuItem>
-                        ))}
-                      </TextField>
+                    </TextField>
 
+                    {showCateInput && (
                       <TextField
                         SelectProps={{ MenuProps: { disableScrollLock: true } }}
                         name="cateId"
                         id="standard-size-small"
                         select
-                        label="Category Child"
+                        // label=""
                         size="small"
                         variant="outlined"
+                        // onChange={(e) => {
+                        //   setCateId(e.target.value);
+                        // }}
                       >
                         {categoryChildArr.map((item) => (
                           <MenuItem key={item.id} value={item.id}>
-                            <div style={{ color: "black" }}>
+                            <div
+                              style={{ color: "black" }}
+                              onClick={() => {
+                                setCateId(item.id);
+                              }}
+                            >
                               {item.cateName}
                             </div>
                           </MenuItem>
                         ))}
                       </TextField>
+                    )}
 
-                      <TextField
-                        SelectProps={{ MenuProps: { disableScrollLock: true } }}
-                        name="name"
-                        label="Tên sản phẩm"
-                        d="standard-size-small"
-                        size="small"
-                        variant="outlined"
-                      />
+                    <TextField
+                      SelectProps={{ MenuProps: { disableScrollLock: true } }}
+                      name="name"
+                      label="Tên sản phẩm"
+                      d="standard-size-small"
+                      size="small"
+                      variant="outlined"
+                      onChange={(e) => {
+                        setName(e.target.value);
+                      }}
+                    />
 
-                      <TextField
-                        SelectProps={{ MenuProps: { disableScrollLock: true } }}
-                        name="statusId"
-                        id="filled-select-currency"
-                        select
-                        label="Trạng thái sản phẩm"
-                        size="small"
-                        variant="outlined"
-                      >
-                        {statusCurrentProduct.map((item) => (
-                          <MenuItem key={item.id} value={item.id}>
-                            <div style={{ color: "black" }}>{item.status}</div>
-                          </MenuItem>
-                        ))}
-                      </TextField>
-
-                      <TextField
-                        SelectProps={{ MenuProps: { disableScrollLock: true } }}
-                        name="warrantyId"
-                        id="filled-select-currency"
-                        select
-                        label="Bảo hành"
-                        size="small"
-                        variant="outlined"
-                      >
-                        {warrantyArr.map((item) => (
-                          <MenuItem key={item.id} value={item.id}>
-                            <div style={{ color: "black" }}>{item.status}</div>
-                          </MenuItem>
-                        ))}
-                      </TextField>
-
-                      <TextField
-                        SelectProps={{ MenuProps: { disableScrollLock: true } }}
-                        name="madeInId"
-                        select
-                        label="Sản xuất tại"
-                        variant="outlined"
-                        size="small"
-                      >
-                        {countryArr.map((item) => (
-                          <MenuItem key={item.id} value={item.id}>
-                            <div style={{ color: "black" }}>
-                              {item.countryName}
-                            </div>
-                          </MenuItem>
-                        ))}
-                      </TextField>
-
-                      <TextField
-                        name="description"
-                        id="outlined-multiline-static"
-                        label="Mô tả"
-                        multiline
-                        minRows={4}
-                        variant="outlined"
-                      />
-
-                      <Stack direction="row" alignContent="center">
-                        <Checkbox
-                          style={{
-                            color: "#7b35ba",
-                          }}
-                          name="free"
-                          size="small"
-                          value={true}
-                          color="secondary"
-                          onChange={() => {
-                            setIsFreeProduct(!isFreeProduct);
-                          }}
-                        />
-                        <Typography style={{ paddingTop: 8, color: "black" }}>
-                          Sản phẩm dùng để cho tặng{" "}
-                        </Typography>
-                      </Stack>
-
-                      <Stack direction="row" alignContent="center">
-                        <Checkbox
-                          style={{
-                            color: "#7b35ba",
-                          }}
-                          name="bidOption"
-                          size="small"
-                          value={true}
-                          color="secondary"
-                          onChange={() => {
-                            setIsBidProduct(!isBidProduct);
-                          }}
-                        />
-                        <Typography style={{ paddingTop: 8, color: "black" }}>
-                          Đấu giá{" "}
-                        </Typography>
-                      </Stack>
-
-                      {/* timeover */}
-
-                      {isBidProduct ? (
-                        <>
-                          <div style={{ justifyContent: "center" }}>
-                            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                              <DateTimePicker
-                                label="Thời gian kết thúc đấu giá"
-                                value={timer}
-                                onChange={handleChangeTimer}
-                                renderInput={(params) => (
-                                  <TextField {...params} />
-                                )}
-                              />
-                            </LocalizationProvider>
+                    <TextField
+                      SelectProps={{ MenuProps: { disableScrollLock: true } }}
+                      name="statusId"
+                      id="filled-select-currency"
+                      select
+                      label="Trạng thái sản phẩm"
+                      size="small"
+                      variant="outlined"
+                      onChange={(e) => {
+                        setStatusId(e.target.value);
+                      }}
+                    >
+                      {statusCurrentProduct.map((item) => (
+                        <MenuItem key={item.id} value={item.id}>
+                          <div
+                            style={{ color: "black" }}
+                            onClick={() => {
+                              setStatusId(item.id);
+                            }}
+                          >
+                            {item.status}
                           </div>
-                          <TextField
-                            name="startPrice"
-                            disabled={!isBidProduct}
-                            label="Giá khởi điểm *"
-                            d="standard-size-small"
-                            size="small"
-                            variant="outlined"
-                          />
-                        </>
-                      ) : (
+                        </MenuItem>
+                      ))}
+                    </TextField>
+
+                    <TextField
+                      SelectProps={{ MenuProps: { disableScrollLock: true } }}
+                      name="warrantyId"
+                      id="filled-select-currency"
+                      select
+                      label="Bảo hành"
+                      size="small"
+                      variant="outlined"
+                      onChange={(e) => {
+                        setWarrantyId(e.target.value);
+                      }}
+                    >
+                      {warrantyArr.map((item) => (
+                        <MenuItem key={item.id} value={item.id}>
+                          <div
+                            style={{ color: "black" }}
+                            onClick={() => {
+                              setWarrantyId(item.id);
+                            }}
+                          >
+                            {item.status}
+                          </div>
+                        </MenuItem>
+                      ))}
+                    </TextField>
+
+                    <TextField
+                      SelectProps={{ MenuProps: { disableScrollLock: true } }}
+                      name="madeInId"
+                      select
+                      label="Sản xuất tại"
+                      variant="outlined"
+                      size="small"
+                      onChange={(e) => {
+                        setMadeInId(e.target.value);
+                      }}
+                    >
+                      {countryArr.map((item) => (
+                        <MenuItem key={item.id} value={item.id}>
+                          <div
+                            style={{ color: "black" }}
+                            onClick={() => {
+                              setMadeInId(item.id);
+                            }}
+                          >
+                            {item.countryName}
+                          </div>
+                        </MenuItem>
+                      ))}
+                    </TextField>
+
+                    <TextField
+                      name="description"
+                      id="outlined-multiline-static"
+                      label="Mô tả"
+                      multiline
+                      minRows={4}
+                      variant="outlined"
+                      onChange={(e) => {
+                        setDescription(e.target.value);
+                      }}
+                    />
+
+                    <Stack direction="row" alignContent="center">
+                      <Checkbox
+                        style={{
+                          color: "#7b35ba",
+                        }}
+                        name="free"
+                        size="small"
+                        value={true}
+                        color="secondary"
+                        onChange={() => {
+                          setIsFreeProduct(true);
+                          // setPrice(0);
+                        }}
+                      />
+                      <Typography style={{ paddingTop: 8, color: "black" }}>
+                        Sản phẩm dùng để cho tặng{" "}
+                      </Typography>
+                    </Stack>
+
+                    <Stack direction="row" alignContent="center">
+                      <Checkbox
+                        style={{
+                          color: "#7b35ba",
+                        }}
+                        name="bidOption"
+                        size="small"
+                        value={true}
+                        color="secondary"
+                        onChange={() => {
+                          setIsBidProduct(!isBidProduct);
+                          setPrice(-1);
+                        }}
+                      />
+                      <Typography style={{ paddingTop: 8, color: "black" }}>
+                        Đấu giá{" "}
+                      </Typography>
+                    </Stack>
+
+                    {/* timeover */}
+
+                    {isBidProduct ? (
+                      <>
+                        <div style={{ justifyContent: "center" }}>
+                          <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DateTimePicker
+                              label="Thời gian kết thúc đấu giá"
+                              value={timer}
+                              onChange={handleChangeTimer}
+                              renderInput={(params) => (
+                                <TextField {...params} />
+                              )}
+                            />
+                          </LocalizationProvider>
+                        </div>
                         <TextField
-                          name="price"
-                          disabled={isFreeProduct}
-                          label="Price *"
+                          name="startPrice"
+                          disabled={!isBidProduct}
+                          label="Giá khởi điểm *"
                           d="standard-size-small"
                           size="small"
                           variant="outlined"
+                          onChange={(e) => {
+                            setStartPrice(e.target.value);
+                          }}
                         />
-                      )}
-
-                      {/* TINH  */}
-
+                      </>
+                    ) : (
                       <TextField
-                        SelectProps={{ MenuProps: { disableScrollLock: true } }}
-                        name="province"
-                        select
-                        label="Tỉnh/Thành phố"
-                        size="small"
-                        variant="outlined"
-                      >
-                        {location.province.map((item) => (
-                          <MenuItem key={item.name} value={item.name}>
-                            <div
-                              onClick={() => {
-                                getDistrictByCodeProvince(item.code);
-                              }}
-                              style={{ color: "black" }}
-                            >
-                              {item.name}
-                            </div>
-                          </MenuItem>
-                        ))}
-                      </TextField>
-
-                      {/* HUYEN */}
-
-                      <TextField
-                        SelectProps={{ MenuProps: { disableScrollLock: true } }}
-                        name="district"
-                        id="filled-select-currency"
-                        select
-                        label="Huyện/Quận"
-                        size="small"
-                        variant="outlined"
-                      >
-                        {districtData.map((item) => (
-                          <MenuItem key={item.name} value={item.name}>
-                            <div
-                              onClick={() => {
-                                getWardByCodeDistrict(item.code);
-                              }}
-                              style={{ color: "black" }}
-                            >
-                              {item.name}
-                            </div>
-                          </MenuItem>
-                        ))}
-                      </TextField>
-
-                      {/* XA */}
-
-                      <TextField
-                        SelectProps={{ MenuProps: { disableScrollLock: true } }}
-                        name="ward"
-                        select
-                        label="Xã/Phường"
-                        size="small"
-                        variant="outlined"
-                      >
-                        {wardData.map((item) => (
-                          <MenuItem key={item.name} value={item.name}>
-                            <div style={{ color: "black" }}>{item.name}</div>
-                          </MenuItem>
-                        ))}
-                      </TextField>
-
-                      <TextField
-                        name="address"
-                        label="Đường"
+                        name="price"
+                        disabled={isFreeProduct}
+                        label="Price *"
                         d="standard-size-small"
                         size="small"
                         variant="outlined"
+                        onChange={(e) => {
+                          setPrice(e.target.value);
+                        }}
                       />
-                      {errMsg && (
-                        <Alert variant="filled" severity="error">
-                          {errMsg}
-                        </Alert>
-                      )}
-                      <Button
-                        type="submit"
-                        style={{ backgroundColor: "#7b35ba" }}
-                        onClick={() => {}}
-                      >
-                        <p style={{ color: "white" }}>Tạo bài viết</p>
-                      </Button>
-                      <Snackbar
-                        open={open}
-                        autoHideDuration={6000}
+                    )}
+
+                    {/* TINH  */}
+
+                    <TextField
+                      SelectProps={{ MenuProps: { disableScrollLock: true } }}
+                      name="province"
+                      select
+                      label="Tỉnh/Thành phố"
+                      size="small"
+                      variant="outlined"
+                      onChange={(e) => {
+                        setProvince(e.target.value);
+                      }}
+                    >
+                      {location.province.map((item) => (
+                        <MenuItem key={item.name} value={item.name}>
+                          <div
+                            onClick={() => {
+                              getDistrictByCodeProvince(item.code);
+                            }}
+                            style={{ color: "black" }}
+                          >
+                            {item.name}
+                          </div>
+                        </MenuItem>
+                      ))}
+                    </TextField>
+
+                    {/* HUYEN */}
+
+                    <TextField
+                      SelectProps={{ MenuProps: { disableScrollLock: true } }}
+                      name="district"
+                      id="filled-select-currency"
+                      select
+                      label="Huyện/Quận"
+                      size="small"
+                      variant="outlined"
+                      onChange={(e) => {
+                        setDistrict(e.target.value);
+                      }}
+                    >
+                      {districtData.map((item) => (
+                        <MenuItem key={item.name} value={item.name}>
+                          <div
+                            onClick={() => {
+                              getWardByCodeDistrict(item.code);
+                            }}
+                            style={{ color: "black" }}
+                          >
+                            {item.name}
+                          </div>
+                        </MenuItem>
+                      ))}
+                    </TextField>
+
+                    {/* XA */}
+
+                    <TextField
+                      SelectProps={{ MenuProps: { disableScrollLock: true } }}
+                      name="ward"
+                      select
+                      label="Xã/Phường"
+                      size="small"
+                      variant="outlined"
+                      onChange={(e) => {
+                        setWard(e.target.value);
+                      }}
+                    >
+                      {wardData.map((item) => (
+                        <MenuItem key={item.name} value={item.name}>
+                          <div style={{ color: "black" }}>{item.name}</div>
+                        </MenuItem>
+                      ))}
+                    </TextField>
+
+                    <TextField
+                      name="street"
+                      label="Đường"
+                      d="standard-size-small"
+                      size="small"
+                      variant="outlined"
+                      onChange={(e) => {
+                        setStreet(e.target.value);
+                      }}
+                    />
+                    {errMsg && (
+                      <Alert variant="filled" severity="error">
+                        {errMsg}
+                      </Alert>
+                    )}
+                    <Button
+                      type="submit"
+                      style={{ backgroundColor: "#7b35ba" }}
+                      onClick={handleSubmit}
+                    >
+                      <p style={{ color: "white" }}>Tạo bài viết</p>
+                    </Button>
+                    <Snackbar
+                      open={open}
+                      autoHideDuration={6000}
+                      onClose={handleClose}
+                    >
+                      <Alert
+                        style={{ backgroundColor: "#08DB3C" }}
                         onClose={handleClose}
+                        severity="success"
+                        sx={{ width: "100%" }}
                       >
-                        <Alert
-                          style={{ backgroundColor: "#08DB3C" }}
-                          onClose={handleClose}
-                          severity="success"
-                          sx={{ width: "100%" }}
-                        >
-                          Tạo bài viết thành công
-                        </Alert>
-                      </Snackbar>
-                    </Stack>
-                  </div>
-                </Grid>
+                        Tạo bài viết thành công
+                      </Alert>
+                    </Snackbar>
+                  </Stack>
+                </div>
               </Grid>
-            </form>
+            </Grid>
+            {/* </form> */}
           </div>
         </Grid>
       </Grid>

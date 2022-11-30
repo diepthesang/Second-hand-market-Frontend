@@ -28,13 +28,11 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "8px",
     backgroundColor: "#F1ECF5",
     display: "flex",
-    flexWrap: "wrap",
     justifyContent: "center",
-    alignItems: "flex-start",
+    alignItems: "center",
+    // alignItems: "flex-start",
     // height: 160,
-    // overflow: "scroll",
-    scrollbarColor: "#7b35ba",
-    position: "relative",
+    overflow: "auto",
   },
 
   img_cus: {
@@ -67,7 +65,13 @@ function MyChildCategory(id) {
       <Stack>
         {/* <Typography style={{ color: '#7b35ba', margin: 10 }} color='#7b35ba' variant='h6' align='left'>Category</Typography> */}
 
-        <div style={{ display: "inline-flex" }} className="cate">
+        <div
+          style={{
+            display: "flex",
+            paddingTop: 4,
+            paddingBottom: 4,
+          }}
+        >
           {cateArr.map((item) => {
             return (
               <div

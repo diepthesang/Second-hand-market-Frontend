@@ -3,8 +3,8 @@ import { Grid, Pagination, TextField } from "@mui/material";
 import { Stack } from "@mui/system";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 import MyChildCategory from "./MyChildCategory";
 import MyListProductByCate from "./MyListProductByCate";
 var _ = require("lodash");
@@ -159,7 +159,7 @@ function MyBodyCategory() {
 
   return (
     <div>
-      <Grid container justifyContent="center">
+      <Grid container justifyContent="center" minHeight="70vh">
         <Grid item xs={8}>
           <Stack
             direction="column"

@@ -5,8 +5,6 @@ import {
   Grid,
   Modal,
   Paper,
-  Tab,
-  Tabs,
   Typography,
 } from "@material-ui/core";
 import { Stack } from "@mui/system";
@@ -14,6 +12,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import AirportShuttleIcon from "@mui/icons-material/AirportShuttle";
 import MyModalBill from "./MyModalBill";
+import { Tab, Tabs } from "@mui/material";
 
 const style = {
   position: "absolute",
@@ -83,24 +82,40 @@ function MyOrderBuyPage() {
 
   return (
     <Grid container justifyContent="center" style={{ minHeight: "70vh" }}>
-      <Grid item xs={8} style={{ backgroundColor: "#F1ECF5" }}>
-        <Tabs
-          centered
-          style={{ color: "yellow" }}
-          value={value}
-          onChange={handleChangeTab}
-          textColor="secondary"
-          indicatorColor="secondary"
-          // aria-label="secondary tabs example"
-        >
-          <Tab value="CONFIRM" label="Chờ xác nhận" />
-          <Tab value="PENDING" label="Đang xử lí" />
-          <Tab value="DELIVERING" label="Đang giao" />
-          <Tab value="DELIVERED" label="Đã giao" />
-          <Tab value="CANCEL" label="Hoàn tiền/đã huỷ" />
-        </Tabs>
+      <Grid
+        item
+        xs={8}
+        style={{ backgroundColor: "#F1ECF5", borderRadius: 12 }}
+      >
+        <Paper style={{ margin: 12 }}>
+          <Tabs
+            value={value}
+            onChange={handleChangeTab}
+            centered
+            TabIndicatorProps={{ sx: { backgroundColor: "#7b35ba" } }}
+            textColor="secondary"
+            // indicatorColor="secondary"
+            size="small"
+            sx={{
+              // "& button": { backgroundColor: "blue" },
+              // "& button:active": { backgroundColor: "yellow" },
+              // "& button:focus": { backgroundColor: "black" },
+              "& button:hover": { backgroundColor: "#F1ECF5" },
+              "& button.Mui-selected": {
+                backgroundColor: "#7b35ba",
+                color: "white",
+              },
+            }}
+          >
+            <Tab value="CONFIRM" label="Chờ xác nhận" />
+            <Tab value="PENDING" label="Đang xử lí" />
+            <Tab value="DELIVERING" label="Đang giao" />
+            <Tab value="DELIVERED" label="Đã giao" />
+            <Tab value="CANCEL" label="Hoàn tiền/đã huỷ" />
+          </Tabs>
+        </Paper>
 
-        <Paper style={{ padding: 12, marginTop: 8, marginBottom: 8 }}>
+        <Paper style={{ padding: 12, margin: 12 }}>
           {/* <Stack direction="row" display="flex" justifyContent="space-around">
             <div style={{ minWidth: 300 }}>Sản phẩm</div>
             <div>Tổng đơn hàng</div>
@@ -183,7 +198,7 @@ function MyOrderBuyPage() {
                   style={{
                     alignItems: "center",
                     display: "flex",
-                    justifyContent: "center",
+                    justifyContent: "flex-start",
                   }}
                 >
                   <img

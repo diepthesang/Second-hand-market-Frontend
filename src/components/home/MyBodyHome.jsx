@@ -1,12 +1,4 @@
-import {
-  Box,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-} from "@material-ui/core";
+import { Box, Grid } from "@material-ui/core";
 import { Button, Divider, Modal, Stack } from "@mui/material";
 import React, { useEffect } from "react";
 import MyCategory from "../common/MyCategory";
@@ -51,19 +43,17 @@ function MyBodyHome() {
   const [listPost, setListPost] = useState([]);
   const [totalPage, setTotalPage] = useState(0);
   const pagingNumber = useSelector((state) => state.paging.paging);
-  const [city, setCity] = React.useState(null);
-  const [listCity, setListCity] = useState([]);
-  console.log("pagingnumber::::", pagingNumber);
+  // const [city, setCity] = React.useState(null);
+  // const [listCity, setListCity] = useState([]);
+  // console.log("pagingnumber::::", pagingNumber);
 
-  const getPlace = async () => {
-    localStorage.setItem("suggest_place", "hehehe");
-  };
-
+  // const getPlace = async () => {
+  //   localStorage.setItem("suggest_place", "hehehe");
+  // };
 
   const getPostByPlace = async () => {
     try {
       let _place = "";
-
       if (localStorage["suggest_place"] === "HÀ NỘI") {
         _place = "Thành Phố Hà Nội";
       } else if (localStorage["suggest_place"] === "ĐÀ NẴNG") {
@@ -102,7 +92,7 @@ function MyBodyHome() {
             <MyCategory />
             <MyListProduct listPost={listPost} totalPage={totalPage} />
             <div>
-              <Button onClick={handleOpen}>Open modal</Button>
+              {/* <Button onClick={handleOpen}>Open modal</Button> */}
               <Modal
                 open={open}
                 onClose={handleClose}
@@ -164,6 +154,7 @@ function MyBodyHome() {
                   </Stack>
                 </Box>
               </Modal>
+              
             </div>
           </Stack>
         </Grid>

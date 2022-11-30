@@ -112,7 +112,11 @@ function MyCheckoutPage() {
   }, []);
 
   return (
-    <Grid container justifyContent="center" style={{ minHeight: "70vh" }}>
+    <Grid
+      container
+      justifyContent="center"
+      style={{ minHeight: "70vh", borderRadius: 8 }}
+    >
       <Grid item xs={6} style={{ backgroundColor: "#F1ECF5" }}>
         <div style={{ display: "inline-flex", alignItems: "center" }}>
           <NoteAltIcon

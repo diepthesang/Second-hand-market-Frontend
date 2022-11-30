@@ -1,22 +1,11 @@
-import {
-  Avatar,
-  FormControl,
-  Grid,
-  makeStyles,
-  MenuItem,
-  Select,
-  TextField,
-} from "@material-ui/core";
-import { Pagination, Paper, Stack, Typography } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { Avatar, Grid, makeStyles } from "@material-ui/core";
+import { Paper, Stack, Typography } from "@mui/material";
+import React, { useState } from "react";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
-import axios from "axios";
 import useWindowDimensions from "../../helps/useWindowDimensions";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { getPostId } from "../../redux/postSlice";
-import { FamilyRestroomRounded } from "@mui/icons-material";
-import { getLikePost } from "../../redux/likePostSlice";
 
 const useStyles = makeStyles((theme) => ({
   paper_cus: {

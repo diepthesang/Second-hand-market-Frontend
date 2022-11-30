@@ -4,7 +4,7 @@ import MyRegister from "./components/authentication/MyRegisterPage";
 import MyHomePage from "./components/home/MyHomePage";
 import MyPostPage from "./components/post/MyPostPage";
 import MyDetailPage from "./components/detail/MyDetailPage";
-import socketIO, { io } from "socket.io-client"
+import { io } from "socket.io-client"
 import MyOTPInputPage from './components/OTP/MyOTPInputPage';
 import MyCategoryPage from './components/categoryChild/MyCategoryPage';
 import MyAdminPage from './components/admin/MyAdminPage';
@@ -27,6 +27,7 @@ import MyModalAuction from "./components/common/MyModalAuction";
 import { useSelector } from "react-redux";
 import MyOrderBuyPage from "./components/order/MyOrderBuyPage";
 import axios from "axios";
+import MyUploadMultypleImages from "./components/test/MyUploadMultypleImages";
 // import NativePickers from "./components/test/MyTestPage";
 
 // const socket = socketIO.connect("http://localhost:8080")
@@ -49,7 +50,8 @@ function BasicLayout() {
 function App() {
 
   const [isLogin, setIsLogin] = useState(false);
-  const [isModal, setIsModal] = useState(false);
+  // const [openModal, setOpenModal] = useState(false);
+  // const [isHighestBidder, setIsHighestBidder] = useState(false);
   // const navigate = useNavigate();
 
   // const navigate = useNavigate()
@@ -61,24 +63,30 @@ function App() {
     }
   }
 
-  // const testConnectSocket = async () => {
-  //   try {
-  //     await axios.get('/common/timeout')
-  //   } catch (error) {
-  //     console.log('err_testConnectSocket::', error);
-  //   }
-  // }
-
   useEffect(
     () => {
       checkIsLogin();
-      socket.on('test', (data) => {
-        setIsModal(true);
-        console.log('data from socket:::', data);
-      });
-      return () => {
-        socket.off('test');
-      }
+      // socket.on('test', (data) => {
+      //   console.log('data from socket:::', data);
+      //   if (!data || !localStorage['userId']) {
+      //     return;
+      //   }
+      //   if (data.highestBidder === localStorage['userId']) {
+      //     setOpenModal(true);
+      //     setIsHighestBidder(true);
+      //     return;
+      //   }
+      //   if (data.otherBidders.some((item) => item.userId === localStorage['userId'])) {
+      //     setOpenModal(true);
+      //     setIsHighestBidder(false);
+      //     console.log('show modal');
+
+      //     return
+      //   }
+      // })
+      // return () => {
+      //   socket.off('test');
+      // }
     }, []
   )
 
@@ -158,6 +166,8 @@ function App() {
 
 
         <Route path="/redirect" element={<MyRedirectPage />}></Route>
+        <Route path="/upload" element={<MyModalAuction />}></Route>
+
         {/* <Route path="/date" element={<NativePickers />}></Route> */}
 
 

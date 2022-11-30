@@ -1,4 +1,4 @@
-import { makeStyles, Paper, Typography } from "@material-ui/core";
+import { Divider, makeStyles, Paper, Typography } from "@material-ui/core";
 import { Stack } from "@mui/system";
 import React, { memo, useEffect, useState } from "react";
 import axios from "axios";
@@ -67,9 +67,17 @@ function MyCategory() {
   return (
     // <div className={classes.category}>
     <div style={{ backgroundColor: "#F1ECF5", borderRadius: 8 }}>
-      <Typography style={{ color: "#7b35ba", margin: 10 }} variant="h6">
-        Category
-      </Typography>
+      <p
+        style={{
+          fontSize: 18,
+          margin: 12,
+          color: "#7b35ba",
+          fontWeight: "bold",
+        }}
+      >
+        Thể loại
+        {/* <Divider style={{ backgroundColor: "#7b35ba", marginTop: 4 }}></Divider> */}
+      </p>
 
       <Stack
         direction="row"

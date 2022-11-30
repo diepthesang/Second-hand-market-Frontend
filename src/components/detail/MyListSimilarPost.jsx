@@ -1,13 +1,13 @@
-import { Avatar, Divider, Grid, makeStyles } from "@material-ui/core";
-import { Pagination, Paper, Stack, Typography } from "@mui/material";
-import React, { useState } from "react";
-// import ThumbUpIcon from "@mui/icons-material/ThumbUp";
-import useWindowDimensions from "../../helps/useWindowDimensions";
-import { useSelector, useDispatch } from "react-redux";
+import { Avatar, Grid, Paper, Stack } from "@mui/material";
+import { Divider, makeStyles } from "@material-ui/core";
+
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import useWindowDimensions from "../../helps/useWindowDimensions";
 import { getPostId } from "../../redux/postSlice";
-import { getPaging } from "../../redux/pagingSlice";
-// import MyCountdownTimer from "../test/MyCountdownTimer";
+// import { fontSize } from "@mui/system";
 
 const useStyles = makeStyles((theme) => ({
   paper_cus: {
@@ -52,55 +52,75 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function MyListProduct({ listPost, totalPage }) {
+function MyListSimilarPost({ cateId }) {
   const classes = useStyles();
-  const { width } = useWindowDimensions();
-  // const [listProduct, setListProduct] = useState([]);
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [page, setPage] = React.useState(1);
+  const dispatch = useDispatch();
+  const { width } = useWindowDimensions();
+  const [listPost, setListPost] = useState([]);
 
-  const handleChange = (event, value) => {
-    console.log(value);
-    setPage(value);
-    dispatch(getPaging(value));
+  const getListPost = async () => {
+    try {
+      console.log("cateId:::::::", cateId);
+      const { data } = await axios.get(`/common/posts/cateId/${cateId}`);
+      // const _listPost = paginate(data.data, 18, page);
+      setListPost(data.data);
+      console.log("getListPost::::", data.data);
+    } catch (error) {
+      console.log("err_getSomePost:::", error);
+    }
   };
 
-  // const categoryChildId = useSelector(
-  //   (state) => state.categoryChildId.categoryChildId
-  // );
+  useEffect(() => {
+    getListPost();
+  }, []);
 
   return (
-    <div>
-      <Stack
-        direction="column"
-        spacing={2}
-        bgcolor="#F1ECF5"
-        paddingBottom={1}
+    <>
+      <Grid
+        container
+        xs={8}
         justifyContent="center"
-        justifyItems="center"
-        style={{ borderRadius: "8px" }}
+        style={{ marginTop: 12, backgroundColor: "#F1ECF5", borderRadius: 12 }}
       >
-        <p
+        <Grid item xs={12}>
+          <p
+            style={{
+              fontSize: 18,
+              margin: 12,
+              color: "#7b35ba",
+              fontWeight: "bold",
+            }}
+          >
+            Tin đăng tương tự
+            <Divider
+              style={{ backgroundColor: "#7b35ba", marginTop: 4 }}
+            ></Divider>
+          </p>
+        </Grid>
+        <Grid
+          container
+          xs={12}
           style={{
-            fontSize: 18,
-            margin: 12,
-            color: "#7b35ba",
-            fontWeight: "bold",
+            marginBottom: 12,
+            marginTop: 12,
+            display: "flex",
+            flexWrap: "wrap",
+            maxHeight: 560,
+            minHeight: 280,
+            overflow: "auto",
+            // overflowX: "hidden",
           }}
         >
-          Tin đăng dành cho bạn
-          <Divider
-            style={{ backgroundColor: "#7b35ba", marginTop: 4 }}
-          ></Divider>
-        </p>
-        <Grid container alignItems="flex-start">
           {listPost.map((item) => {
             return (
+              // <div style={{ backgroundColor: "red" }}>
               <Grid key={item.id} item xs={2} sm={2}>
                 <div
                   onClick={() => {
                     navigate(`/post/${item.id}`);
+                    window.location.reload(false);
+
                     dispatch(getPostId(item.id));
                   }}
                   className="hover"
@@ -110,7 +130,7 @@ function MyListProduct({ listPost, totalPage }) {
                       <div style={{ paddingTop: 8, position: "relative" }}>
                         <Avatar
                           variant={"rounded"}
-                          src={`http://localhost:8080/${item.image.imagePath}`}
+                          src={item.PostImages[0].imagePath}
                           alt="The image"
                           style={{
                             width: width / 11,
@@ -119,8 +139,8 @@ function MyListProduct({ listPost, totalPage }) {
                         />
                         <div>
                           {/* {item.liked ? <ThumbUpIcon className={classes.iconHeart_cus} />
-                                                        :
-                                                        <ThumbUpIcon className={classes.iconHeart_cus} style={{ fill: 'white' }} />} */}
+                                                            :
+                                                            <ThumbUpIcon className={classes.iconHeart_cus} style={{ fill: 'white' }} />} */}
                         </div>
                       </div>
                       <p className={classes.title_cus}>{item.title}</p>
@@ -158,15 +178,13 @@ function MyListProduct({ listPost, totalPage }) {
                   </Paper>
                 </div>
               </Grid>
+              // </div>
             );
           })}
         </Grid>
-        <div style={{ display: "inline-flex", justifyContent: "center" }}>
-          <Pagination count={totalPage} page={page} onChange={handleChange} />
-        </div>
-      </Stack>
-    </div>
+      </Grid>
+    </>
   );
 }
 
-export default MyListProduct;
+export default MyListSimilarPost;

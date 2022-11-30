@@ -1,5 +1,12 @@
-import { Box, Button, ButtonGroup, Grid, Tab } from "@material-ui/core";
-import { IconButton, Pagination, Paper, Tabs } from "@mui/material";
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Grid,
+  Modal,
+  Typography,
+} from "@material-ui/core";
+import { IconButton, Pagination, Paper, Tab, Tabs } from "@mui/material";
 import { Stack } from "@mui/system";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -9,11 +16,26 @@ import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  border: "1px solid #000",
+  boxShadow: 24,
+  p: 4,
+  borderRadius: 8,
+};
 
 function MyBodyManagePosting() {
   const [listPostShow, setListPostShow] = useState([]);
   const [listPostHide, setListPostHide] = useState([]);
   const [listPostLike, setListPostLike] = useState([]);
+  const [listPostBid, setListPostBid] = useState([]);
   const [value, setValue] = React.useState("1");
   const [hidePost, setHidePost] = useState(false);
   const [showPost, setShowPost] = useState(false);
@@ -21,6 +43,15 @@ function MyBodyManagePosting() {
   const [page, setPage] = React.useState(1);
   const [totalPage, setTotalPage] = useState(0);
   const navigate = useNavigate();
+  const [isModalDelete, setIsModalDelete] = useState(false);
+  const [open, setOpen] = React.useState(false);
+  const [postId, setPostId] = useState("");
+  const [isModalDeleteSuccess, setIsModalDeleteSuccess] = useState(false);
+  // const handleOpen = () => setOpen(true);
+  const handleClose = () => {
+    setOpen(false);
+    setIsModalDeleteSuccess(false);
+  };
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -53,26 +84,40 @@ function MyBodyManagePosting() {
           Authorization: localStorage["access_token"],
         },
       });
-      console.log("post is showing :::: ", data);
       setListPostShow(data.data);
       setTotalPage(data.totalPage);
-      console.log(data.data);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const getPostIsHidingByUserId = async () => {
+  const getPostBid = async () => {
     try {
-      const { data } = await axios.get(`/user/post/activeId/4/page/${page}`, {
+      const { data } = await axios.get(`user/post/bid/page/${page}`, {
         headers: {
           Authorization: localStorage["access_token"],
         },
       });
+      setListPostBid(data.data);
+      setTotalPage(data.totalPage);
+    } catch (error) {
+      console.log("err_getPostBid::::", error);
+    }
+  };
+
+  const getPostIsHidingByUserId = async () => {
+    try {
+      const { data } = await axios.get(
+        `/user/postHide/activeId/4/page/${page}`,
+        {
+          headers: {
+            Authorization: localStorage["access_token"],
+          },
+        }
+      );
 
       setListPostHide(data.data);
       setTotalPage(data.totalPage);
-      console.log(data.data);
     } catch (error) {
       console.log(error);
     }
@@ -92,7 +137,7 @@ function MyBodyManagePosting() {
           },
         }
       );
-      console.log(data);
+      // console.log(data);
     } catch (error) {
       console.log(error);
     }
@@ -119,12 +164,16 @@ function MyBodyManagePosting() {
   };
 
   const removePost = async (id) => {
+    setIsModalDelete(false);
     try {
       await axios.delete(`/user/Post/${id}`, {
         headers: {
           Authorization: localStorage["access_token"],
         },
       });
+      setIsModalDeleteSuccess(true);
+      getPostIsShowingByUserId();
+      getPostBid();
     } catch (error) {
       console.log("err_removePost::", error);
     }
@@ -156,10 +205,6 @@ function MyBodyManagePosting() {
   };
 
   useEffect(() => {
-    getPostIsShowingByUserId();
-  }, [hidePost]);
-
-  useEffect(() => {
     if (value === "1") {
       getPostIsShowingByUserId();
     }
@@ -169,6 +214,9 @@ function MyBodyManagePosting() {
     if (value === "3") {
       getPostsLike();
     }
+    if (value === "4") {
+      getPostBid();
+    }
   }, [value, page]);
 
   useEffect(() => {
@@ -177,15 +225,30 @@ function MyBodyManagePosting() {
 
   useEffect(() => {
     getPostIsHidingByUserId();
+    // getPostBid();
   }, [showPost]);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    getPostIsShowingByUserId();
+    getPostBid();
+  }, [hidePost]);
 
   return (
     <div>
-      <Grid container justifyContent="center" style={{ minHeight: "70vh" }}>
-        <Grid item xs={6} style={{ backgroundColor: "#F1ECF5" }}>
-          <Paper style={{ padding: 8, marginBottom: 12, margin: 12 }}>
+      <Grid
+        container
+        justifyContent="center"
+        style={{ minHeight: "70vh", borderRadius: 12 }}
+      >
+        <Grid
+          item
+          xs={6}
+          style={{ backgroundColor: "#F1ECF5", borderRadius: 12 }}
+        >
+          <Paper
+            style={{ padding: 8, marginBottom: 12, margin: 12 }}
+            // sx={{ backgroundColor: "red" }}
+          >
             <Stack direction="row" spacing={4}>
               <img
                 src={userInfo.avatarImg}
@@ -198,12 +261,19 @@ function MyBodyManagePosting() {
                   borderRadius: "50%",
                 }}
               />
-              <Stack direction="column">
+              <Stack direction="column" spacing={1}>
                 <p style={{ fontSize: 24 }}>
                   {userInfo.firstName} {userInfo.lastName}
                 </p>
                 <Button
-                  variant="outlined"
+                  style={{
+                    textTransform: "none",
+                    // color: "black",
+                    backgroundColor: "#FFD501",
+                  }}
+                  // color="secondary"
+                  // color
+                  // variant="outlined"
                   size="small"
                   onClick={() => {
                     navigate(`/profile/user/${userInfo.userId}`);
@@ -219,16 +289,30 @@ function MyBodyManagePosting() {
               <Tabs
                 value={value}
                 onChange={handleChange}
-                textColor="secondary"
-                indicatorColor="secondary"
-                // aria-label="secondary tabs example"
                 centered
+                TabIndicatorProps={{ sx: { backgroundColor: "#7b35ba" } }}
                 size="small"
+                sx={{
+                  // "& button": { backgroundColor: "blue" },
+                  // "& button:active": { backgroundColor: "yellow" },
+                  // "& button:focus": { backgroundColor: "black" },
+                  "& button:hover": { backgroundColor: "#F1ECF5" },
+                  "& button.Mui-selected": {
+                    backgroundColor: "#7b35ba",
+                    color: "white",
+                  },
+                }}
               >
                 <Tab
                   value="1"
-                  label="Hiển thị"
+                  label="Tin đăng"
                   defaultValue={1}
+                  style={{ textTransform: "none", fontSize: 18 }}
+                />
+                <Tab
+                  value="4"
+                  label="Đấu giá"
+                  // defaultValue={4}
                   style={{ textTransform: "none", fontSize: 18 }}
                 />
                 <Tab
@@ -278,9 +362,126 @@ function MyBodyManagePosting() {
                           direction="column"
                           spacing={1}
                           justifyContent="start"
+                          // alignItem="center"
+                          alignContent="center"
                         >
                           <p>{item.title}</p>
-                          <p>{item.price}</p>
+                          <p style={{ color: "red" }}>
+                            {item.price === Number(0) ? "Miễn phí" : item.price}
+                          </p>
+                          <p>{item.createdAt}</p>
+                        </Stack>
+                      </Stack>
+                      <div
+                        style={{
+                          display: "inline-flex",
+                          justifyContent: "flex-end",
+                        }}
+                      >
+                        <ButtonGroup
+                          size="small"
+                          aria-label="small button group"
+                        >
+                          <Button
+                            color="error"
+                            size="small"
+                            variant="outlined"
+                            style={{
+                              textTransform: "none",
+                              boxShadow: " rgba(0, 0, 0, 0.24) 0px 3px 8px ",
+                            }}
+                            onClick={() => {
+                              navigate(`/edit/post/${item.id}`);
+                            }}
+                          >
+                            <EditIcon style={{ paddingRight: 4 }} />
+                            Sửa
+                          </Button>
+                          <Button
+                            color="primary"
+                            size="small"
+                            variant="outlined"
+                            style={{
+                              textTransform: "none",
+                              boxShadow: " rgba(0, 0, 0, 0.24) 0px 3px 8px ",
+                            }}
+                            onClick={() => {
+                              console.log(item.id);
+                              hidePostByPostId(item.id, 4);
+                              setHidePost(!hidePost);
+                            }}
+                          >
+                            <VisibilityOffOutlinedIcon
+                              style={{ paddingRight: 4 }}
+                            />
+                            Ẩn
+                          </Button>
+
+                          <Button
+                            color="secondary"
+                            size="small"
+                            variant="outlined"
+                            style={{
+                              textTransform: "none",
+                              boxShadow: " rgba(0, 0, 0, 0.24) 0px 3px 8px ",
+                            }}
+                            onClick={() => {
+                              console.log(item.id);
+                              // removePost(item.id);
+                              setIsModalDelete(true);
+                              setPostId(item.id);
+                              setHidePost(!hidePost);
+                              setOpen(true);
+                            }}
+                          >
+                            <DeleteIcon style={{ paddingRight: 4 }} />
+                            Xoá
+                          </Button>
+
+                          {/* {buttons} */}
+                        </ButtonGroup>
+                      </div>
+                    </Stack>
+                  </Paper>
+                );
+              })}
+
+            {value === "4" &&
+              listPostBid.map((item) => {
+                return (
+                  <Paper
+                    key={item.id}
+                    style={{
+                      marginLeft: 12,
+                      marginRight: 12,
+                      marginBottom: 12,
+                    }}
+                  >
+                    <Stack
+                      direction="row"
+                      spacing={2}
+                      padding={1}
+                      justifyContent="space-between"
+                      alignItems="center"
+                    >
+                      <Stack direction="row" spacing={2}>
+                        <img
+                          style={{ cursor: "pointer" }}
+                          onClick={() => {
+                            navigate(`/post/${item.id}`);
+                          }}
+                          alt=""
+                          width={100}
+                          height={100}
+                          src={item.image.imagePath}
+                        ></img>
+                        <Stack
+                          direction="column"
+                          spacing={1}
+                          justifyContent="start"
+                        >
+                          <p>{item.title}</p>
+                          <p style={{ color: "red" }}>Đấu giá</p>
                           <p>{item.createdAt}</p>
                         </Stack>
                       </Stack>
@@ -340,9 +541,10 @@ function MyBodyManagePosting() {
                               boxShadow: " rgba(0, 0, 0, 0.24) 0px 3px 8px ",
                             }}
                             onClick={() => {
-                              console.log(item.id);
-                              removePost(item.id);
+                              setIsModalDelete(true);
+                              setPostId(item.id);
                               setHidePost(!hidePost);
+                              setOpen(true);
                             }}
                           >
                             <DeleteIcon style={{ paddingRight: 4 }} />
@@ -509,6 +711,83 @@ function MyBodyManagePosting() {
           </div>
         </Grid>
       </Grid>
+      <div>
+        <Modal
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={style}>
+            {isModalDelete && (
+              <Stack
+                direction="column"
+                justifyContent="center"
+                alignItems="center"
+              >
+                <Typography id="modal-modal-description" sx={{ m: 2 }}>
+                  Bạn có chắc muốn xoá bài viết này!
+                </Typography>
+                <Stack
+                  direction="row"
+                  spacing={2}
+                  justifyContent="center"
+                  paddingTop={4}
+                >
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    style={{
+                      textTransform: "none",
+                      backgroundColor: "#7b35ba",
+                      color: "white",
+                    }}
+                    onClick={() => {
+                      removePost(postId);
+                    }}
+                  >
+                    Có
+                  </Button>
+                  <Button
+                    size="small"
+                    style={{
+                      textTransform: "none",
+                      backgroundColor: "#BDBDBD",
+                      color: "white",
+                    }}
+                    onClick={() => {
+                      setOpen(false);
+                    }}
+                  >
+                    Không
+                  </Button>
+                </Stack>
+              </Stack>
+            )}
+            {isModalDeleteSuccess && (
+              <div>
+                <Stack
+                  direction="column"
+                  justifyContent="center"
+                  alignItems="center"
+                >
+                  <CheckCircleIcon
+                    style={{
+                      fill: "green",
+                      width: 100,
+                      height: 100,
+                      paddingBottom: 20,
+                    }}
+                  />
+                  <Typography id="modal-modal-description" sx={{ m: 2 }}>
+                    Xoá bài viết thành công!
+                  </Typography>
+                </Stack>
+              </div>
+            )}
+          </Box>
+        </Modal>
+      </div>
     </div>
   );
 }

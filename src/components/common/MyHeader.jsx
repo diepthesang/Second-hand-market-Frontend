@@ -147,7 +147,7 @@ function MyHeader() {
                     }}
                   >
                     <img
-                      src="/upload/logochinh.png"
+                      src="/upload/logo1.png"
                       alt="logo"
                       style={{ width: 200, height: 60 }}
                     />
@@ -159,17 +159,20 @@ function MyHeader() {
                         handBtnHome();
                       }}
                       size="small"
-                      style={{ color: "white" }}
+                      style={{ color: "white", textTransform: "none" }}
                     >
                       <HomeIcon />
                       <Box width={4}></Box>
-                      Home
+                      Trang chủ
                     </Button>
                   </div>
 
                   <div>
                     <Button
-                      style={{ color: "white" }}
+                      style={{
+                        color: "white",
+                        textTransform: "none",
+                      }}
                       size="small"
                       onClick={() => {
                         navigate("/managePosting");
@@ -177,14 +180,14 @@ function MyHeader() {
                     >
                       <FormatListBulletedIcon />
                       <Box width={4}></Box>
-                      <div> Manage postting</div>
+                      Quản lý tin
                     </Button>
                   </div>
 
                   <div>
                     <Button
                       size="small"
-                      style={{ color: "white" }}
+                      style={{ color: "white", textTransform: "none" }}
                       aria-controls={open ? "fade-menu" : undefined}
                       // aria-haspopup="true"
                       aria-expanded={open ? "true" : undefined}
@@ -192,7 +195,7 @@ function MyHeader() {
                     >
                       <ShoppingBagIcon />
                       <Box width={4}></Box>
-                      <div>Đơn hàng</div>
+                      Đơn hàng
                     </Button>
                   </div>
                   <div>
@@ -231,7 +234,7 @@ function MyHeader() {
 
                   <div>
                     <Button
-                      style={{ color: "white" }}
+                      style={{ color: "white", textTransform: "none" }}
                       onClick={() => {
                         handleBtnChat();
                       }}

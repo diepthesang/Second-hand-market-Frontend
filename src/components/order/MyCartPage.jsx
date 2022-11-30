@@ -94,6 +94,9 @@ function MyCartPage() {
         },
       });
       console.log("getListPostBychecked:::", data.data);
+      if (data.data.Post.id === undefined) {
+        data.data = [];
+      }
       const listAmount = [];
       data.data.forEach((item) => {
         if (item.Post.price === -1) {
@@ -123,7 +126,11 @@ function MyCartPage() {
   }, [page, postId, checked]);
 
   return (
-    <Grid container justifyContent="center" style={{ minHeight: "70vh" }}>
+    <Grid
+      container
+      justifyContent="center"
+      style={{ minHeight: "70vh", borderRadius: 8 }}
+    >
       <Grid item xs={5} style={{ backgroundColor: "#F1ECF5" }}>
         <div style={{ display: "inline-flex", alignItems: "center" }}>
           <ShoppingCartIcon
@@ -163,7 +170,6 @@ function MyCartPage() {
                 key={item.id}
                 style={{ marginLeft: 12, marginRight: 12, marginBottom: 12 }}
               >
-               
                 <Stack
                   direction="row"
                   spacing={2}

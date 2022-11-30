@@ -16,7 +16,6 @@ import React, { useEffect, useLayoutEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import location from "../../helps/location";
 
-
 const useStyles = makeStyles((theme) => ({
   input_file_cus: {
     // backgroundColor: "#7b35ba",
@@ -25,9 +24,9 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px ",
     width: 120,
     height: 120,
-    textAlign: 'center',
+    textAlign: "center",
     // border: 4,
-    border: '2px dashed #7b35ba'
+    border: "2px dashed #7b35ba",
   },
 
   image_frame_cus: {
@@ -51,30 +50,28 @@ function MyBodyEditPost() {
   const [isFreeProduct, setIsFreeProduct] = useState(false);
   const [images, setImages] = useState([]);
   const [imageURLS, setImageURLs] = useState([]);
-  const [errMsg, setErrMsg] = useState('')
+  const [errMsg, setErrMsg] = useState("");
 
   //edit posting
-  const [currentParentCate, setCurrentParrentCate] = useState('');
-  const [currentChildCate, setCurrentChildCate] = useState('');
-  const [currentProductName, setCurrentProductName] = useState('');
-  const [currentProductState, setCurrentProductState] = useState('');
-  const [currentWarrantyStatus, setCurrentWarrantyStatus] = useState('');
-  const [CurrentMadeIn, setCurrentMadeIn] = useState('');
-  const [currentDes, setCurrentDes] = useState('');
+  const [currentParentCate, setCurrentParrentCate] = useState("");
+  const [currentChildCate, setCurrentChildCate] = useState("");
+  const [currentProductName, setCurrentProductName] = useState("");
+  const [currentProductState, setCurrentProductState] = useState("");
+  const [currentWarrantyStatus, setCurrentWarrantyStatus] = useState("");
+  const [CurrentMadeIn, setCurrentMadeIn] = useState("");
+  const [currentDes, setCurrentDes] = useState("");
   const [currentFree, setCurrentFree] = useState(false);
   const [currentPrice, setCurrentPrice] = useState(0);
-  const [currentProvince, setCurrentProvince] = useState('');
-  const [currentDistrict, setCurrentDistrict] = useState('');
-  const [currentWard, setCurrentWard] = useState('');
-  const [currentAddress, setCurrentAddress] = useState('')
-
+  const [currentProvince, setCurrentProvince] = useState("");
+  const [currentDistrict, setCurrentDistrict] = useState("");
+  const [currentWard, setCurrentWard] = useState("");
+  const [currentAddress, setCurrentAddress] = useState("");
 
   // const [cookies, setCookie, removeCookie] = useCookies();
   const classes = useStyles();
 
   //HANDLE SUBMIT
   const handleSubmit = async (event) => {
-
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     console.log({
@@ -91,45 +88,44 @@ function MyBodyEditPost() {
       ward: data.get("ward"),
       address: data.get("address"),
       free: data.get("freeProduct"),
-      image: data.get('file'),
-      images: document.querySelector('#file').files,
+      image: data.get("file"),
+      images: document.querySelector("#file").files,
 
       // cookie: cookies.get('access_token')
     });
 
-
     try {
-      const res = await axios.post('/user/createPost', {
-        cateId: data.get("categoryChild"),
-        name: data.get("productName"),
-        statusId: data.get("productState"),
-        warrantyId: data.get("warranty"),
-        madeInId: data.get("madeIn"),
-        description: data.get("describe"),
-        free: data.get("freeProduct"),
-        price: data.get("price"),
-        province: data.get("province"),
-        district: data.get("district"),
-        ward: data.get("ward"),
-        address: data.get("address"),
-        images: data.get('file'),
-        // images: document.querySelector('#file').files[0],
-        // images: images,
-      },
+      const res = await axios.post(
+        "/user/createPost",
+        {
+          cateId: data.get("categoryChild"),
+          name: data.get("productName"),
+          statusId: data.get("productState"),
+          warrantyId: data.get("warranty"),
+          madeInId: data.get("madeIn"),
+          description: data.get("describe"),
+          free: data.get("freeProduct"),
+          price: data.get("price"),
+          province: data.get("province"),
+          district: data.get("district"),
+          ward: data.get("ward"),
+          address: data.get("address"),
+          images: data.get("file"),
+          // images: document.querySelector('#file').files[0],
+          // images: images,
+        },
         {
           headers: {
-            Authorization: localStorage['access_token'],
-            'Content-type': 'multipart/form-data',
-          }
+            Authorization: localStorage["access_token"],
+            "Content-type": "multipart/form-data",
+          },
         }
-      )
-      setErrMsg('')
-      handleClick()
-
+      );
+      setErrMsg("");
+      handleClick();
     } catch (error) {
-      setErrMsg(error.response.data.message)
+      setErrMsg(error.response.data.message);
     }
-
   };
 
   const getDistrictByCodeProvince = (codeProvince) => {
@@ -163,7 +159,9 @@ function MyBodyEditPost() {
   };
 
   const getAllCategoryChild = async () => {
-    let { data } = await axios.get(`/common/categoryParent/${categoryParentId}/allCategoryChild`);
+    let { data } = await axios.get(
+      `/common/categoryParent/${categoryParentId}/allCategoryChild`
+    );
     setCategoryChildArr(data.data);
     console.log(data.data);
   };
@@ -186,14 +184,14 @@ function MyBodyEditPost() {
     setImageURLs(newImageUrls);
   }, [images]);
 
-  // edit post 
+  // edit post
 
-  const { postId } = useParams()
+  const { postId } = useParams();
 
   const getCurrentInfoPosting = async () => {
     try {
       const { data } = await axios.get(`/common/post/${postId}`);
-      console.log('name::::', data.data);
+      console.log("name::::", data.data);
       await getCateById(data.data.Category.cateParent);
       setCurrentChildCate(data.data.Category.cateName);
       setCurrentProductName(data.data.name);
@@ -205,24 +203,19 @@ function MyBodyEditPost() {
       setCurrentProvince(data.data.province);
       setCurrentDistrict(data.data.district);
       setCurrentWard(data.data.ward);
-      setCurrentAddress(data.data.address)
+      setCurrentAddress(data.data.address);
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   const getCateById = async (id) => {
     try {
-      console.log('id ::::', id);
+      console.log("id ::::", id);
       const { data } = await axios.get(`/common/category/${id}`);
       setCurrentParrentCate(data.data.cateName);
-    } catch (error) {
-
-    }
-  }
-
-
-
+    } catch (error) {}
+  };
 
   // useEffect(() => {
   //   getDistrictByCodeProvince(codeProvince);
@@ -244,13 +237,11 @@ function MyBodyEditPost() {
   // getAllStatusCurrentProduct();
   // }, []);
 
-  useLayoutEffect(
-    () => {
-      getAllCategoryParrent()
-      // getAllStatusCurrentProduct()
-      getCurrentInfoPosting();
-    }, []
-  )
+  useLayoutEffect(() => {
+    getAllCategoryParrent();
+    // getAllStatusCurrentProduct()
+    getCurrentInfoPosting();
+  }, []);
 
   // show message cussess
   const [open, setOpen] = React.useState(false);
@@ -260,27 +251,22 @@ function MyBodyEditPost() {
   };
 
   const handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
 
     setOpen(false);
   };
 
-
-
-
-
-  // handle choose category parent 
+  // handle choose category parent
 
   const handleChooseCateParent = async (id) => {
-    const { data } = await axios.get(`/common/categoryParent/${id}/allCategoryChild`);
-    setCategoryChildArr(data.data)
+    const { data } = await axios.get(
+      `/common/categoryParent/${id}/allCategoryChild`
+    );
+    setCategoryChildArr(data.data);
     console.log(data.data);
-  }
-
-
-
+  };
 
   return (
     <div>
@@ -293,19 +279,26 @@ function MyBodyEditPost() {
               padding: 20,
             }}
           >
-            <form method="post" encType="multipart/form-data" onSubmit={handleSubmit}>
+            <form
+              method="post"
+              encType="multipart/form-data"
+              onSubmit={handleSubmit}
+            >
               <Grid container justifyContent="center">
                 <Grid item xs={6}>
                   <div style={{ marginTop: 8 }}>
                     <label htmlFor="file">
-                      <div className={classes.input_file_cus} >
+                      <div className={classes.input_file_cus}>
                         {/* <AddAPhoto style={{ color: 'red' }}></AddAPhoto> */}
-                        <img alt="" style={{ marginTop: 15 }} src="https://img.icons8.com/color/48/000000/camera.png" />
+                        <img
+                          alt=""
+                          style={{ marginTop: 15 }}
+                          src="https://img.icons8.com/color/48/000000/camera.png"
+                        />
                         <p style={{ color: "#6f6c70" }}>Add Image</p>
                       </div>
                     </label>
                     <input
-
                       name="file"
                       accept="image/*"
                       type="file"
@@ -314,15 +307,16 @@ function MyBodyEditPost() {
                       multiple
                       onChange={onImageChange}
                     ></input>
-                    <div style={{
-                      marginTop: 16,
-                      display: "flex",
-                      flexWrap: "wrap",
-                      backgroundColor: 'white'
-                    }}
+                    <div
+                      style={{
+                        marginTop: 16,
+                        display: "flex",
+                        flexWrap: "wrap",
+                        backgroundColor: "white",
+                      }}
                     >
                       {imageURLS.map((imageSrc) => (
-                        <div className={classes.image_frame_cus} >
+                        <div className={classes.image_frame_cus}>
                           <img
                             src={imageSrc}
                             alt="not fount"
@@ -337,14 +331,13 @@ function MyBodyEditPost() {
                 <Grid item xs={6}>
                   <div style={{ marginLeft: 40 }}>
                     <Stack spacing={1} justifyContent="center">
-
                       {/* CATEGORY PARENT */}
 
                       <TextField
                         SelectProps={{
                           MenuProps: { disableScrollLock: true },
                           renderValue: (value) => value,
-                          color: "primary"
+                          color: "primary",
                         }}
                         name="categoryParent"
                         id="standard-size-small"
@@ -357,11 +350,11 @@ function MyBodyEditPost() {
                         defaultValue={setCurrentParrentCate}
                       >
                         {categoryParentArr.map((item) => (
-                          <MenuItem key={item.id} value={item.id} >
+                          <MenuItem key={item.id} value={item.id}>
                             <div
                               onClick={async () => {
-                                handleChooseCateParent(item.id)
-                                setCurrentParrentCate(item.cateName)
+                                handleChooseCateParent(item.id);
+                                setCurrentParrentCate(item.cateName);
                               }}
                               style={{ color: "black" }}
                             >
@@ -460,10 +453,7 @@ function MyBodyEditPost() {
                         value={CurrentMadeIn}
                       >
                         {countryArr.map((item) => (
-                          <MenuItem
-                            key={item.id}
-                            value={item.id}
-                          >
+                          <MenuItem key={item.id} value={item.id}>
                             <div style={{ color: "black" }}>
                               {item.countryName}
                             </div>
@@ -589,18 +579,29 @@ function MyBodyEditPost() {
                         variant="outlined"
                         value={currentAddress}
                       />
-                      {errMsg && <Alert variant="filled" severity="error">
-                        {errMsg}
-                      </Alert>}
+                      {errMsg && (
+                        <Alert variant="filled" severity="error">
+                          {errMsg}
+                        </Alert>
+                      )}
                       <Button
                         type="submit"
                         style={{ backgroundColor: "#7b35ba" }}
-                        onClick={() => { }}
+                        onClick={() => {}}
                       >
                         EDIT
                       </Button>
-                      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-                        <Alert style={{ backgroundColor: '#08DB3C' }} onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+                      <Snackbar
+                        open={open}
+                        autoHideDuration={6000}
+                        onClose={handleClose}
+                      >
+                        <Alert
+                          style={{ backgroundColor: "#08DB3C" }}
+                          onClose={handleClose}
+                          severity="success"
+                          sx={{ width: "100%" }}
+                        >
                           Tạo bài viết thành công
                         </Alert>
                       </Snackbar>
@@ -612,7 +613,7 @@ function MyBodyEditPost() {
           </div>
         </Grid>
       </Grid>
-    </div >
+    </div>
   );
 }
 

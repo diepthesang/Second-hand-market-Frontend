@@ -1,0 +1,330 @@
+import {
+  Box,
+  Button,
+  Fade,
+  IconButton,
+  makeStyles,
+  Menu,
+  MenuItem,
+  Modal,
+  Typography,
+} from "@material-ui/core";
+import { Checkbox, Divider, Grid, Paper, Rating, Stack } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import EditIcon from "@mui/icons-material/Edit";
+import { getUserInfo, removeUser } from "./user_api";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+
+const useStyles = makeStyles((theme) => ({
+  row: {
+    display: "flex",
+    height: 50,
+    alignItems: "center",
+    // justifyContent: "center",
+    alignContent: "center",
+    borderRadius: 8,
+  },
+}));
+
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  border: "1px solid #000",
+  borderRadius: 4,
+  boxShadow: 24,
+  p: 4,
+};
+
+function MyUser() {
+  const classes = useStyles();
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [listUser, setListUser] = useState([]);
+  const [openModal, setOpenModal] = useState(false);
+  const [isModalDelete, setIsModalDelete] = useState(false);
+  const [isModalDeleteSuccess, setIsModalDeleteSuccess] = useState(false);
+  const [userId, setUserId] = useState("");
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const getListUserInfo = async () => {
+    setListUser(await getUserInfo());
+  };
+
+  const handleDeleteUserById = async (userId) => {
+    handleClose();
+    setOpenModal(true);
+    setIsModalDelete(true);
+    setUserId(userId);
+  };
+
+  const handleYesBtn = async () => {
+    setOpenModal(true);
+    setIsModalDelete(false);
+    setIsModalDeleteSuccess(true);
+    await removeUser(userId);
+    await getListUserInfo();
+  };
+
+  const handleNoBtn = () => {
+    setOpenModal(false);
+  };
+
+  useEffect(() => {
+    getListUserInfo();
+  }, []);
+
+  return (
+    <div style={{ margin: 40 }}>
+      <div></div>
+      {/* <div style={{ margin: 20 }}> */}
+      <Paper style={{ borderRadius: 12 }}>
+        <Grid container>
+          <Grid item xs={12} className={classes.row}>
+            ds
+          </Grid>
+        </Grid>
+        <Divider />
+        <Grid container style={{ backgroundColor: "#F1ECF5" }}>
+          <Grid item xs={0.4} className={classes.row}>
+            <div style={{ marginLeft: 8 }}>
+              <Checkbox
+                style={{
+                  color: "#7b35ba",
+                }}
+                name="free"
+                size="small"
+                value={true}
+                color="secondary"
+                // onChange={() => {
+                //   setIsFreeProduct(true);
+                //   // setPrice(0);
+                // }}
+              />
+            </div>
+          </Grid>
+          <Grid item xs={1.5} className={classes.row}>
+            <div style={{ marginLeft: 8 }}>First name</div>
+          </Grid>
+          <Grid item xs={1.5} className={classes.row}>
+            <div>Last name</div>
+          </Grid>
+          <Grid item xs={1.5} className={classes.row}>
+            <div>Phone</div>
+          </Grid>
+          <Grid item xs={4} className={classes.row}>
+            <div>Address</div>
+          </Grid>
+          <Grid
+            item
+            xs={1.1}
+            className={classes.row}
+            style={{ paddingLeft: 4 }}
+          >
+            <div>Star</div>
+          </Grid>
+          <Grid item xs={1} className={classes.row}>
+            <div>Status</div>
+          </Grid>
+          <Grid item xs={1} className={classes.row}>
+            <div>Action</div>
+          </Grid>
+        </Grid>
+        {listUser.map((item) => {
+          return (
+            <>
+              <Divider />
+              <Grid container key={item.userId}>
+                <Grid item xs={0.4} className={classes.row}>
+                  <div style={{ marginLeft: 8 }}>
+                    <Checkbox
+                      style={{
+                        color: "#7b35ba",
+                      }}
+                      name="free"
+                      size="small"
+                      value={true}
+                      color="secondary"
+                      // onChange={() => {
+                      //   setIsFreeProduct(true);
+                      //   // setPrice(0);
+                      // }}
+                    />
+                  </div>
+                </Grid>
+                <Grid item xs={1.5} className={classes.row}>
+                  <div style={{ marginLeft: 8 }}>{item.firstName}</div>
+                </Grid>
+                <Grid item xs={1.5} className={classes.row}>
+                  <div>{item.lastName}</div>
+                </Grid>
+                <Grid item xs={1.5} className={classes.row}>
+                  <div>{item.phone}</div>
+                </Grid>
+                <Grid item xs={4} className={classes.row} style={{}}>
+                  <div>{item.address}</div>
+                </Grid>
+                <Grid
+                  item
+                  xs={1.1}
+                  className={classes.row}
+                  style={{ paddingLeft: 4 }}
+                >
+                  <div>
+                    <Rating
+                      name="read-only"
+                      value={item.starRating}
+                      size="small"
+                      readOnly
+                    />
+                  </div>
+                </Grid>
+                <Grid item xs={1} className={classes.row}>
+                  {item.UserStatus.status === "Active" && (
+                    <div
+                      style={{
+                        padding: 8,
+                        color: "#229A16",
+                        backgroundColor: "#E4F8DD",
+                        borderRadius: 8,
+                      }}
+                    >
+                      Active
+                    </div>
+                  )}
+                </Grid>
+                <Grid item xs={1} className={classes.row}>
+                  <div>
+                    <IconButton
+                      id="fade-button"
+                      aria-controls={open ? "fade-menu" : undefined}
+                      aria-haspopup="true"
+                      aria-expanded={open ? "true" : undefined}
+                      onClick={handleClick}
+                    >
+                      <MoreVertIcon></MoreVertIcon>
+                    </IconButton>
+                    <Menu
+                      id="fade-menu"
+                      MenuListProps={{
+                        "aria-labelledby": "fade-button",
+                      }}
+                      anchorEl={anchorEl}
+                      open={open}
+                      onClose={handleClose}
+                      TransitionComponent={Fade}
+                    >
+                      <MenuItem onClick={handleClose}>
+                        <EditIcon style={{ paddingRight: 8 }} />
+                        edit
+                      </MenuItem>
+                      <MenuItem
+                        onClick={() => {
+                          handleDeleteUserById(item.userId);
+                        }}
+                      >
+                        <DeleteForeverIcon
+                          style={{ paddingRight: 8, fill: "red" }}
+                        />
+                        <p style={{ color: "red" }}>Delete</p>
+                      </MenuItem>
+                      <MenuItem onClick={handleClose}>Logout</MenuItem>
+                    </Menu>
+                  </div>
+                </Grid>
+              </Grid>
+            </>
+          );
+        })}
+      </Paper>
+      <Modal
+        open={openModal}
+        onClose={() => {
+          setOpenModal(false);
+        }}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          {isModalDelete && (
+            <Stack justifyContent="center" alignItems="center">
+              <Typography id="modal-modal-description" sx={{ m: 2 }}>
+                Bạn có chắc muốn xoá người dùng này!
+              </Typography>
+              <Stack
+                direction="row"
+                spacing={2}
+                justifyContent="center"
+                paddingTop={4}
+              >
+                <Button
+                  size="small"
+                  variant="outlined"
+                  style={{
+                    textTransform: "none",
+                    backgroundColor: "#7b35ba",
+                    color: "white",
+                  }}
+                  onClick={() => {
+                    handleYesBtn();
+                  }}
+                >
+                  Có
+                </Button>
+                <Button
+                  size="small"
+                  // variant="outlined"
+                  // color="secondary"
+                  style={{
+                    textTransform: "none",
+                    backgroundColor: "#BDBDBD",
+                    color: "white",
+                  }}
+                  onClick={() => {
+                    handleNoBtn();
+                  }}
+                >
+                  Không
+                </Button>
+              </Stack>
+            </Stack>
+          )}
+
+          {isModalDeleteSuccess && (
+            <div>
+              <Stack
+                direction="column"
+                justifyContent="center"
+                alignItems="center"
+              >
+                <CheckCircleIcon
+                  style={{
+                    fill: "green",
+                    width: 100,
+                    height: 100,
+                    paddingBottom: 20,
+                  }}
+                />
+                <Typography id="modal-modal-description" sx={{ m: 2 }}>
+                  Xoá bài viết thành công!
+                </Typography>
+              </Stack>
+            </div>
+          )}
+        </Box>
+      </Modal>
+    </div>
+  );
+}
+
+export default MyUser;

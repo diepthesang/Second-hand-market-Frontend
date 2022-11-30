@@ -106,6 +106,7 @@ export default function MySearchBar() {
 
   const handleLogOut = () => {
     localStorage.removeItem("access_token");
+    localStorage.removeItem("userId");
     navigate("/login");
   };
 
@@ -240,6 +241,7 @@ export default function MySearchBar() {
 
         <Button
           style={{
+            textTransform: "none",
             color: "white",
             width: 150,
             height: 35,
@@ -254,7 +256,7 @@ export default function MySearchBar() {
         >
           <PostAddIcon />
           <div style={{ width: 4 }}></div>
-          <div>Post</div>
+          Đăng tin
         </Button>
       </Stack>
     </Box>

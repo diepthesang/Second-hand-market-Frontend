@@ -14,11 +14,15 @@ import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
 import { useDispatch, useSelector } from "react-redux";
 import { getCart } from "../../redux/cartSlice";
-import io from "socket.io-client";
-import MyListUserBid from "./MyListUserBid";
 import MyBidFeature from "./MyBidFeature";
 import MyLike from "../common/MyLike";
-const socket = io();
+import MyCountdownTimer from "../test/MyCountdownTimer";
+import MyListUserBid from "./MyListUserBid";
+import MyListSimilarPost from "./MyListSimilarPost";
+import CategoryIcon from "@mui/icons-material/Category";
+import { getTimeOver } from "../../redux/timeOverSice";
+import MyListOtherPost from "./MyListOtherPost";
+// const socket = io();
 function MyBodyDetail() {
   console.log("**rerender");
   const { width } = useWindowDimensions();
@@ -30,7 +34,7 @@ function MyBodyDetail() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isPostAuction, setIsPostAuction] = useState(false);
-  const [listUserBid, setListUserBid] = useState([]);
+  // const [listUserBid, setListUserBid] = useState([]);
   const [isBid, setIsBid] = useState(0);
   const [priceUserBid, setPriceUserBid] = useState("");
   const [bidOrderId, setBidOrderId] = useState("");
@@ -48,8 +52,17 @@ function MyBodyDetail() {
       const _listPost = [];
       _listPost.push(data.data);
       console.log("listPost:::", _listPost[0]);
+      const _bidEndTimePost = _listPost[0].PostAuction.bidEndTime;
+      if (_bidEndTimePost) {
+        if (new Date(_bidEndTimePost).getTime() < Date.now()) {
+          dispatch(getTimeOver(true));
+        } else {
+          dispatch(getTimeOver(false));
+        }
+      }
       setListPost(_listPost);
       setValue(_listPost[0].User.starRating);
+
       const _listImage = _listPost[0].listImage.map((item) => {
         return {
           url: item.imagePath,
@@ -102,76 +115,19 @@ function MyBodyDetail() {
     }
   };
 
-  // GET HIGHEST BIDDER PRICE
-  // const getHighestBidder = async () => {
-  //   console.log({ _postId, postAuctionId });
-  //   try {
-  //     const { data } = await axios.get(
-  //       `/user/highestBidder/postId/${_postId}}/postAuctionId/${postAuctionId}`,
-  //       {
-  //         headers: {
-  //           Authorization: localStorage["access_token"],
-  //         },
-  //       }
-  //     );
-  //     localStorage.setItem("highest_bid_user", data.data.userId);
-  //     return data.data.priceBid;
-  //   } catch (error) {
-  //     console.log("error_getHighestBidder:::", error);
-  //   }
-  // };
-
-  //REMOVE MONEY AUTION
-  // const removeMoneyAution = async () => {
-  //   console.log("bidorderID...", bidOrderId);
-  //   try {
-  //     const { data } = await axios.delete(`/user/moneyAution/${bidOrderId}`, {
-  //       headers: {
-  //         Authorization: localStorage["access_token"],
-  //       },
-  //     });
-  //     setRemove(!remove);
-  //   } catch (error) {
-  //     console.log("err_removeMoneyAution", error);
-  //   }
-  // };
-
-  // const bidSoket = async (bid) => {
-  //   try {
-  //     await axios.post("/createBid", {
-  //       bid,
-  //     });
-  //   } catch (error) {}
-  // };
-
   useEffect(() => {
     getPostByPostId();
-    // getListUserBid();
-    // getHighestBidder();
   }, []);
-
-  // useEffect(() => {
-  //   getListUserBid();
-  // }, [isBid]);
-
-  // useEffect(() => {
-  //   socket.on("userBid", (bid) => {
-  //     console.log("biddddddd*******", bid);
-  //     getPostByPostId();
-  //     // getListUserBid();
-  //     // getHighestBidder();
-  //     console.log("run cai nay chu <><><><><><><><><><><><><><><><><><><>");
-  //   });
-  //   return () => {
-  //     socket.off("userBid");
-  //   };
-  // }, []);
 
   return listPost.map((item) => {
     return (
       <div key={item.id}>
         <Grid container justifyContent="center">
-          <Grid item xs={8} style={{ backgroundColor: "#F1ECF5" }}>
+          <Grid
+            item
+            xs={8}
+            style={{ backgroundColor: "#F1ECF5", borderRadius: 12 }}
+          >
             <Grid container justifyContent="center" style={{ padding: 30 }}>
               <Grid item xs={8}>
                 <div>
@@ -202,7 +158,7 @@ function MyBodyDetail() {
                         <div style={{ marginRight: 20 }}>
                           <p
                             style={{
-                              color: "blue",
+                              color: "black",
                               fontSize: 20,
                               fontWeight: "bold",
                             }}
@@ -217,34 +173,50 @@ function MyBodyDetail() {
                       <p style={{ color: "#C90927", fontWeight: "bold" }}>
                         {item.price === -1 ? "Đấu giá" : item.price + " đ"}
                       </p>
-                      <p style={{ color: "blue" }}>
+                      <p style={{ color: "black" }}>
                         {item.description}
                         <br />
                       </p>
-                      <Stack direction="row" spacing={12}>
-                        <Stack direction="row" spacing={1}>
-                          <BuildCircleIcon style={{ fill: "#7b35ba" }} />
-                          <p style={{ color: "blue" }}>
-                            Tình trạng: {item.PostCondition.status}
-                          </p>
-                        </Stack>
-                        <Stack direction="row" spacing={1}>
-                          <VerifiedUserIcon style={{ fill: "#7b35ba" }} />
-                          <p style={{ color: "blue" }}>
-                            Bảo hành: {item.Warranty.status}
-                          </p>
-                        </Stack>
-                      </Stack>
-                      <Stack direction="row" spacing={1}>
-                        <ApartmentIcon style={{ fill: "#7b35ba" }} />
-                        <p style={{ color: "blue" }}>
-                          Sản xuất tại: {item.Origin.countryName}
-                        </p>
-                      </Stack>
+
+                      <Grid container spacing={2} style={{ marginLeft: -10 }}>
+                        <Grid item xs={5}>
+                          <Stack direction="row" spacing={1}>
+                            <BuildCircleIcon style={{ fill: "#7b35ba" }} />
+                            <p style={{ color: "black" }}>
+                              Tình trạng: {item.PostCondition.status}
+                            </p>
+                          </Stack>
+                        </Grid>
+                        <Grid item xs={5}>
+                          <Stack direction="row" spacing={1}>
+                            <VerifiedUserIcon style={{ fill: "#7b35ba" }} />
+                            <p style={{ color: "black" }}>
+                              Bảo hành: {item.Warranty.status}
+                            </p>
+                          </Stack>
+                        </Grid>
+                        <Grid item xs={5}>
+                          <Stack direction="row" spacing={1}>
+                            <ApartmentIcon style={{ fill: "#7b35ba" }} />
+                            <p style={{ color: "black" }}>
+                              Sản xuất tại: {item.Origin.countryName}
+                            </p>
+                          </Stack>
+                        </Grid>
+                        <Grid item xs={5}>
+                          <Stack direction="row" spacing={1}>
+                            <CategoryIcon style={{ fill: "#7b35ba" }} />
+                            <p style={{ color: "black" }}>
+                              Thể loại: {item.Category.cateName}
+                            </p>
+                          </Stack>
+                        </Grid>
+                      </Grid>
+
                       <Divider style={{ backgroundColor: "#7b35ba" }} />
                       <Stack direction="row" spacing={1}>
                         <LocationOnIcon style={{ fill: "#7b35ba" }} />
-                        <p style={{ color: "blue" }}>
+                        <p style={{ color: "black" }}>
                           {item.street} - {item.ward} - {item.district} -{" "}
                           {item.province}
                         </p>
@@ -357,16 +329,36 @@ function MyBodyDetail() {
                       {/* đấu giá */}
                       {isPostAuction ? (
                         <Stack direction="column" spacing={2}>
-                          <MyBidFeature
-                            isRemove={isRemove}
-                            bidOrderId={bidOrderId}
-                            postId={item.id}
-                            postAuctionId={item.PostAuction.id}
-                            priceStart={item.PostAuction.priceStart}
-                            priceUserBid={priceUserBid}
-                            isBid={isBid}
-                            bidEndTime={bidEndTime}
-                          ></MyBidFeature>
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <MyCountdownTimer
+                              time={bidEndTime}
+                              postId={_postId}
+                            />
+                          </div>
+                          {!timeOver && (
+                            <>
+                              <MyBidFeature
+                                isRemove={isRemove}
+                                bidOrderId={bidOrderId}
+                                postId={item.id}
+                                postAuctionId={item.PostAuction.id}
+                                priceStart={item.PostAuction.priceStart}
+                                priceUserBid={priceUserBid}
+                                isBid={isBid}
+                                bidEndTime={bidEndTime}
+                              ></MyBidFeature>
+                            </>
+                          )}
+                          <Divider />
+                          <MyListUserBid
+                            postId={_postId}
+                            postAuctionId={postAuctionId}
+                          ></MyListUserBid>
                         </Stack>
                       ) : (
                         <Button
@@ -387,6 +379,10 @@ function MyBodyDetail() {
               </Grid>
             </Grid>
           </Grid>
+          <MyListOtherPost userId={item.User.userId}></MyListOtherPost>
+          <MyListSimilarPost cateId={item.cateId}></MyListSimilarPost>
+
+          {/* </Grid> */}
         </Grid>
       </div>
     );

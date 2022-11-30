@@ -8,7 +8,7 @@ import { Alert, Divider, Stack } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getCart } from "../../redux/cartSlice";
+// import { getCart } from "../../redux/cartSlice";
 import MyCountdownTimer from "../test/MyCountdownTimer";
 import MyListUserBid from "./MyListUserBid";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -109,7 +109,6 @@ function MyBidFeature({
   // remove bid money
 
   const removePriceBid = async () => {
-    console.log("bidorderID...", bidOrderId);
     try {
       const { data } = await axios.delete(
         `/user/moneyAution/${currentBidPrice.bidOrderId}`,
@@ -141,8 +140,8 @@ function MyBidFeature({
           },
         }
       );
-      localStorage.setItem("highest_bid_user", data.data.userId);
-      localStorage.setItem("highest_bid_price", data.data.priceBid);
+      // localStorage.setItem("highest_bid_user", data.data.userId);
+      // localStorage.setItem("highest_bid_price", data.data.priceBid);
       setHighestPriceBid(data.data.priceBid);
       console.log("highes_bid_user:::", data.data.userId);
       return data.data.priceBid;
@@ -151,25 +150,6 @@ function MyBidFeature({
     }
   };
 
-  // // get list user bid
-  // const getListUserBid = async (postAuctionId) => {
-  //   try {
-  //     const { data } = await axios.get(
-  //       `/common/listBidPrice/postId/${_postId}/postAuctionId/${postAuctionId}`
-  //     );
-
-  //     data.data.forEach((item) => {
-  //       if (item.userId === localStorage["userId"]) {
-  //         setPriceUserBid(item.priceBid);
-  //         setBidOrderId(item.id);
-  //         setIsRemove(true);
-  //       }
-  //     });
-  //     setListUserBid(data.data);
-  //   } catch (error) {
-  //     console.log("error_getListPostUserBid:::", error);
-  //   }
-  // };
 
   useEffect(() => {
     getHighestBidder();
@@ -185,11 +165,11 @@ function MyBidFeature({
           alignItem: "center",
         }}
       >
-        <MyCountdownTimer
+        {/* <MyCountdownTimer
           time={bidEndTime}
           highestPriceBid={highestPriceBid}
           postId={postId}
-        />
+        /> */}
       </div>
       <p>Giá khởi điểm: {priceStart} đ</p>
       <TextField
@@ -247,11 +227,11 @@ function MyBidFeature({
         Đấu giá
       </Button>
       {/* DANH SACH USER DANG DAU GIA */}
-      <Divider />
+      {/* <Divider />
       <MyListUserBid
         postId={postId}
         postAuctionId={postAuctionId}
-      ></MyListUserBid>
+      ></MyListUserBid> */}
     </Stack>
   );
 }
