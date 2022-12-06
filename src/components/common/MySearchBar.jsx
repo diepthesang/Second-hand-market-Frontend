@@ -144,7 +144,7 @@ export default function MySearchBar() {
             <SearchIcon style={{ fill: "#7b35ba" }} />
           </SearchIconWrapper>
           <StyledInputBase
-            placeholder="Search…"
+            placeholder="Tìm kiếm…"
             inputProps={{ "aria-label": "search" }}
           />
         </Search>
@@ -260,9 +260,6 @@ export default function MySearchBar() {
         </Button>
       </Stack>
     </Box>
-    // { renderMobileMenu }
-    // { renderMenu }
-    // </Box>
   );
 }
 

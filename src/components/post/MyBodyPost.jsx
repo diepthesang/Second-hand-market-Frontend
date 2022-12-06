@@ -11,7 +11,7 @@ import {
 import { Alert } from "@mui/material";
 import { Stack } from "@mui/system";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import location from "../../helps/location";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
@@ -23,6 +23,7 @@ import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import { MobileDatePicker } from "@mui/x-date-pickers/MobileDatePicker";
 import { useDispatch } from "react-redux";
 import { getCurrentBidPrice } from "../../redux/currentBidPriceSice";
+import { formatCash } from "../../helps/common";
 
 const useStyles = makeStyles((theme) => ({
   input_file_cus: {
@@ -81,6 +82,8 @@ function MyBodyPost() {
   const navigate = useNavigate();
   const classes = useStyles();
 
+  const inputRef = useRef(null);
+
   //HANDLE SUBMIT
   const handleSubmit = async () => {
     let data = new FormData();
@@ -124,6 +127,19 @@ function MyBodyPost() {
       console.log("error::::", error.response.data);
       setErrMsg(error.response.data.message);
     }
+  };
+
+  const handleInputPrice = (e) => {
+    // let _price = ;
+    setPrice(e.target.value);
+    console.log(e.target.value);
+    console.log("input");
+    console.log("price:::", price);
+
+    // setInterval(() => {
+    //   console.log("setInterval:::", e.target.value);
+    //   setPrice(formatCash(String(price)));
+    // }, 100);
   };
 
   const getDistrictByCodeProvince = (codeProvince) => {
@@ -205,7 +221,6 @@ function MyBodyPost() {
   };
 
   //  timeover for auction
-
 
   const handleChangeTimer = (timer) => {
     // const _timer = new Date(timer).getTime();
@@ -505,14 +520,16 @@ function MyBodyPost() {
                       </>
                     ) : (
                       <TextField
+                        // value={price}
                         name="price"
                         disabled={isFreeProduct}
-                        label="Price *"
+                        label="Giá *"
                         d="standard-size-small"
                         size="small"
                         variant="outlined"
                         onChange={(e) => {
-                          setPrice(e.target.value);
+                          // setPrice(e.target.value);
+                          handleInputPrice(e);
                         }}
                       />
                     )}

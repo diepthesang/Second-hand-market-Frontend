@@ -22,6 +22,8 @@ import MyListSimilarPost from "./MyListSimilarPost";
 import CategoryIcon from "@mui/icons-material/Category";
 import { getTimeOver } from "../../redux/timeOverSice";
 import MyListOtherPost from "./MyListOtherPost";
+import { formatCash } from "../../helps/common";
+import moment from "moment";
 // const socket = io();
 function MyBodyDetail() {
   console.log("**rerender");
@@ -70,7 +72,9 @@ function MyBodyDetail() {
       });
       setImages(_listImage);
       var d = new Date(data.data.createdAt);
-      const _time = d.toUTCString();
+      // const _time = moment(d).endOf("day").fromNow();
+      // const _time = d.toUTCString();
+      const _time = "1 giờ trước";
       setTime(_time);
       // SET END TIME
       setBidEndTime(data.data.PostAuction.bidEndTime);
@@ -171,7 +175,9 @@ function MyBodyDetail() {
                         </div>
                       </div>
                       <p style={{ color: "#C90927", fontWeight: "bold" }}>
-                        {item.price === -1 ? "Đấu giá" : item.price + " đ"}
+                        {item.price === -1
+                          ? "Đấu giá"
+                          : formatCash(String(item.price)) + " đ"}
                       </p>
                       <p style={{ color: "black" }}>
                         {item.description}
@@ -232,48 +238,56 @@ function MyBodyDetail() {
                 <div>
                   <div style={{ cursor: "pointer", color: "red" }}>
                     <Stack direction="column" spacing={2}>
-                      <div
+                      <Stack
+                        direction="row"
+                        justifyContent="center"
+                        alignItems="center"
+                        spacing={2}
+                      >
+                        <Avatar
+                          alt="Remy Sharp"
+                          src={item.User.avatarImg}
+                          sx={{ width: 48, height: 48 }}
+                        />
+
+                        <p
+                          style={{
+                            color: "#7b35ba",
+                            fontSize: 20,
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {item.User.firstName} {item.User.lastName}
+                        </p>
+                      </Stack>
+
+                      <Stack
                         style={{
-                          display: "inline-flex",
-                          justifyContent: "space-around",
+                          marginTop: 10,
+                          justifyContent: "center",
+                          alignItems: "center",
+                          alignContent: "center",
                         }}
                       >
-                        {/* <div style={{ width: 12, height: 12, marginTop: -4 }}> */}
-                        <div>
-                          <Avatar
-                            alt="Remy Sharp"
-                            src={item.User.avatarImg}
-                            sx={{ width: 48, height: 48 }}
-                          />
-                        </div>
-
-                        <div>
-                          <p
-                            style={{
-                              marginLeft: -8,
-                              marginTop: 10,
-                              color: "blue",
-                            }}
-                          >
-                            {item.User.firstName} {item.User.lastName}
-                          </p>
-                        </div>
-
-                        <div style={{ marginTop: 10 }}>
-                          <Button
-                            style={{ fill: "red" }}
-                            variant="outlined"
-                            size="small"
-                            sx={{ width: 50 }}
-                            onClick={() => {
-                              navigate(`/profile/user/${item.User.userId}`);
-                              console.log("..... alo ", item.User.userId);
-                            }}
-                          >
-                            Xem trang
-                          </Button>
-                        </div>
-                      </div>
+                        <Button
+                          style={{
+                            textTransform: "none",
+                            boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+                            backgroundColor: "#7b35ba",
+                            color: "white",
+                            // marginLeft: 40,
+                            // marginRight: -80,
+                            width: 200,
+                          }}
+                          size="small"
+                          onClick={() => {
+                            navigate(`/profile/user/${item.User.userId}`);
+                            console.log("..... alo ", item.User.userId);
+                          }}
+                        >
+                          Xem trang
+                        </Button>
+                      </Stack>
                       <div
                         style={{ display: "flex", justifyContent: "center" }}
                       >
@@ -319,12 +333,14 @@ function MyBodyDetail() {
                       <Button
                         size="small"
                         style={{
+                          textTransform: "none",
                           backgroundColor: "#33A837",
                           boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+                          color: "white",
                         }}
                       >
                         <QuestionAnswerIcon style={{ marginRight: 8 }} />
-                        Chat voi nguoi ban
+                        Nhắn tin với người bán
                       </Button>
                       {/* đấu giá */}
                       {isPostAuction ? (

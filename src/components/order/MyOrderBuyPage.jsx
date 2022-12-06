@@ -107,11 +107,31 @@ function MyOrderBuyPage() {
               },
             }}
           >
-            <Tab value="CONFIRM" label="Chờ xác nhận" />
-            <Tab value="PENDING" label="Đang xử lí" />
-            <Tab value="DELIVERING" label="Đang giao" />
-            <Tab value="DELIVERED" label="Đã giao" />
-            <Tab value="CANCEL" label="Hoàn tiền/đã huỷ" />
+            <Tab
+              style={{ textTransform: "none" }}
+              value="CONFIRM"
+              label="Chờ xác nhận"
+            />
+            <Tab
+              style={{ textTransform: "none" }}
+              value="PENDING"
+              label="Đang xử lí"
+            />
+            <Tab
+              style={{ textTransform: "none" }}
+              value="DELIVERING"
+              label="Đang giao"
+            />
+            <Tab
+              style={{ textTransform: "none" }}
+              value="DELIVERED"
+              label="Đã giao"
+            />
+            <Tab
+              style={{ textTransform: "none" }}
+              value="CANCEL"
+              label="Hoàn tiền/đã huỷ"
+            />
           </Tabs>
         </Paper>
 
@@ -123,7 +143,8 @@ function MyOrderBuyPage() {
             <div>Vận chuyển</div>
             <div style={{ marginRight: 60 }}>Thao tác</div>
           </Stack> */}
-          <Grid container justifyContent="center">
+
+          <Grid container justifyContent="center" style={{ color: " #666666" }}>
             <Grid
               item
               xs={4}
@@ -153,6 +174,7 @@ function MyOrderBuyPage() {
                 alignItems: "center",
                 display: "flex",
                 justifyContent: "center",
+                color: "#666666",
               }}
             >
               Trạng thái

@@ -1,5 +1,5 @@
 import { Box, Grid } from "@material-ui/core";
-import { Button, Divider, Modal, Stack } from "@mui/material";
+import { Button, CircularProgress, Divider, Modal, Stack } from "@mui/material";
 import React, { useEffect } from "react";
 import MyCategory from "../common/MyCategory";
 import MyListProduct from "../common/MyListProduct";
@@ -8,6 +8,7 @@ import LocationCityIcon from "@mui/icons-material/LocationCity";
 import { useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import MyListAutionPost from "./MyListAutionPost";
 
 const style = {
   position: "absolute",
@@ -43,6 +44,7 @@ function MyBodyHome() {
   const [listPost, setListPost] = useState([]);
   const [totalPage, setTotalPage] = useState(0);
   const pagingNumber = useSelector((state) => state.paging.paging);
+  const [loading, setLoading] = useState(false);
   // const [city, setCity] = React.useState(null);
   // const [listCity, setListCity] = useState([]);
   // console.log("pagingnumber::::", pagingNumber);
@@ -86,11 +88,13 @@ function MyBodyHome() {
   return (
     <div>
       <Grid container justifyContent="center">
+       
         <Grid item xs={8}>
           <Stack direction="column" spacing={2} bgcolor="white">
             <MyThumbnailAds />
             <MyCategory />
             <MyListProduct listPost={listPost} totalPage={totalPage} />
+            <MyListAutionPost />
             <div>
               {/* <Button onClick={handleOpen}>Open modal</Button> */}
               <Modal
@@ -154,7 +158,6 @@ function MyBodyHome() {
                   </Stack>
                 </Box>
               </Modal>
-              
             </div>
           </Stack>
         </Grid>

@@ -2,21 +2,53 @@
 import { Avatar, Grid } from "@mui/material";
 import { Stack } from "@mui/system";
 import React, { useEffect, useState } from "react";
-import MyUser from "./MyUser";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { makeStyles } from "@material-ui/core";
+import MyManagePost from "./MyManagePost";
+import MyManageUser from "./MyManageUser";
+
+const useStyles = makeStyles((theme) => ({
+  active: {
+    // border: "1px solid #7b35ba",
+    backgroundColor: "red",
+    // padding: 2,
+  },
+}));
 
 function MyAdminPage() {
-  const [blur, setBlur] = useState(false);
+  const classes = useStyles();
+  const [active, setActive] = useState(1);
+  const [menuId, setMenuId] = useState(1);
 
-  const changeColor = () => {
-    setBlur(!blur);
+  const listMenu = [
+    {
+      id: 1,
+      name: "Dashboard",
+      icon: "DashboardIcon",
+    },
+    {
+      id: 2,
+      name: "User",
+      icon: "AccountBoxIcon",
+    },
+    {
+      id: 3,
+      name: "Post",
+      icon: "ShoppingCartIcon",
+    },
+    {
+      id: 4,
+      name: "Dashboard",
+      icon: "DashboardIcon",
+    },
+  ];
+
+  const handleMenuBtn = (id) => {
+    setActive(id);
+    setMenuId(id);
   };
-
-  // useEffect(() => {
-  //   changeColor();
-  // }, [blur]);
 
   return (
     <Grid container style={{}}>
@@ -44,30 +76,46 @@ function MyAdminPage() {
           </div>
           <div>
             <Stack direction="column" spacing={1}>
-              <div
-                onclick={() => {
-                  changeColor();
-                }}
-              >
-                <Stack
-                  direction="row"
-                  spacing={2}
-                  style={{
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyItems: "center",
-                    backgroundColor: "#E8EBEE",
-                    padding: 12,
-                    marginLeft: 8,
-                    marginRight: 8,
-                    borderRadius: 8,
-                  }}
-                >
-                  <DashboardIcon style={{ fill: "#7b35ba" }} /> <p>Dashboard</p>
-                </Stack>
-              </div>
-              <Stack
+              {listMenu.map((item) => {
+                return (
+                  <div
+                    onClick={() => {
+                      handleMenuBtn(item.id);
+                      console.log("item.id:::", item.id);
+                    }}
+                  >
+                    <Stack
+                      direction="row"
+                      spacing={2}
+                      style={{
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyItems: "center",
+                        backgroundColor: "#E8EBEE",
+                        border: item.id == active && "2px solid #7b35ba",
+                        padding: 12,
+                        marginLeft: 8,
+                        marginRight: 8,
+                        borderRadius: 8,
+                      }}
+                    >
+                      {item.name === "Dashboard" && (
+                        <DashboardIcon style={{ fill: "#7b35ba" }} />
+                      )}{" "}
+                      {item.name === "User" && (
+                        <AccountBoxIcon style={{ fill: "#7b35ba" }} />
+                      )}{" "}
+                      {item.name === "Post" && (
+                        <ShoppingCartIcon style={{ fill: "#7b35ba" }} />
+                      )}{" "}
+                      <p>{item.name}</p>
+                    </Stack>
+                  </div>
+                );
+              })}
+
+              {/* <Stack
                 direction="row"
                 spacing={2}
                 style={{
@@ -117,12 +165,12 @@ function MyAdminPage() {
                 }}
               >
                 <DashboardIcon style={{ fill: "#7b35ba" }} /> <p>Dashboard</p>
-              </Stack>
+              </Stack> */}
             </Stack>
           </div>
         </Stack>
       </Grid>
-      <Grid item xs={10}>
+      <Grid item xs={10} style={{ backgroundColor: "#F1ECF5" }}>
         <div
           style={{
             backgroundColor: "red",
@@ -137,7 +185,8 @@ function MyAdminPage() {
           </Stack>
         </div>
         <Stack direction="column">
-          <MyUser />
+          {menuId === 2 && <MyManageUser />}
+          {menuId === 3 && <MyManagePost />}
         </Stack>
       </Grid>
     </Grid>

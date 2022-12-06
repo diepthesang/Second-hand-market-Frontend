@@ -238,7 +238,7 @@ function MyBodyManagePosting() {
       <Grid
         container
         justifyContent="center"
-        style={{ minHeight: "70vh", borderRadius: 12 }}
+        style={{ minHeight: "70vh", borderRadius: 12, color: " #666666" }}
       >
         <Grid
           item
@@ -268,7 +268,7 @@ function MyBodyManagePosting() {
                 <Button
                   style={{
                     textTransform: "none",
-                    // color: "black",
+                    // color: " #666666",
                     backgroundColor: "#FFD501",
                   }}
                   // color="secondary"
@@ -284,16 +284,18 @@ function MyBodyManagePosting() {
               </Stack>
             </Stack>
           </Paper>
-          <Paper style={{ margin: 12 }}>
+          <Paper style={{ margin: 8 }}>
             <Box sx={{ width: "100%" }}>
               <Tabs
                 value={value}
                 onChange={handleChange}
                 centered
-                TabIndicatorProps={{ sx: { backgroundColor: "#7b35ba" } }}
+                TabIndicatorProps={{
+                  sx: { backgroundColor: "#7b35ba" },
+                }}
                 size="small"
                 sx={{
-                  // "& button": { backgroundColor: "blue" },
+                  // "& button": { backgroundColor: "blue",  },
                   // "& button:active": { backgroundColor: "yellow" },
                   // "& button:focus": { backgroundColor: "black" },
                   "& button:hover": { backgroundColor: "#F1ECF5" },
@@ -304,26 +306,38 @@ function MyBodyManagePosting() {
                 }}
               >
                 <Tab
+                  onClick={() => {
+                    setPage(1);
+                  }}
                   value="1"
                   label="Tin đăng"
                   defaultValue={1}
-                  style={{ textTransform: "none", fontSize: 18 }}
+                  style={{ textTransform: "none" }}
                 />
                 <Tab
+                  onClick={() => {
+                    setPage(1);
+                  }}
                   value="4"
                   label="Đấu giá"
                   // defaultValue={4}
-                  style={{ textTransform: "none", fontSize: 18 }}
+                  style={{ textTransform: "none" }}
                 />
                 <Tab
+                  onClick={() => {
+                    setPage(1);
+                  }}
                   value="2"
                   label="Ẩn"
-                  style={{ textTransform: "none", fontSize: 18 }}
+                  style={{ textTransform: "none" }}
                 />
                 <Tab
+                  onClick={() => {
+                    setPage(1);
+                  }}
                   value="3"
                   label="Yêu thích"
-                  style={{ textTransform: "none", fontSize: 18 }}
+                  style={{ textTransform: "none" }}
                 />
               </Tabs>
             </Box>
@@ -365,6 +379,7 @@ function MyBodyManagePosting() {
                           // alignItem="center"
                           alignContent="center"
                         >
+                          <p>ID: {item.id}</p>
                           <p>{item.title}</p>
                           <p style={{ color: "red" }}>
                             {item.price === Number(0) ? "Miễn phí" : item.price}
@@ -480,6 +495,7 @@ function MyBodyManagePosting() {
                           spacing={1}
                           justifyContent="start"
                         >
+                          <p>ID: {item.id}</p>
                           <p>{item.title}</p>
                           <p style={{ color: "red" }}>Đấu giá</p>
                           <p>{item.createdAt}</p>
@@ -558,7 +574,11 @@ function MyBodyManagePosting() {
                   </Paper>
                 );
               })}
-
+            {/* {(value === "2") & (listPostHide === []) && (
+              <p style={{ marginLeft: 12, marginRight: 12, marginBottom: 12 }}>
+                Chưa có bài đăng nà
+              </p>
+            )} */}
             {value === "2" &&
               listPostHide.map((item) => {
                 return (
@@ -593,8 +613,13 @@ function MyBodyManagePosting() {
                           spacing={1}
                           justifyContent="start"
                         >
+                          <p>ID: {item.id}</p>
                           <p>{item.title}</p>
-                          <p>{item.price}</p>
+                          <p>
+                            {(item.price === -1 && "Đấu giá") ||
+                              (item.price === 0 && "Miễn phí") ||
+                              item.price}
+                          </p>
                           <p>{item.createdAt}</p>
                         </Stack>
                       </Stack>
@@ -664,12 +689,16 @@ function MyBodyManagePosting() {
                         <Stack
                           direction="column"
                           spacing={1}
-                          justifyContent="center"
-                          alignItems="center"
+                          justifyContent="start"
                         >
+                          <p>ID: {item.Post.id}</p>
                           <p>{item.Post.title}</p>
-                          <p>{item.Post.price}</p>
-                          {/* <p>{item.createdAt}</p> */}
+                          <p style={{ color: "red" }}>
+                            {(item.Post.price === -1 && "Đấu giá") ||
+                              (item.Post.price === 0 && "Miễn phí") ||
+                              item.Post.price}
+                          </p>
+                          <p>{item.Post.createdAt}</p>
                         </Stack>
                       </Stack>
                       <div
@@ -693,7 +722,7 @@ function MyBodyManagePosting() {
                         >
                           <ThumbUpIcon
                             fontSize="large"
-                            style={{ paddingRight: 4 }}
+                            style={{ paddingRight: 4, fill: "#7b35ba" }}
                           />
                         </IconButton>
                       </div>

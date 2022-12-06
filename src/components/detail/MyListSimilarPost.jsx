@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import useWindowDimensions from "../../helps/useWindowDimensions";
 import { getPostId } from "../../redux/postSlice";
+import { formatCash } from "../../helps/common";
 // import { fontSize } from "@mui/system";
 
 const useStyles = makeStyles((theme) => ({
@@ -126,7 +127,7 @@ function MyListSimilarPost({ cateId }) {
                   className="hover"
                 >
                   <Paper className={classes.paper_cus}>
-                    <Stack direction="column" alignItems="center">
+                    <Stack direction="column" alignItems="center" spacing={1}>
                       <div style={{ paddingTop: 8, position: "relative" }}>
                         <Avatar
                           variant={"rounded"}
@@ -145,7 +146,9 @@ function MyListSimilarPost({ cateId }) {
                       </div>
                       <p className={classes.title_cus}>{item.title}</p>
                       <p className={classes.price_cus}>
-                        {item.price === -1 ? "Đấu giá" : item.price + " đ"}
+                        {item.price === -1
+                          ? "Đấu giá"
+                          : formatCash(String(item.price)) + " đ"}
                       </p>
                       <div
                         style={{

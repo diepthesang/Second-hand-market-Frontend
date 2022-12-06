@@ -9,13 +9,27 @@ import {
   Modal,
   Typography,
 } from "@material-ui/core";
-import { Checkbox, Divider, Grid, Paper, Rating, Stack } from "@mui/material";
+import {
+  Checkbox,
+  Divider,
+  Grid,
+  Pagination,
+  Paper,
+  Rating,
+  Stack,
+  TextField,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import EditIcon from "@mui/icons-material/Edit";
-import { getUserInfo, removeUser } from "./user_api";
+import {
+  getUsers,
+  removeUser,
+  searchUserByLastname as searchUser,
+} from "../../API/user_api";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import { paginate } from "../../helps/common";
 
 const useStyles = makeStyles((theme) => ({
   row: {
@@ -41,7 +55,7 @@ const style = {
   p: 4,
 };
 
-function MyUser() {
+function MyManageUser() {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [listUser, setListUser] = useState([]);
@@ -49,40 +63,65 @@ function MyUser() {
   const [isModalDelete, setIsModalDelete] = useState(false);
   const [isModalDeleteSuccess, setIsModalDeleteSuccess] = useState(false);
   const [userId, setUserId] = useState("");
+  const [page, setPage] = React.useState(1);
+  const [totalNumberPage, setTotalNumberPage] = useState(0);
+
   const open = Boolean(anchorEl);
-  const handleClick = (event) => {
+  const handleClick = (event, userId) => {
     setAnchorEl(event.currentTarget);
+    setUserId(userId);
+    console.log("userId:::", userId);
   };
   const handleClose = () => {
     setAnchorEl(null);
   };
 
+  // paging
+  const handleChangePage = (event, value) => {
+    setPage(value);
+  };
+
   const getListUserInfo = async () => {
-    setListUser(await getUserInfo());
+    setListUser([]);
+    const { list, totalNumberPage } = paginate(await getUsers(), 11, page);
+    setTotalNumberPage(totalNumberPage);
+    setListUser(list);
   };
 
   const handleDeleteUserById = async (userId) => {
     handleClose();
     setOpenModal(true);
     setIsModalDelete(true);
-    setUserId(userId);
+    // setUserId(userId);
   };
 
   const handleYesBtn = async () => {
     setOpenModal(true);
     setIsModalDelete(false);
-    setIsModalDeleteSuccess(true);
-    await removeUser(userId);
-    await getListUserInfo();
+    const isSuccess = await removeUser(userId);
+    if (Number(isSuccess) === 1) {
+      await getListUserInfo();
+      setIsModalDeleteSuccess(true);
+    } else {
+      console.log("xoa khong thanh cong");
+    }
   };
 
   const handleNoBtn = () => {
     setOpenModal(false);
   };
 
+  const searchUserByLastname = async (lastName) => {
+    if (!lastName) {
+      setListUser(await getUsers());
+      return;
+    }
+    setListUser(await searchUser(lastName));
+  };
+
   useEffect(() => {
     getListUserInfo();
-  }, []);
+  }, [page]);
 
   return (
     <div style={{ margin: 40 }}>
@@ -91,11 +130,20 @@ function MyUser() {
       <Paper style={{ borderRadius: 12 }}>
         <Grid container>
           <Grid item xs={12} className={classes.row}>
-            ds
+            <TextField
+              style={{ margin: 20 }}
+              size="small"
+              color="secondary"
+              label="Tìm kiếm"
+              variant="outlined"
+              onChange={(e) => {
+                searchUserByLastname(e.target.value);
+              }}
+            />
           </Grid>
         </Grid>
         <Divider />
-        <Grid container style={{ backgroundColor: "#F1ECF5" }}>
+        <Grid container style={{ backgroundColor: "#E8EBEE" }}>
           <Grid item xs={0.4} className={classes.row}>
             <div style={{ marginLeft: 8 }}>
               <Checkbox
@@ -114,15 +162,18 @@ function MyUser() {
             </div>
           </Grid>
           <Grid item xs={1.5} className={classes.row}>
+            userId
+          </Grid>
+          <Grid item xs={1} className={classes.row}>
             <div style={{ marginLeft: 8 }}>First name</div>
           </Grid>
-          <Grid item xs={1.5} className={classes.row}>
+          <Grid item xs={1} className={classes.row}>
             <div>Last name</div>
           </Grid>
           <Grid item xs={1.5} className={classes.row}>
             <div>Phone</div>
           </Grid>
-          <Grid item xs={4} className={classes.row}>
+          <Grid item xs={3.5} className={classes.row}>
             <div>Address</div>
           </Grid>
           <Grid
@@ -142,7 +193,7 @@ function MyUser() {
         </Grid>
         {listUser.map((item) => {
           return (
-            <>
+            <div key={item.userId}>
               <Divider />
               <Grid container key={item.userId}>
                 <Grid item xs={0.4} className={classes.row}>
@@ -162,16 +213,19 @@ function MyUser() {
                     />
                   </div>
                 </Grid>
-                <Grid item xs={1.5} className={classes.row}>
+                <Grid tiem xs={1.5} className={classes.row}>
+                  {item.userId}
+                </Grid>
+                <Grid item xs={1} className={classes.row}>
                   <div style={{ marginLeft: 8 }}>{item.firstName}</div>
                 </Grid>
-                <Grid item xs={1.5} className={classes.row}>
+                <Grid item xs={1} className={classes.row}>
                   <div>{item.lastName}</div>
                 </Grid>
                 <Grid item xs={1.5} className={classes.row}>
                   <div>{item.phone}</div>
                 </Grid>
-                <Grid item xs={4} className={classes.row} style={{}}>
+                <Grid item xs={3.5} className={classes.row} style={{}}>
                   <div>{item.address}</div>
                 </Grid>
                 <Grid
@@ -210,7 +264,9 @@ function MyUser() {
                       aria-controls={open ? "fade-menu" : undefined}
                       aria-haspopup="true"
                       aria-expanded={open ? "true" : undefined}
-                      onClick={handleClick}
+                      onClick={(event) => {
+                        handleClick(event, item.userId);
+                      }}
                     >
                       <MoreVertIcon></MoreVertIcon>
                     </IconButton>
@@ -223,6 +279,10 @@ function MyUser() {
                       open={open}
                       onClose={handleClose}
                       TransitionComponent={Fade}
+                      // onChange={(e) => {
+                      //   setUserId(item.id);
+                      //   console.log("userId:::", item.id);
+                      // }}
                     >
                       <MenuItem onClick={handleClose}>
                         <EditIcon style={{ paddingRight: 8 }} />
@@ -230,20 +290,21 @@ function MyUser() {
                       </MenuItem>
                       <MenuItem
                         onClick={() => {
-                          handleDeleteUserById(item.userId);
+                          handleDeleteUserById(userId);
                         }}
+                        value={item.userId}
                       >
                         <DeleteForeverIcon
                           style={{ paddingRight: 8, fill: "red" }}
                         />
                         <p style={{ color: "red" }}>Delete</p>
                       </MenuItem>
-                      <MenuItem onClick={handleClose}>Logout</MenuItem>
+                      {/* <MenuItem onClick={handleClose}>Logout</MenuItem> */}
                     </Menu>
                   </div>
                 </Grid>
               </Grid>
-            </>
+            </div>
           );
         })}
       </Paper>
@@ -251,6 +312,7 @@ function MyUser() {
         open={openModal}
         onClose={() => {
           setOpenModal(false);
+          setIsModalDeleteSuccess(false);
         }}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
@@ -316,15 +378,25 @@ function MyUser() {
                   }}
                 />
                 <Typography id="modal-modal-description" sx={{ m: 2 }}>
-                  Xoá bài viết thành công!
+                  Xoá người dùng thành công!
                 </Typography>
               </Stack>
             </div>
           )}
         </Box>
       </Modal>
+      <div
+        style={{ display: "flex", justifyContent: "flex-end", marginTop: 8 }}
+      >
+        <Pagination
+          color="secondary"
+          count={totalNumberPage}
+          page={page}
+          onChange={handleChangePage}
+        />
+      </div>
     </div>
   );
 }
 
-export default MyUser;
+export default MyManageUser;

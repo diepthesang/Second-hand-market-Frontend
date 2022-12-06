@@ -13,6 +13,7 @@ import MyCountdownTimer from "../test/MyCountdownTimer";
 import MyListUserBid from "./MyListUserBid";
 import ClearIcon from "@mui/icons-material/Clear";
 import { getCurrentBidPrice } from "../../redux/currentBidPriceSice";
+import { formatCash } from "../../helps/common";
 
 function MyBidFeature({
   priceStart,
@@ -150,7 +151,6 @@ function MyBidFeature({
     }
   };
 
-
   useEffect(() => {
     getHighestBidder();
   }, []);
@@ -171,7 +171,7 @@ function MyBidFeature({
           postId={postId}
         /> */}
       </div>
-      <p>Giá khởi điểm: {priceStart} đ</p>
+      <p>Giá khởi điểm: {formatCash(String(priceStart))} đ</p>
       <TextField
         size="small"
         startAdornment={<InputAdornment position="start">$</InputAdornment>}
@@ -202,7 +202,9 @@ function MyBidFeature({
       )}
       {currentBidPrice.currentBidPrice !== false && (
         <Stack direction="row" alignItems="center" spacing={2}>
-          <p>Bạn đã ra giá: {currentBidPrice.currentBidPrice}</p>
+          <p>
+            Bạn đã ra giá: {formatCash(String(currentBidPrice.currentBidPrice))} đ
+          </p>
           <IconButton
             onClick={() => {
               removePriceBid();

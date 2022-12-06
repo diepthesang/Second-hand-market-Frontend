@@ -229,6 +229,16 @@ function MyHeader() {
                       >
                         Đơn Bán
                       </MenuItem>
+                      <Divider />
+                      <MenuItem
+                        style={{ color: "#7b35ba " }}
+                        onClick={() => {
+                          navigate("/order/overview");
+                          handleClose();
+                        }}
+                      >
+                        Tổng quan
+                      </MenuItem>
                     </Menu>
                   </div>
 
@@ -261,44 +271,6 @@ function MyHeader() {
                       </Badge>
                     </Button>
                   </div>
-                  {/* <div>
-                    <Button
-                      onClick={() => {
-                        handleBtnChat();
-                      }}
-                      size="small"
-                    >
-                      <ExpandMoreIcon />
-                      <Box width={4}></Box>
-                      More
-                    </Button>
-
-                    <div>
-                      <Button
-                        id="fade-button"
-                        aria-controls={open ? "fade-menu" : undefined}
-                        aria-haspopup="true"
-                        aria-expanded={open ? "true" : undefined}
-                        onClick={handleClick}
-                      >
-                        More <ExpandMoreIcon />
-                      </Button>
-                      <Menu
-                        id="fade-menu"
-                        MenuListProps={{
-                          "aria-labelledby": "fade-button",
-                        }}
-                        anchorEl={anchorEl}
-                        open={open}
-                        onClose={handleClose}
-                        TransitionComponent={Fade}
-                      >
-                        <MenuItem onClick={handleClose}>Profile</MenuItem>
-                        <MenuItem onClick={handleClose}>My account</MenuItem>
-                        <MenuItem onClick={handleClose}>Logout</MenuItem>
-                      </Menu>
-                    </div>
-                  </div> */}
                 </div>
                 <MySearchBar></MySearchBar>
               </div>

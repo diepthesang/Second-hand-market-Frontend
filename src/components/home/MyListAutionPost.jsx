@@ -1,12 +1,20 @@
-import { Avatar, Grid, makeStyles } from "@material-ui/core";
-import { CircularProgress, Paper, Stack, Typography } from "@mui/material";
-import React, { useState } from "react";
-import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+import { Avatar, Divider, Grid, makeStyles } from "@material-ui/core";
+import {
+  CircularProgress,
+  Pagination,
+  Paper,
+  Stack,
+  Typography,
+} from "@mui/material";
+import React, { useEffect, useState } from "react";
+// import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import useWindowDimensions from "../../helps/useWindowDimensions";
-import { useDispatch } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { getPostId } from "../../redux/postSlice";
-import { formatCash } from "../../helps/common";
+import { getPaging } from "../../redux/pagingSlice";
+import { getPostsBidding as getPostListBidding } from "../../API/common";
+// import MyCountdownTimer from "../test/MyCountdownTimer";
 
 const useStyles = makeStyles((theme) => ({
   paper_cus: {
@@ -51,29 +59,73 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function MyListProductByCate({ listPost }) {
+function MyListAutionPost() {
   const classes = useStyles();
   const { width } = useWindowDimensions();
-
+  // const [listProduct, setListProduct] = useState([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [page, setPage] = React.useState(1);
+  const [listPost, setListPost] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  // useEffect(() => {
-  //   getSomePost();
-  // }, []);
+  const handleChange = (event, value) => {
+    console.log(value);
+    setPage(value);
+    dispatch(getPaging(value));
+  };
 
-  // useEffect(() => {
-  //   getListPost();
-  // }, [categoryChildId]);
+  // const categoryChildId = useSelector(
+  //   (state) => state.categoryChildId.categoryChildId
+  // );
+
+  const getPostsBidding = async () => {
+    setLoading(true);
+    setListPost(await getPostListBidding());
+  };
+
+  useEffect(() => {
+    getPostsBidding();
+    setLoading(false);
+  }, []);
 
   return (
     <div>
+      {loading && (
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <CircularProgress
+            style={{
+              zIndex: 10000,
+              color: "#7b35ba",
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+            }}
+          />
+        </div>
+      )}
       <Stack
+        direction="column"
         spacing={2}
         bgcolor="#F1ECF5"
-        padding={2}
-        style={{ borderRadius: 8 }}
+        paddingBottom={1}
+        justifyContent="center"
+        justifyItems="center"
+        style={{ borderRadius: "8px" }}
       >
+        <p
+          style={{
+            fontSize: 18,
+            margin: 12,
+            color: "#7b35ba",
+            fontWeight: "bold",
+          }}
+        >
+          Sản phẩm đang đấu giá
+          <Divider
+            style={{ backgroundColor: "#7b35ba", marginTop: 4 }}
+          ></Divider>
+        </p>
         {listPost.length === 0 && (
           <div style={{ display: "flex", justifyContent: "center" }}>
             <p>Không có tin nào</p>
@@ -95,7 +147,7 @@ function MyListProductByCate({ listPost }) {
                       <div style={{ paddingTop: 8, position: "relative" }}>
                         <Avatar
                           variant={"rounded"}
-                          src={`http://localhost:8080/${item.image.imagePath}`}
+                          src={`http://localhost:8080/${item.PostImages[0].imagePath}`}
                           alt="The image"
                           style={{
                             width: width / 11,
@@ -103,21 +155,15 @@ function MyListProductByCate({ listPost }) {
                           }}
                         />
                         <div>
-                          {item.liked ? (
-                            <ThumbUpIcon className={classes.iconHeart_cus} />
-                          ) : (
-                            <ThumbUpIcon
-                              className={classes.iconHeart_cus}
-                              style={{ fill: "white" }}
-                            />
-                          )}
+                          {/* {item.liked ? <ThumbUpIcon className={classes.iconHeart_cus} />
+                                                        :
+                                                        <ThumbUpIcon className={classes.iconHeart_cus} style={{ fill: 'white' }} />} */}
                         </div>
                       </div>
                       <p className={classes.title_cus}>{item.title}</p>
                       <p className={classes.price_cus}>
-                        {item.price === -1
-                          ? "Đấu giá"
-                          : formatCash(String(item.price)) + " đ"}
+                        {/* {item.price === -1 ? "Đấu giá" : item.price + " đ"} */}
+                        Đang đấu giá
                       </p>
                       <div
                         style={{
@@ -135,7 +181,7 @@ function MyListProductByCate({ listPost }) {
                         <div
                           style={{
                             display: "inline-flex",
-                            marginLeft: 8,
+                            marginLeft: 4,
                             paddingTop: 4,
                           }}
                         >
@@ -153,9 +199,12 @@ function MyListProductByCate({ listPost }) {
             );
           })}
         </Grid>
+        <div style={{ display: "inline-flex", justifyContent: "center" }}>
+          <Pagination count={1} page={page} onChange={handleChange} />
+        </div>
       </Stack>
     </div>
   );
 }
 
-export default MyListProductByCate;
+export default MyListAutionPost;

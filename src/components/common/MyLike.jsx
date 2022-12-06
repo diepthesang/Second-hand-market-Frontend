@@ -95,7 +95,7 @@ function MyLike({ postId }) {
             unlikePost(postId);
           }}
         >
-          <ThumbUpAltIcon fontSize="large" style={{ fill: "#4676E4" }} />
+          <ThumbUpAltIcon fontSize="large" style={{ fill: "#7b35ba" }} />
         </IconButton>
       ) : (
         <IconButton

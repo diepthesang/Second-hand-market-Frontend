@@ -10,13 +10,12 @@ import {
   getCurrentBidPrice,
 } from "../../redux/currentBidPriceSice";
 import { getHighestPriceBid } from "../../redux/highestPriceBidSlice";
+import { formatCash } from "../../helps/common";
 const socket = io();
 
 function MyListUserBid({ postId, postAuctionId }) {
   const [listBidUser, setListBidUser] = useState([]);
   const dispatch = useDispatch();
-
- 
 
   const getHighestBidder = async () => {
     try {
@@ -99,7 +98,9 @@ function MyListUserBid({ postId, postAuctionId }) {
                 height={30}
                 style={{ borderRadius: "50%" }}
               />
-              <p style={{ marginLeft: 16 }}>{item.priceBid} đ</p>
+              <p style={{ marginLeft: 16 }}>
+                {formatCash(String(item.priceBid))} đ
+              </p>
               <ClearIcon style={{ fill: "white" }}></ClearIcon>
             </Paper>
           );

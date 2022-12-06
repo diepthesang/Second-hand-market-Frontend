@@ -39,6 +39,7 @@ function MyBodyCategory() {
       const { data } = await axios.get(`/common/somePost/${categoryParentId}`);
       const _listPost = paginate(data.data, 18, page);
       setListPost(_listPost);
+      // return data.data;
     } catch (error) {
       console.log("err_getSomePost:::", error);
     }
@@ -94,7 +95,10 @@ function MyBodyCategory() {
   };
 
   const filterOrderPrice = () => {
-    const _listPost = _.orderBy(listPost, ["price"], [`${order}`]);
+    const _listPost = _.orderBy(listPost, ["price"], [`${order}`]).filter(
+      (item) => item.price !== -1
+    );
+    console.log("orderPost:::", _listPost);
     const __listPost = paginate(_listPost, 18, page);
     setListPost(__listPost);
   };
@@ -120,7 +124,9 @@ function MyBodyCategory() {
     } catch (error) {}
   };
 
-  const filterBidPost = () => {
+  const filterBidPost = async () => {
+    // const listPost = await getListPost();
+    console.log("listPost:::", listPost);
     const _listPost = _.filter(listPost, (item) => {
       return item.price === Number(-1);
     });
@@ -171,6 +177,7 @@ function MyBodyCategory() {
             <Stack direction="row" spacing={2}>
               <div style={{ width: 200, color: "black" }}>
                 <TextField
+                  color="secondary"
                   fullWidth
                   SelectProps={{ MenuProps: { disableScrollLock: true } }}
                   // name="cateParentId"
@@ -188,6 +195,7 @@ function MyBodyCategory() {
 
               <div style={{ width: 200, color: "black" }}>
                 <TextField
+                  color="secondary"
                   fullWidth
                   SelectProps={{ MenuProps: { disableScrollLock: true } }}
                   // name="cateParentId"
@@ -204,6 +212,7 @@ function MyBodyCategory() {
               </div>
               <div style={{ width: 300 }}>
                 <TextField
+                  color="secondary"
                   fullWidth
                   SelectProps={{ MenuProps: { disableScrollLock: true } }}
                   // name="cateParentId"

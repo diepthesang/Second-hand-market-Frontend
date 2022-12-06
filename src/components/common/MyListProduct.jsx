@@ -1,12 +1,19 @@
 import { Avatar, Divider, Grid, makeStyles } from "@material-ui/core";
-import { Pagination, Paper, Stack, Typography } from "@mui/material";
-import React, { useState } from "react";
+import {
+  CircularProgress,
+  Pagination,
+  Paper,
+  Stack,
+  Typography,
+} from "@mui/material";
+import React, { useEffect, useState } from "react";
 // import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import useWindowDimensions from "../../helps/useWindowDimensions";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getPostId } from "../../redux/postSlice";
 import { getPaging } from "../../redux/pagingSlice";
+import { formatCash } from "../../helps/common";
 // import MyCountdownTimer from "../test/MyCountdownTimer";
 
 const useStyles = makeStyles((theme) => ({
@@ -39,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
   address_cus: {
     color: "black",
     fontWeight: "inherit",
-    fontSize: 10,
+    fontSize: 9,
   },
 
   iconHeart_cus: {
@@ -94,6 +101,15 @@ function MyListProduct({ listPost, totalPage }) {
             style={{ backgroundColor: "#7b35ba", marginTop: 4 }}
           ></Divider>
         </p>
+
+        {listPost.length === 0 && (
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <Stack direction="column">
+              <p>Không có tin nào</p>
+            </Stack>
+          </div>
+        )}
+
         <Grid container alignItems="flex-start">
           {listPost.map((item) => {
             return (
@@ -106,7 +122,7 @@ function MyListProduct({ listPost, totalPage }) {
                   className="hover"
                 >
                   <Paper className={classes.paper_cus}>
-                    <Stack direction="column" alignItems="center">
+                    <Stack direction="column" alignItems="center" spacing={1}>
                       <div style={{ paddingTop: 8, position: "relative" }}>
                         <Avatar
                           variant={"rounded"}
@@ -117,16 +133,18 @@ function MyListProduct({ listPost, totalPage }) {
                             height: width / 11,
                           }}
                         />
-                        <div>
-                          {/* {item.liked ? <ThumbUpIcon className={classes.iconHeart_cus} />
-                                                        :
-                                                        <ThumbUpIcon className={classes.iconHeart_cus} style={{ fill: 'white' }} />} */}
-                        </div>
                       </div>
                       <p className={classes.title_cus}>{item.title}</p>
                       <p className={classes.price_cus}>
-                        {item.price === -1 ? "Đấu giá" : item.price + " đ"}
+                        {item.price === -1
+                          ? "Đấu giá"
+                          : formatCash(String(item.price)) + " đ"}
                       </p>
+                      {/* <p className={classes.price_cus}>
+                        {item.price === -1
+                          ? "Đấu giá"
+                          : formatCash(String(item.price)) + " đ"}
+                      </p> */}
                       <div
                         style={{
                           display: "inline-flex",

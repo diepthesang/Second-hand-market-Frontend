@@ -1,4 +1,3 @@
-
 import OtpInput from "react-otp-input";
 // import OTPInput, { ResendOTP } from "otp-input-react";
 // import CssBaseline from "@material-ui/core/CssBaseline";
@@ -13,29 +12,32 @@ import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import VpnKeyIcon from "@mui/icons-material/VpnKey";
 
 // import "./styles.css";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   grid: {
     backgroundColor: "grey",
     height: "50vh",
-    textAlign: "center"
+    textAlign: "center",
   },
   avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main
+    padding: 12,
+    borderRadius: "50%",
+    backgroundColor: "#7b35ba",
+    fill: "white",
   },
   submit: {
-    margin: theme.spacing(3, 0, 2)
+    margin: theme.spacing(3, 0, 2),
   },
   paper: {
     marginTop: theme.spacing(8),
     display: "flex",
     flexDirection: "column",
-    alignItems: "center"
-  }
+    alignItems: "center",
+  },
 }));
 
 export default function MyOTPInputPage() {
@@ -44,19 +46,17 @@ export default function MyOTPInputPage() {
 
   const navigate = useNavigate();
 
-  const [OTP, setOTP] = useState()
+  const [OTP, setOTP] = useState();
 
   const sendOTP = async () => {
-    let res = await axios.post('http://localhost:8080/auth/sent_otp', {
-      otp: OTP
+    let res = await axios.post("http://localhost:8080/auth/sent_otp", {
+      otp: OTP,
     });
     if (res) {
-      navigate('/login')
-      alert('dang ky thanh cong')
+      navigate("/login");
+      alert("dang ky thanh cong");
     }
-  }
-
-
+  };
 
   useEffect(() => {
     console.log("The current value of the input: ", OTP);
@@ -76,13 +76,28 @@ export default function MyOTPInputPage() {
           <Grid item container justifyContent="center">
             <Grid item container alignItems="center" direction="column">
               <Grid item>
-                <Avatar className={classes.avatar}>
-                  {/* <LockOutlinedIcon /> */}
-                </Avatar>
+                <div
+                  style={{
+                    backgroundColor: "#7b35ba",
+                    borderRadius: "50%",
+                    width: 50,
+                    height: 50,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <VpnKeyIcon
+                    // className={classes.avatar}
+                    style={{ fill: "white" }}
+                  >
+                    {/* <LockOutlinedIcon /> */}
+                  </VpnKeyIcon>
+                </div>
               </Grid>
               <Grid item>
                 <Typography component="h1" variant="h5">
-                  Verification Code
+                  Mã xác thực
                 </Typography>
               </Grid>
             </Grid>
@@ -90,7 +105,7 @@ export default function MyOTPInputPage() {
           <Grid item xs={12} textalign="center">
             <Paper elevation={0}>
               <Typography variant="h6">
-                Please enter the verification code sent to your mobile
+                Bạn hãy nhập mã xác thực được gửi vào email của bạn
               </Typography>
             </Paper>
           </Grid>
@@ -119,20 +134,23 @@ export default function MyOTPInputPage() {
                   margin: "0 1rem",
                   fontSize: "2rem",
                   borderRadius: 4,
-                  border: "1px solid rgba(0,0,0,0.3)"
+                  border: "1px solid rgba(0,0,0,0.3)",
                 }}
               />
             </Grid>
             <Grid item>
               <Button
-                onClick={() => { sendOTP() }}
+                onClick={() => {
+                  sendOTP();
+                }}
                 type="submit"
                 fullWidth
                 variant="contained"
                 color="primary"
                 className={classes.submit}
+                style={{ textTransform: "none", backgroundColor: "#7b35ba" }}
               >
-                Verify
+                Xác thực
               </Button>
             </Grid>
           </Grid>

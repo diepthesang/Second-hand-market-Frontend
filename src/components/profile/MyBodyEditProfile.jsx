@@ -166,7 +166,7 @@ function MyBodyEditProfile() {
                     <TextField
                       SelectProps={{ MenuProps: { disableScrollLock: true } }}
                       name="firstName"
-                      label="First name"
+                      label="Họ"
                       d="standard-size-small"
                       size="small"
                       variant="outlined"
@@ -179,7 +179,7 @@ function MyBodyEditProfile() {
                     <TextField
                       SelectProps={{ MenuProps: { disableScrollLock: true } }}
                       name="lastName"
-                      label="Last name"
+                      label="Tên"
                       d="standard-size-small"
                       size="small"
                       variant="outlined"
@@ -203,7 +203,7 @@ function MyBodyEditProfile() {
                   />
                   <TextField
                     name="phone"
-                    label="Phone"
+                    label="Số điện thoại"
                     d="standard-size-small"
                     size="small"
                     variant="outlined"
@@ -214,7 +214,7 @@ function MyBodyEditProfile() {
                   />
                   <TextField
                     name="address"
-                    label="Address"
+                    label="Địa chỉ"
                     d="standard-size-small"
                     size="small"
                     variant="outlined"
@@ -225,7 +225,7 @@ function MyBodyEditProfile() {
                   />
                   <TextField
                     name="changePassword"
-                    label="Change Password"
+                    label="Đổi mật khẩu"
                     d="standard-size-small"
                     size="small"
                     variant="outlined"

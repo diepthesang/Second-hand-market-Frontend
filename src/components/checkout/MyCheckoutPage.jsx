@@ -8,6 +8,7 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
 import PersonPinCircleIcon from "@mui/icons-material/PersonPinCircle";
+import { formatCash } from "../../helps/common";
 function MyCheckoutPage() {
   const [userInfo, setUserInfo] = useState({});
   // const [firstName, setFirstName] = useState('');
@@ -248,8 +249,10 @@ function MyCheckoutPage() {
                               <div style={{ marginRight: 24 }}>
                                 <p>
                                   {item.Post.price === -1
-                                    ? item.PostAuction.priceEnd
-                                    : item.Post.price}{" "}
+                                    ? formatCash(
+                                        String(item.PostAuction.priceEnd)
+                                      )
+                                    : formatCash(String(item.Post.price))}{" "}
                                   đ
                                 </p>
                               </div>
@@ -281,7 +284,7 @@ function MyCheckoutPage() {
                           <p>Tổng Thanh toán: </p>
                         </div>
                         <div style={{ marginRight: 16 }}>
-                          <p>{amount} đ</p>
+                          <p>{formatCash(String(amount))} đ</p>
                         </div>
                       </div>
                     </Stack>
@@ -294,12 +297,16 @@ function MyCheckoutPage() {
                       <Button
                         form="payment_form"
                         type="submit"
-                        style={{ backgroundColor: "#002F86", color: "white" }}
+                        style={{
+                          backgroundColor: "#002F86",
+                          color: "white",
+                          textTransform: "none",
+                        }}
                         variant="contained"
                         size="large"
                         fullWidth
                       >
-                        Thanh toán
+                        Thanh toán khi nhận hàng
                       </Button>
                       {/* <button form='payment_form' type='submit'>
             submit

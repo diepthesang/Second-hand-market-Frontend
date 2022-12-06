@@ -198,9 +198,9 @@ function MyBodyProfile() {
                           >
                             <p>{item.title}</p>
                             <p style={{ color: "red" }}>
-                              {Number(item.price) === -1 && "Đấu giá"}
-                              {Number(item.price) === 0 && "Miễn phí"}
-                              {item.price}
+                              {(Number(item.price) === -1 && "Đấu giá") ||
+                                (Number(item.price) === 0 && "Miễn phí") ||
+                                item.price}
                             </p>
                             <p>{item.createdAt}</p>
                           </Stack>

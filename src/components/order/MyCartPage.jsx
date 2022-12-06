@@ -1,12 +1,4 @@
-import {
-  Button,
-  Checkbox,
-  Divider,
-  Grid,
-  IconButton,
-  Paper,
-} from "@material-ui/core";
-import { blue, pink } from "@material-ui/core/colors";
+import { Button, Checkbox, Grid, IconButton, Paper } from "@material-ui/core";
 import { Stack } from "@mui/system";
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -15,6 +7,7 @@ import axios from "axios";
 import { useState } from "react";
 import { Pagination } from "@mui/material";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { formatCash } from "../../helps/common";
 
 function MyCartPage() {
   const [listPost, setListPost] = useState([]);
@@ -94,15 +87,16 @@ function MyCartPage() {
         },
       });
       console.log("getListPostBychecked:::", data.data);
-      if (data.data.Post.id === undefined) {
-        data.data = [];
-      }
+      // if (data.data.Post.id === undefined) {
+      //   data.data = [];
+      // }
       const listAmount = [];
       data.data.forEach((item) => {
         if (item.Post.price === -1) {
           listAmount.push(item.PostAuction.priceEnd);
         } else {
           listAmount.push(item.Post.price);
+          console.log("so tien thiệt :::", item.Post.price);
         }
       });
       console.log("listAmount::;", listAmount);
@@ -131,7 +125,11 @@ function MyCartPage() {
       justifyContent="center"
       style={{ minHeight: "70vh", borderRadius: 8 }}
     >
-      <Grid item xs={5} style={{ backgroundColor: "#F1ECF5" }}>
+      <Grid
+        item
+        xs={5}
+        style={{ backgroundColor: "#F1ECF5", borderRadius: 12 }}
+      >
         <div style={{ display: "inline-flex", alignItems: "center" }}>
           <ShoppingCartIcon
             style={{
@@ -164,6 +162,17 @@ function MyCartPage() {
           </Stack>
         </Paper>
         <Stack direction="column">
+          {listPost.length === 0 && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                color: "gray",
+              }}
+            >
+              <p>Chưa có sản phẩm nào trong giỏ hàng</p>
+            </div>
+          )}
           {listPost.map((item) => {
             return (
               <Paper
@@ -219,12 +228,11 @@ function MyCartPage() {
                     <div style={{ marginRight: 100, justifyContent: "center" }}>
                       <p>
                         {item.Post.price === -1
-                          ? item.PostAuction.priceEnd
-                          : item.Post.price}{" "}
+                          ? formatCash(String(item.PostAuction.priceEnd))
+                          : formatCash(String(item.Post.price))}{" "}
                         đ
                       </p>
                     </div>
-
                     <IconButton
                       onClick={() => {
                         console.log("postId:::", item.postId);
@@ -267,9 +275,10 @@ function MyCartPage() {
               borderRadius: 4,
             }}
           >
-            <p style={{ fontSize: 24 }}>{amount} đ</p>
+            <p style={{ fontSize: 24 }}>{formatCash(String(amount))} đ</p>
           </div>
           <Button
+            disabled={listPost.length === 0 ? true : false}
             size="large"
             variant="contained"
             style={{ backgroundColor: "#FFD600" }}

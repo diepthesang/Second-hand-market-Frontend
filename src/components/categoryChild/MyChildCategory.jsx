@@ -1,5 +1,5 @@
 import { makeStyles, Typography } from "@material-ui/core";
-import { Stack } from "@mui/material";
+import { CircularProgress, Stack } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -41,6 +41,9 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 16,
     paddingTop: 4,
   },
+  active: {
+    border: "2px solid #7b35ba",
+  },
 }));
 
 function MyChildCategory(id) {
@@ -49,6 +52,7 @@ function MyChildCategory(id) {
   const { categoryParentId } = useParams();
   const [click, setClick] = useState(false);
   const dispatch = useDispatch();
+  const [active, setActive] = useState();
 
   const getDataCateParent = async () => {
     const { data } = await axios.get(
@@ -64,7 +68,6 @@ function MyChildCategory(id) {
     <div className={classes.category}>
       <Stack>
         {/* <Typography style={{ color: '#7b35ba', margin: 10 }} color='#7b35ba' variant='h6' align='left'>Category</Typography> */}
-
         <div
           style={{
             display: "flex",
@@ -72,6 +75,7 @@ function MyChildCategory(id) {
             paddingBottom: 4,
           }}
         >
+      
           {cateArr.map((item) => {
             return (
               <div
@@ -79,6 +83,7 @@ function MyChildCategory(id) {
                 className={classes.paper_cus}
                 onClick={() => {
                   dispatch(getCategoryChildId(item.id));
+                  setActive(item.id);
                 }}
               >
                 <Stack
@@ -91,6 +96,7 @@ function MyChildCategory(id) {
                     onClick={() => {
                       setClick(!click);
                     }}
+                    className={item.id === active && classes.active}
                     alt=""
                     src={item.cateLogoImg}
                     style={{
