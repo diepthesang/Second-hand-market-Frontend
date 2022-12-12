@@ -113,7 +113,8 @@ function MyManageUser() {
 
   const searchUserByLastname = async (lastName) => {
     if (!lastName) {
-      setListUser(await getUsers());
+      // setListUser(await getUsers());
+      await getListUserInfo();
       return;
     }
     setListUser(await searchUser(lastName));
@@ -124,7 +125,7 @@ function MyManageUser() {
   }, [page]);
 
   return (
-    <div style={{ margin: 40 }}>
+    <div style={{ margin: 40, fontSize: 14 }}>
       <div></div>
       {/* <div style={{ margin: 20 }}> */}
       <Paper style={{ borderRadius: 12 }}>
@@ -270,37 +271,6 @@ function MyManageUser() {
                     >
                       <MoreVertIcon></MoreVertIcon>
                     </IconButton>
-                    <Menu
-                      id="fade-menu"
-                      MenuListProps={{
-                        "aria-labelledby": "fade-button",
-                      }}
-                      anchorEl={anchorEl}
-                      open={open}
-                      onClose={handleClose}
-                      TransitionComponent={Fade}
-                      // onChange={(e) => {
-                      //   setUserId(item.id);
-                      //   console.log("userId:::", item.id);
-                      // }}
-                    >
-                      <MenuItem onClick={handleClose}>
-                        <EditIcon style={{ paddingRight: 8 }} />
-                        edit
-                      </MenuItem>
-                      <MenuItem
-                        onClick={() => {
-                          handleDeleteUserById(userId);
-                        }}
-                        value={item.userId}
-                      >
-                        <DeleteForeverIcon
-                          style={{ paddingRight: 8, fill: "red" }}
-                        />
-                        <p style={{ color: "red" }}>Delete</p>
-                      </MenuItem>
-                      {/* <MenuItem onClick={handleClose}>Logout</MenuItem> */}
-                    </Menu>
                   </div>
                 </Grid>
               </Grid>
@@ -308,6 +278,35 @@ function MyManageUser() {
           );
         })}
       </Paper>
+      <Menu
+        id="fade-menu"
+        MenuListProps={{
+          "aria-labelledby": "fade-button",
+        }}
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        TransitionComponent={Fade}
+        // onChange={(e) => {
+        //   setUserId(item.id);
+        //   console.log("userId:::", item.id);
+        // }}
+      >
+        <MenuItem onClick={handleClose}>
+          <EditIcon style={{ paddingRight: 8 }} />
+          edit
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleDeleteUserById(userId);
+          }}
+          // value={item.userId}
+        >
+          <DeleteForeverIcon style={{ paddingRight: 8, fill: "red" }} />
+          <p style={{ color: "red" }}>Delete</p>
+        </MenuItem>
+        {/* <MenuItem onClick={handleClose}>Logout</MenuItem> */}
+      </Menu>
       <Modal
         open={openModal}
         onClose={() => {

@@ -2,9 +2,10 @@ import { Box, Button, Grid, Modal, Paper, Typography } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { formatCash } from "../../helps/common";
 import WalletIcon from "@mui/icons-material/Wallet";
-import { Tab, Tabs } from "@mui/material";
+import { Stack, Tab, Tabs, TextField } from "@mui/material";
 import MyChart from "./MyChart";
 import { getRevenueByUser } from "../../API/user_api";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 
 const style = {
   position: "absolute",
@@ -13,7 +14,8 @@ const style = {
   transform: "translate(-50%, -50%)",
   width: 400,
   bgcolor: "background.paper",
-  border: "2px solid #000",
+  // border: "2px solid #000",
+  borderRadius: 8,
   boxShadow: 24,
   p: 4,
 };
@@ -156,12 +158,50 @@ function MyOverview() {
           aria-describedby="modal-modal-description"
         >
           <Box sx={style}>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-              Text in a modal
-            </Typography>
-            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-              Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-            </Typography>
+            {/* <Typography id="modal-modal-title" variant="h6" component="h2">
+              Tài khoản ngân hàng
+            </Typography> */}
+            <p style={{ fontSize: 20 }}>Tài khoản ngân hàng</p>
+            <Stack direction="column" spacing={2} marginTop={2}>
+              <TextField
+                color="secondary"
+                size="small"
+                id="outlined-basic"
+                label="Tên tài khoản"
+                variant="outlined"
+              />
+              <TextField
+                color="secondary"
+                size="small"
+                id="outlined-basic"
+                label="Ngân hàng"
+                variant="outlined"
+              />
+              <TextField
+                color="secondary"
+                size="small"
+                id="outlined-basic"
+                label="Chi nhánh"
+                variant="outlined"
+              />
+              <TextField
+                color="secondary"
+                size="small"
+                id="outlined-basic"
+                label="Số tài khoản"
+                variant="outlined"
+              />
+              <Button
+                style={{
+                  textTransform: "none",
+                  color: "white",
+                  backgroundColor: "#7b35ba",
+                }}
+              >
+                <AccountBalanceWalletIcon style={{ marginRight: 8 }} />
+                Gửi yêu cầu
+              </Button>
+            </Stack>
           </Box>
         </Modal>
       </div>

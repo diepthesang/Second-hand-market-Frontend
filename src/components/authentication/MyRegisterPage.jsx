@@ -15,6 +15,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import axios from "axios";
+import { Alert } from "@mui/material";
 // import { Routes, Route, Outlet, Link } from "react-router-dom";
 
 function Copyright(props) {
@@ -38,29 +39,38 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function MyRegister() {
+  const [errMsg, setErrMsg] = React.useState("");
   const navigate = useNavigate();
   const handleSubmit = async (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-      confirmPassword: data.get("confirmPassword"),
-      firstName: data.get("firstName"),
-      lastName: data.get("lastName"),
-    });
+    try {
+      event.preventDefault();
+      const data = new FormData(event.currentTarget);
+      console.log({
+        email: data.get("email"),
+        password: data.get("password"),
+        confirmPassword: data.get("confirmPassword"),
+        firstName: data.get("firstName"),
+        lastName: data.get("lastName"),
+      });
 
-    let res = await axios.post("/auth/register", {
-      email: data.get("email"),
-      password: data.get("password"),
-      confirmPassword: data.get("confirmPassword"),
-      firstName: data.get("firstName"),
-      lastName: data.get("lastName"),
-    });
+      let res = await axios.post("/auth/register", {
+        email: data.get("email"),
+        password: data.get("password"),
+        confirmPassword: data.get("confirmPassword"),
+        firstName: data.get("firstName"),
+        lastName: data.get("lastName"),
+      });
 
-    console.log("res::::::", res);
-    if (res) {
-      navigate("/sendOTP");
+      console.log("res::::::", res);
+      if (res) {
+        navigate("/sendOTP");
+      }
+    } catch (error) {
+      console.log(
+        "error_handleSubmitRegisterAccount::::",
+        error.response.data.message
+      );
+      setErrMsg(error.response.data.message);
     }
   };
 
@@ -96,6 +106,11 @@ export default function MyRegister() {
           <Typography component="h1" variant="h5">
             Đăng ký
           </Typography>
+          {errMsg !== "" && (
+            <Alert variant="filled" severity="error">
+              {errMsg}
+            </Alert>
+          )}
           <Box
             component="form"
             noValidate
@@ -113,6 +128,9 @@ export default function MyRegister() {
                   id="firstName"
                   label="Họ"
                   autoFocus
+                  onChange={() => {
+                    setErrMsg("");
+                  }}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -124,6 +142,9 @@ export default function MyRegister() {
                   label="Tên"
                   name="lastName"
                   autoComplete="family-name"
+                  onChange={() => {
+                    setErrMsg("");
+                  }}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -135,6 +156,9 @@ export default function MyRegister() {
                   label="Địa chỉ email"
                   name="email"
                   autoComplete="email"
+                  onChange={() => {
+                    setErrMsg("");
+                  }}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -147,6 +171,9 @@ export default function MyRegister() {
                   type="password"
                   id="password"
                   autoComplete="new-password"
+                  onChange={() => {
+                    setErrMsg("");
+                  }}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -159,6 +186,9 @@ export default function MyRegister() {
                   type="password"
                   id="password"
                   autoComplete="new-confirmPassword"
+                  onChange={() => {
+                    setErrMsg("");
+                  }}
                 />
               </Grid>
               {/* <Grid item xs={12}>
@@ -172,12 +202,12 @@ export default function MyRegister() {
               // href='/sendOTP'
               // component={Linkr} to="/sendOTP"
               variant="contained"
-              color="primary"
+              // color="primary"
               type="submit"
               fullWidth
-              sx={{
-                mt: 3,
-                mb: 2,
+              style={{
+                marginTop: 12,
+                marginBottom: 8,
                 textTransform: "none",
                 backgroundColor: "#7b35ba",
               }}

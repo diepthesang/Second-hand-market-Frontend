@@ -129,10 +129,9 @@ function MyManagePost() {
         style={{
           margin: 40,
           overflow: "auto",
+          fontSize: 14,
         }}
       >
-        <div>sf</div>
-        {/* <div style={{ margin: 20 }}> */}
         <Paper style={{ borderRadius: 12, width: 2400 }}>
           <Grid container>
             <Grid item xs={12} className={classes.row}>
@@ -308,31 +307,6 @@ function MyManagePost() {
                       >
                         <MoreVertIcon></MoreVertIcon>
                       </IconButton>
-                      <Menu
-                        id="fade-menu"
-                        MenuListProps={{
-                          "aria-labelledby": "fade-button",
-                        }}
-                        anchorEl={anchorEl}
-                        open={open}
-                        onClose={handleClose}
-                        TransitionComponent={Fade}
-                      >
-                        <MenuItem onClick={handleClose}>
-                          <EditIcon style={{ paddingRight: 8 }} />
-                          edit
-                        </MenuItem>
-                        <MenuItem
-                          onClick={() => {
-                            handleDeletePostByPostId(postId);
-                          }}
-                        >
-                          <DeleteForeverIcon
-                            style={{ paddingRight: 8, fill: "red" }}
-                          />
-                          <p style={{ color: "red" }}>Delete</p>
-                        </MenuItem>
-                      </Menu>
                     </div>
                   </Grid>
                 </Grid>
@@ -340,6 +314,29 @@ function MyManagePost() {
             );
           })}
         </Paper>
+        <Menu
+          id="fade-menu"
+          MenuListProps={{
+            "aria-labelledby": "fade-button",
+          }}
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+          TransitionComponent={Fade}
+        >
+          <MenuItem onClick={handleClose}>
+            <EditIcon style={{ paddingRight: 8 }} />
+            edit
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              handleDeletePostByPostId(postId);
+            }}
+          >
+            <DeleteForeverIcon style={{ paddingRight: 8, fill: "red" }} />
+            <p style={{ color: "red" }}>Delete</p>
+          </MenuItem>
+        </Menu>
         <Modal
           open={openModal}
           onClose={() => {
@@ -421,9 +418,10 @@ function MyManagePost() {
       <div
         style={{
           display: "flex",
-          justifyContent: "center",
+          justifyContent: "flex-end",
           marginTop: -32,
-          paddingBottom: 40,
+          // paddingBottom: 40,
+          marginRight: 30,
         }}
       >
         <Pagination

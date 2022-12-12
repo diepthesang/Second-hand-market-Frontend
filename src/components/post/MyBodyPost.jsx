@@ -5,22 +5,17 @@ import {
   makeStyles,
   MenuItem,
   Snackbar,
-  TextField,
   Typography,
 } from "@material-ui/core";
-import { Alert } from "@mui/material";
+import { Alert, TextField } from "@mui/material";
 import { Stack } from "@mui/system";
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import location from "../../helps/location";
 import { useNavigate } from "react-router-dom";
-import dayjs from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
-import { MobileDatePicker } from "@mui/x-date-pickers/MobileDatePicker";
 import { useDispatch } from "react-redux";
 import { getCurrentBidPrice } from "../../redux/currentBidPriceSice";
 import { formatCash } from "../../helps/common";
@@ -108,6 +103,8 @@ function MyBodyPost() {
     Array.from(images).forEach((item) => {
       data.append("images", item);
     });
+
+    console.log("imagesss:::", images);
 
     try {
       const res = await axios.post("/user/createPost", data, {
@@ -300,6 +297,7 @@ function MyBodyPost() {
                       name="cateParentId"
                       id="standard-size-small"
                       select
+                      color="secondary"
                       label="Thể loại"
                       size="small"
                       variant="outlined"
@@ -329,6 +327,7 @@ function MyBodyPost() {
                         name="cateId"
                         id="standard-size-small"
                         select
+                        color="secondary"
                         // label=""
                         size="small"
                         variant="outlined"
@@ -356,6 +355,7 @@ function MyBodyPost() {
                       name="name"
                       label="Tên sản phẩm"
                       d="standard-size-small"
+                      color="secondary"
                       size="small"
                       variant="outlined"
                       onChange={(e) => {
@@ -369,6 +369,7 @@ function MyBodyPost() {
                       id="filled-select-currency"
                       select
                       label="Trạng thái sản phẩm"
+                      color="secondary"
                       size="small"
                       variant="outlined"
                       onChange={(e) => {
@@ -394,6 +395,7 @@ function MyBodyPost() {
                       name="warrantyId"
                       id="filled-select-currency"
                       select
+                      color="secondary"
                       label="Bảo hành"
                       size="small"
                       variant="outlined"
@@ -418,6 +420,7 @@ function MyBodyPost() {
                     <TextField
                       SelectProps={{ MenuProps: { disableScrollLock: true } }}
                       name="madeInId"
+                      color="secondary"
                       select
                       label="Sản xuất tại"
                       variant="outlined"
@@ -441,6 +444,7 @@ function MyBodyPost() {
                     </TextField>
 
                     <TextField
+                      color="secondary"
                       name="description"
                       id="outlined-multiline-static"
                       label="Mô tả"
@@ -454,6 +458,7 @@ function MyBodyPost() {
 
                     <Stack direction="row" alignContent="center">
                       <Checkbox
+                        checked={isFreeProduct}
                         style={{
                           color: "#7b35ba",
                         }}
@@ -462,7 +467,8 @@ function MyBodyPost() {
                         value={true}
                         color="secondary"
                         onChange={() => {
-                          setIsFreeProduct(true);
+                          setIsFreeProduct(!isFreeProduct);
+                          setIsBidProduct(false);
                           // setPrice(0);
                         }}
                       />
@@ -473,6 +479,7 @@ function MyBodyPost() {
 
                     <Stack direction="row" alignContent="center">
                       <Checkbox
+                        checked={isBidProduct}
                         style={{
                           color: "#7b35ba",
                         }}
@@ -482,6 +489,7 @@ function MyBodyPost() {
                         color="secondary"
                         onChange={() => {
                           setIsBidProduct(!isBidProduct);
+                          setIsFreeProduct(false);
                           setPrice(-1);
                         }}
                       />
@@ -501,12 +509,13 @@ function MyBodyPost() {
                               value={timer}
                               onChange={handleChangeTimer}
                               renderInput={(params) => (
-                                <TextField {...params} />
+                                <TextField {...params} color="secondary" />
                               )}
                             />
                           </LocalizationProvider>
                         </div>
                         <TextField
+                          color="secondary"
                           name="startPrice"
                           disabled={!isBidProduct}
                           label="Giá khởi điểm *"
@@ -521,6 +530,7 @@ function MyBodyPost() {
                     ) : (
                       <TextField
                         // value={price}
+                        color="secondary"
                         name="price"
                         disabled={isFreeProduct}
                         label="Giá *"
@@ -538,6 +548,7 @@ function MyBodyPost() {
 
                     <TextField
                       SelectProps={{ MenuProps: { disableScrollLock: true } }}
+                      color="secondary"
                       name="province"
                       select
                       label="Tỉnh/Thành phố"
@@ -568,6 +579,7 @@ function MyBodyPost() {
                       name="district"
                       id="filled-select-currency"
                       select
+                      color="secondary"
                       label="Huyện/Quận"
                       size="small"
                       variant="outlined"
@@ -594,6 +606,7 @@ function MyBodyPost() {
                     <TextField
                       SelectProps={{ MenuProps: { disableScrollLock: true } }}
                       name="ward"
+                      color="secondary"
                       select
                       label="Xã/Phường"
                       size="small"
@@ -611,6 +624,7 @@ function MyBodyPost() {
 
                     <TextField
                       name="street"
+                      color="secondary"
                       label="Đường"
                       d="standard-size-small"
                       size="small"

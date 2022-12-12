@@ -38,8 +38,8 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function MyLogin() {
-  const [isError, setIsError] = React.useState();
-  const [errMsg, setErrMsg] = React.useState();
+  // const [isError, setIsError] = React.useState();
+  const [errMsg, setErrMsg] = React.useState("");
 
   const pageUrl = useSelector((state) => state.pageUrl.search);
 
@@ -71,7 +71,7 @@ export default function MyLogin() {
       console.log(error);
       console.log(error.response.data.codeMessage);
       if (error.response.data.codeMessage) {
-        setIsError(true);
+        // setIsError(true);
         setErrMsg(error.response.data.message);
       }
     }
@@ -144,7 +144,7 @@ export default function MyLogin() {
             <Typography component="h1" variant="h5">
               Đăng nhập
             </Typography>
-            {isError && (
+            {errMsg !== "" && (
               <Alert variant="filled" severity="error">
                 {errMsg}
               </Alert>
@@ -166,6 +166,9 @@ export default function MyLogin() {
                 name="email"
                 autoComplete="email"
                 autoFocus
+                onChange={() => {
+                  setErrMsg("");
+                }}
               />
               <TextField
                 color="secondary"
@@ -177,6 +180,9 @@ export default function MyLogin() {
                 type="password"
                 id="password"
                 autoComplete="current-password"
+                onChange={() => {
+                  setErrMsg("");
+                }}
               />
 
               <Button

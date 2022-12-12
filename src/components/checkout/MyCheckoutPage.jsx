@@ -1,4 +1,13 @@
-import { Button, Divider, Grid, Paper, TextField } from "@material-ui/core";
+import {
+  Box,
+  Button,
+  Divider,
+  Grid,
+  Modal,
+  Paper,
+  TextField,
+  Typography,
+} from "@material-ui/core";
 import { Stack } from "@mui/system";
 import React, { useEffect, useState } from "react";
 import NoteAltIcon from "@mui/icons-material/NoteAlt";
@@ -9,12 +18,26 @@ import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
 import PersonPinCircleIcon from "@mui/icons-material/PersonPinCircle";
 import { formatCash } from "../../helps/common";
+import ErrorIcon from "@mui/icons-material/Error";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import {
+  getPostIdsCheckoutbyUser,
+  updateStatusPostingCart,
+} from "../../API/user_api";
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  boxShadow: 24,
+  borderRadius: 8,
+  p: 4,
+};
+
 function MyCheckoutPage() {
   const [userInfo, setUserInfo] = useState({});
-  // const [firstName, setFirstName] = useState('');
-  // const [lastName, setLastName] = useState('');
-  // const [email, setEmail] = useState('');
-  // const [phone, setPhone] = useState('');
   const [message, setMessage] = useState("");
   const [listPost, setListPost] = useState([]);
   const [amount, setAmount] = useState();
@@ -22,19 +45,32 @@ function MyCheckoutPage() {
 
   const navigate = useNavigate();
 
-  // const handlePayment = (event) => {
-  //   event.preventDefault();
-  //   const data = new FormData(event.currentTarget);
-  //   console.log(data);
-  //   console.log({
-  //     firstName: data.get("firstName"),
-  //     lastName: data.get("lastName"),
-  //     email: data.get("email"),
-  //     phone: data.get("phone"),
-  //     address: data.get("address"),
-  //     changePassword: data.get("changePassword"),
-  //   });
-  // };
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  const checkedUserInfo = () => {
+    if (!userInfo.firstName || !userInfo.lastName || !userInfo.phone) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  const handleBtnPayment = async () => {
+    if (checkedUserInfo()) {
+      setOpen(true);
+      return;
+    } else {
+      setOpen(false);
+    }
+    const isSuccess = await updateStatusPostingCart("ORDER");
+    if (isSuccess) {
+      navigate("/order/buy");
+    } else {
+      return;
+    }
+  };
 
   const getListPostChecked = async () => {
     try {
@@ -72,6 +108,7 @@ function MyCheckoutPage() {
       });
       console.log("getUserInfor:::", data.data);
       setUserInfo(data.data);
+      // return data.data;
     } catch (error) {
       console.log("error_getUserInfo:::", error);
     }
@@ -87,6 +124,10 @@ function MyCheckoutPage() {
 
   // HANDLE PAYMENT
   const handlePayment = async () => {
+    if (checkedUserInfo()) {
+      setOpen(true);
+      return;
+    }
     try {
       const { data } = await axios.post(
         "/user/payment",
@@ -113,12 +154,12 @@ function MyCheckoutPage() {
   }, []);
 
   return (
-    <Grid
-      container
-      justifyContent="center"
-      style={{ minHeight: "70vh", borderRadius: 8 }}
-    >
-      <Grid item xs={6} style={{ backgroundColor: "#F1ECF5" }}>
+    <Grid container justifyContent="center" style={{ minHeight: "70vh" }}>
+      <Grid
+        item
+        xs={6}
+        style={{ backgroundColor: "#F1ECF5", borderRadius: 12 }}
+      >
         <div style={{ display: "inline-flex", alignItems: "center" }}>
           <NoteAltIcon
             style={{
@@ -175,7 +216,9 @@ function MyCheckoutPage() {
                             navigate("/editProfile");
                           }}
                         >
-                          <p style={{ color: "white" }}>Thay đổi</p>
+                          <p style={{ color: "white", textTransform: "none" }}>
+                            Thay đổi
+                          </p>
                         </Button>
                       </Stack>
                     </Stack>
@@ -207,7 +250,7 @@ function MyCheckoutPage() {
                     {listPost.map((item) => {
                       return (
                         <Paper key={item.id} style={{ marginBottom: 8 }}>
-                          <p style={{ marginLeft: 8 }}>
+                          <p style={{ marginLeft: 8, padding: 2 }}>
                             {item.Post.User.firstName +
                               " " +
                               item.Post.User.lastName}
@@ -305,6 +348,7 @@ function MyCheckoutPage() {
                         variant="contained"
                         size="large"
                         fullWidth
+                        onClick={handleBtnPayment}
                       >
                         Thanh toán khi nhận hàng
                       </Button>
@@ -334,6 +378,30 @@ function MyCheckoutPage() {
           </Grid>
         </div>
       </Grid>
+      <div>
+        <Modal
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={style}>
+            <Stack
+              direction="column"
+              justifyContent="center"
+              alignItems="center"
+              spacing={2}
+            >
+              <ErrorOutlineIcon
+                style={{ width: 100, height: 100, fill: "#FEC43A" }}
+              />
+              <Typography id="modal-modal-description">
+                Bạn cần điền đầy đủ thông tin địa chỉ nhận hàng!
+              </Typography>
+            </Stack>
+          </Box>
+        </Modal>
+      </div>
     </Grid>
   );
 }

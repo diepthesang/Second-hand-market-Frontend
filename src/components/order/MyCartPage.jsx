@@ -51,6 +51,11 @@ function MyCartPage() {
           Authorization: localStorage["access_token"],
         },
       });
+      await axios.get("/user/cart/qty", {
+        headers: {
+          Authorization: localStorage["access_token"],
+        },
+      });
       setPostId(postId);
     } catch (error) {
       console.log("err_removePost", error);

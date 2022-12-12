@@ -134,10 +134,16 @@ function MyBodyEditProfile() {
                       <label htmlFor="file" style={{ cursor: "pointer" }}>
                         <img
                           alt=""
-                          src={image}
+                          src={
+                            image ||
+                            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNL_ZnOTpXSvhf1UaK7beHey2BX42U6solRA&usqp=CAU"
+                          }
                           width={120}
                           height={120}
-                          style={{ borderRadius: "50%" }}
+                          style={{
+                            borderRadius: "50%",
+                            // border: " 1px solid #7b35ba",
+                          }}
                         ></img>
                       </label>
                       <input

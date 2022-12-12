@@ -111,7 +111,12 @@ function MyBodyDetail() {
       );
       console.log("data_handlebuy", data.data);
       if (data.data) {
-        dispatch(getCart());
+        // dispatch(getCart());
+        await axios.get("/user/cart/qty", {
+          headers: {
+            Authorization: localStorage["access_token"],
+          },
+        });
       } else {
       }
     } catch (error) {

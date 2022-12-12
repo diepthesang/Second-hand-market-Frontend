@@ -76,10 +76,13 @@ function MyBodyProfile() {
             <Stack direction="row" justifyContent="start">
               <Stack direction="row" spacing={2}>
                 <img
-                  src={userInfo.avatarImg}
-                  alt="Avatar"
+                  src={
+                    userInfo.avatarImg ||
+                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNL_ZnOTpXSvhf1UaK7beHey2BX42U6solRA&usqp=CAU"
+                  }
+                  alt=""
                   style={{
-                    // border: " 2px solid #7b35ba",
+                    // border: " 1px solid #7b35ba",
                     verticalAlign: "middle",
                     width: 100,
                     height: 100,

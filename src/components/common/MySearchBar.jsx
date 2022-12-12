@@ -255,8 +255,7 @@ export default function MySearchBar() {
           }}
         >
           <PostAddIcon />
-          <div style={{ width: 4 }}></div>
-          Đăng tin
+          <div style={{ fontSize: 14, paddingLeft: 4 }}>Đăng tin</div>
         </Button>
       </Stack>
     </Box>

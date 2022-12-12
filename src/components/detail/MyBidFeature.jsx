@@ -42,38 +42,55 @@ function MyBidFeature({
   const dispatch = useDispatch();
   const currentBidPrice = useSelector((state) => state.currentBidPrice);
   // xu li nhap tien dau gia
+  // const handleChangeValueBid = (event) => {
+  //   try {
+  //     if (Number(event.target.value) <= Number(priceStart)) {
+  //       setErrMsg("Số tiền trả phải lớn hơn giá khởi điểm");
+  //       if (event.target.value === "") {
+  //         setErrMsg(null);
+  //       } else {
+  //         return;
+  //       }
+  //       return;
+  //     } else {
+  //       setErrMsg(null);
+  //     }
+  //     if (isNaN(parseFloat(event.target.value))) {
+  //       setErrMsg("Tiền phải là số");
+  //       return;
+  //     } else {
+  //       setErrMsg(null);
+  //     }
+  //     setValueBid(event.target.value);
+  //   } catch (error) {
+  //     console.log("err_handleChangeValueBid:::", error);
+  //   }
+  // };
+
   const handleChangeValueBid = (event) => {
-    try {
-      if (event.target.value <= priceStart) {
-        setErrMsg("Số tiền trả phải lớn hơn giá khởi điểm");
-        if (event.target.value === "") {
-          setErrMsg(null);
-        } else {
-          return;
-        }
-        return;
-      } else {
-        setErrMsg(null);
-      }
-      if (isNaN(parseFloat(event.target.value))) {
-        setErrMsg("Tiền phải là số");
-        return;
-      } else {
-        setErrMsg(null);
-      }
-      setValueBid(event.target.value);
-    } catch (error) {
-      console.log("err_handleChangeValueBid:::", error);
-    }
+    setErrMsg("");
+    setValueBid(event.target.value);
   };
 
   // xu li button dau gia
   const handleBid = async () => {
     try {
+      if (isNaN(parseFloat(valueBid))) {
+        setErrMsg("Tiền phải là số");
+        setValueBid("");
+        return;
+      }
+
+      if (valueBid <= priceStart) {
+        setErrMsg("Số tiền bạn trả phải lớn hơn giá khởi điểm");
+        return;
+      }
+
       if (valueBid <= (await getHighestBidder())) {
         setErrMsg("Số tiền bạn trả phải lớn hơn người đứng đầu!");
         return;
       }
+
       const { data } = await axios.post(
         "/user/createPriceBid",
         {
@@ -87,6 +104,7 @@ function MyBidFeature({
           },
         }
       );
+      setValueBid("");
       bidSoket();
       getHighestBidder();
       console.log("createBidPrice:::", data.data);
@@ -141,10 +159,7 @@ function MyBidFeature({
           },
         }
       );
-      // localStorage.setItem("highest_bid_user", data.data.userId);
-      // localStorage.setItem("highest_bid_price", data.data.priceBid);
-      setHighestPriceBid(data.data.priceBid);
-      console.log("highes_bid_user:::", data.data.userId);
+      // setHighestPriceBid(data.data.priceBid);
       return data.data.priceBid;
     } catch (error) {
       console.log("error_getHighestBidder:::", error);
@@ -173,6 +188,7 @@ function MyBidFeature({
       </div>
       <p>Giá khởi điểm: {formatCash(String(priceStart))} đ</p>
       <TextField
+        value={valueBid}
         size="small"
         startAdornment={<InputAdornment position="start">$</InputAdornment>}
         fullWidth
@@ -203,7 +219,8 @@ function MyBidFeature({
       {currentBidPrice.currentBidPrice !== false && (
         <Stack direction="row" alignItems="center" spacing={2}>
           <p>
-            Bạn đã ra giá: {formatCash(String(currentBidPrice.currentBidPrice))} đ
+            Bạn đã ra giá: {formatCash(String(currentBidPrice.currentBidPrice))}{" "}
+            đ
           </p>
           <IconButton
             onClick={() => {
@@ -228,12 +245,6 @@ function MyBidFeature({
       >
         Đấu giá
       </Button>
-      {/* DANH SACH USER DANG DAU GIA */}
-      {/* <Divider />
-      <MyListUserBid
-        postId={postId}
-        postAuctionId={postAuctionId}
-      ></MyListUserBid> */}
     </Stack>
   );
 }

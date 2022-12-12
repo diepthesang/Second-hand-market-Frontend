@@ -5,7 +5,6 @@ import axios from "axios";
 export const getUsers = async () => {
   try {
     const { data } = await axios.get('/admin/user');
-    console.log('listUsr:::', data.data)
     return data.data;
   } catch (error) {
     console.log('error_getUserInfo:::', error);
@@ -29,7 +28,6 @@ export const getRevenueByUser = async (isWithdrew) => {
           Authorization: localStorage["access_token"],
         },
       });
-    console.log('listRevenue::', data.data);
     return data.data;
   } catch (error) {
     console.log('err_getRevenueByUser:::', error);
@@ -56,7 +54,6 @@ export const withdrawByUser = async (isWithdrew) => {
 export const searchUserByLastname = async (lastName) => {
   try {
     const { data } = await axios.get(`/admin/user/search/lastName/${lastName}`);
-    console.log('searchUser::::;', data.data);
     return data.data
   } catch (error) {
     console.log('err_searchUserByLastname', error);
@@ -66,7 +63,6 @@ export const searchUserByLastname = async (lastName) => {
 export const getPosts = async () => {
   try {
     const { data } = await axios.get('/admin/post');
-    console.log('getPosts:::', data.data);
     return data.data;
   } catch (error) {
     console.log('err_getPosts', error);
@@ -89,5 +85,125 @@ export const searchPostByTitle = async (title) => {
     return data.data;
   } catch (error) {
     console.log('err_searchPostByTitle:::', error);
+  }
+}
+
+export const getParentCategories = async (parentCate) => {
+  try {
+    const { data } = await axios.get(`/admin/category/parentCate/${parentCate}`);
+    return data.data;
+  } catch (error) {
+    console.log('err_getParentCategories::', error);
+  }
+}
+
+
+export const addCategory = async (formData) => {
+  try {
+    const { data } = await axios.post('/admin/category/create',
+      formData,
+      {
+        headers: {
+          "Content-type": "multipart/form-data",
+        }
+      }
+    );
+    return !!data.data
+  } catch (error) {
+    console.log('err_addCategory:::', error)
+  }
+}
+
+export const removeCateById = async (id) => {
+  try {
+    const { data } = await axios.delete(`/admin/category/remove/${id}`);
+    return data.data;
+  } catch (error) {
+    console.log('err_removeCateById::', error)
+  }
+}
+
+export const updateCategory = async (formData) => {
+  try {
+    const { data } = await axios.put('/admin/category/update/', formData,
+      {
+        headers: {
+          "Content-type": "multipart/form-data",
+        }
+      });
+    return !!data.data;
+  } catch (error) {
+    console.log('err_updateCategory:::', error);
+  }
+}
+
+
+export const getCategoryById = async (id) => {
+  try {
+    const { data } = await axios.get(`/admin/category/${id}`);
+    console.log('cate::::::', data.data)
+    return data.data;
+  } catch (error) {
+    console.log('err_getCategory:::', error)
+  }
+}
+
+export const getPostingBuyByUser = async (status) => {
+  try {
+    const { data } = await axios.get(`/user/order/posting/buy/status/${status}`, {
+      headers: {
+        Authorization: localStorage["access_token"],
+      },
+    });
+    console.log(data.data);
+    return data.data
+  } catch (error) {
+    console.log('err_getOrderPostingByUsr:::', error);
+  }
+}
+
+export const updateStatusPostingCart = async (status) => {
+  try {
+    const { data } = await axios.put('/user/cart/', {
+      status,
+    },
+      {
+        headers: {
+          Authorization: localStorage["access_token"],
+        },
+      })
+    return data.data;
+  } catch (error) {
+    console.log('err_updateStatusPostingCart:::', error);
+
+  }
+}
+
+export const getPostIdsCheckoutbyUser = async (checked) => {
+  try {
+    const { data } = await axios.get(`/user/cart/checked/${checked}`,
+      {
+        headers: {
+          Authorization: localStorage["access_token"],
+        },
+      })
+    return data.data
+  } catch (error) {
+    console.log('err_getPostIdCheckoutByuser:::', error);
+  }
+}
+
+export const getUserInfoByUser = async () => {
+  try {
+    const { data } = await axios.get('/user/userInfo',
+      {
+        headers: {
+          Authorization: localStorage["access_token"],
+        }
+      });
+    console.log('getUserInfor:::', data.data)
+    return data.data
+  } catch (error) {
+
   }
 }

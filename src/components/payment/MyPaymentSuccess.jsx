@@ -3,12 +3,15 @@ import { Stack } from "@mui/system";
 import React from "react";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 function MyPaymentSuccess() {
   const getTransactionId = async () => {
     try {
     } catch (error) {}
   };
+
+  const navigate = useNavigate();
 
   return (
     <Grid container justifyContent="center">
@@ -40,6 +43,9 @@ function MyPaymentSuccess() {
                 backgroundColor: "#7b35ba",
                 textTransform: "none",
                 color: "white",
+              }}
+              onClick={() => {
+                navigate("/");
               }}
             >
               Tiếp tục mua hàng

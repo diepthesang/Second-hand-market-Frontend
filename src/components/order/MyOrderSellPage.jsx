@@ -12,74 +12,85 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import AirportShuttleIcon from "@mui/icons-material/AirportShuttle";
 import MyModalBill from "./MyModalBill";
-import { Tab, Tabs } from "@mui/material";
-import { getPostingBuyByUser } from "../../API/user_api";
+import { MenuItem, Tab, Tabs, TextField } from "@mui/material";
+import { DesktopDateTimePicker } from "@mui/x-date-pickers/DesktopDateTimePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
+import { getUserInfoByUser } from "../../API/user_api";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
-import TakeoutDiningIcon from "@mui/icons-material/TakeoutDining";
 
 const style = {
   position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 400,
+  width: 550,
   bgcolor: "background.paper",
-  border: "2px solid #000",
+  // border: "2px solid #000",
+  borderRadius: 8,
   boxShadow: 24,
   p: 4,
 };
 
-function MyOrderBuyPage() {
-  const [value, setValue] = useState("ALL");
+const listShipping = [
+  {
+    id: 1,
+    name: "Viettel Post",
+  },
+  {
+    id: 2,
+    name: "Giao hàng tiết kiệm",
+  },
+  {
+    id: 3,
+    name: "J&T Express",
+  },
+  {
+    id: 4,
+    name: "Giao hàng nhanh",
+  },
+];
+
+function MyOrderSellPage() {
+  const [value, setValue] = React.useState("CONFIRM");
   const [listPost, setListPost] = useState([]);
   const [tapButton, setTapButton] = useState(false);
   const [openModal, setOpenModal] = useState(false);
+  const [address, setAddress] = useState("");
+  const [shipping, setShipping] = useState("");
+  const [postId, setPostId] = useState("");
+
+  const [valueTime, setValueTime] = useState(Date.now());
+
+  const handleChange = (newValue) => {
+    setValue(newValue);
+  };
 
   const handleChangeTab = (event, newValue) => {
     setValue(newValue);
   };
 
-  // const getListOrderBuyPost = async () => {
-  //   try {
-  //     const { data } = await axios.get(`/user/orderBuyPost/${value}`, {
-  //       headers: {
-  //         Authorization: localStorage["access_token"],
-  //       },
-  //     });
-  //     console.log("listPost:::", data.data);
-  //     setListPost(data.data);
-  //   } catch (error) {
-  //     console.log("err_getListOrderBuyPost:::", error);
-  //   }
-  // };
+  const getListOrderBuyPost = async () => {
+    try {
+      const { data } = await axios.get(`/user/orderBuyPost/${value}`, {
+        headers: {
+          Authorization: localStorage["access_token"],
+        },
+      });
+      console.log("listPost:::", data.data);
+      setListPost(data.data);
+    } catch (error) {
+      console.log("err_getListOrderBuyPost:::", error);
+    }
+  };
 
-  // const handleChangeStatusOrderPost = async (id, status) => {
-  //   try {
-  //     const { data } = await axios.put(
-  //       "/user/updateConfirmOrderPost",
-  //       {
-  //         id,
-  //         status,
-  //       },
-  //       {
-  //         headers: {
-  //           Authorization: localStorage["access_token"],
-  //         },
-  //       }
-  //     );
-  //     setTapButton(data.data);
-  //   } catch (error) {
-  //     console.log("err_handleConfirm:::", error);
-  //   }
-  // };
-
-  const handleChangeStatusOrderByBuyder = async (postId, status) => {
-    console.log("hello");
+  const handleChangeStatusOrderPost = async (id, status) => {
     try {
       const { data } = await axios.put(
-        "/user/order/buy/updateStatus",
+        "/user/updateConfirmOrderPost",
         {
-          postId,
+          id,
           status,
         },
         {
@@ -88,15 +99,11 @@ function MyOrderBuyPage() {
           },
         }
       );
-      console.log(data.data);
-      return data.data;
-    } catch (error) {}
-  };
-
-  const getOrderPostings = async () => {
-    try {
-      setListPost(await getPostingBuyByUser(value));
-    } catch (error) {}
+      // setTapButton(data.data);
+      getListOrderBuyPost();
+    } catch (error) {
+      console.log("err_handleConfirm:::", error);
+    }
   };
 
   const hanlePending = async () => {
@@ -105,10 +112,16 @@ function MyOrderBuyPage() {
     } catch (error) {}
   };
 
+  const getUserInfo = async () => {
+    try {
+      const data = await getUserInfoByUser();
+      setAddress(data.address);
+    } catch (error) {}
+  };
+
   useEffect(() => {
-    // getListOrderBuyPost();
-    getOrderPostings();
-  }, [value]);
+    getListOrderBuyPost();
+  }, [value, tapButton]);
 
   return (
     <Grid container justifyContent="center" style={{ minHeight: "70vh" }}>
@@ -137,16 +150,10 @@ function MyOrderBuyPage() {
               },
             }}
           >
-            <Tab style={{ textTransform: "none" }} value="ALL" label="Tất cả" />
             <Tab
               style={{ textTransform: "none" }}
               value="CONFIRM"
               label="Chờ xác nhận"
-              // onClick={() => {
-              //   console.log("confirm");
-              //   // getOrderPostings("CONFIRM");
-              //   // setValue("CONFIRM");
-              // }}
             />
             <Tab
               style={{ textTransform: "none" }}
@@ -242,9 +249,11 @@ function MyOrderBuyPage() {
 
         {listPost.map((item) => {
           return (
-            <Paper style={{ padding: 8, marginTop: 4 }}>
+            <Paper key={item.id} style={{ padding: 8, marginTop: 4 }}>
               <div>
-                {/* {item.Post.User.firstName + " " + item.Post.User.lastName} */}
+                {item.Transaction.User.firstName +
+                  " " +
+                  item.Transaction.User.lastName}
               </div>
               <Divider></Divider>
               <Grid container justifyContent="center">
@@ -274,12 +283,7 @@ function MyOrderBuyPage() {
                     justifyContent: "center",
                   }}
                 >
-                  <p>
-                    {" "}
-                    {(item.Post.price === -1 &&
-                      item.Post.PostAuction.priceEnd) ||
-                      item.Post.price}
-                  </p>
+                  <p> {item.Post.price}</p>
                 </Grid>
                 <Grid
                   item
@@ -290,9 +294,10 @@ function MyOrderBuyPage() {
                     justifyContent: "center",
                   }}
                 >
-                  {/* {item.status === "CONFIRM" && "Chờ xác nhận"}
+                  {item.status === "CONFIRM" && "Chờ xác nhận"}
                   {item.status === "PENDING" && "Đang đóng gói"}
-                  {item.status === "DELIVERING" && "Đang giao"} */}
+                  {item.status === "DELIVERING" && "Đang giao"}
+                  {item.status === "DELIVERED" && "Đã giao"}
                 </Grid>
                 <Grid
                   item
@@ -314,15 +319,16 @@ function MyOrderBuyPage() {
                     justifyContent: "center",
                   }}
                 >
-                  {/* {item.status === "CONFIRM" && (
+                  {item.status === "CONFIRM" && (
                     <Button
                       size="small"
                       style={{
                         backgroundColor: "#F50057",
                         textTransform: "none",
+                        color: "white",
                       }}
                       onClick={() => {
-                        // handleChangeStatusOrderPost(item.id, "PENDING");
+                        handleChangeStatusOrderPost(item.id, "PENDING");
                       }}
                     >
                       Xác nhận
@@ -337,15 +343,32 @@ function MyOrderBuyPage() {
                         color: "white",
                       }}
                       onClick={() => {
+                        getUserInfo();
                         hanlePending();
+                        setPostId(item.id);
                       }}
                     >
                       <AirportShuttleIcon />
                       Chuẩn bị hàng
                     </Button>
-                  )} */}
-
-                  {value === "DELIVERED" && (
+                  )}
+                  {item.status === "DELIVERING" && (
+                    <Button
+                      size="small"
+                      style={{
+                        backgroundColor: "#F50057",
+                        textTransform: "none",
+                        color: "white",
+                      }}
+                      onClick={() => {
+                        handleChangeStatusOrderPost(item.id, "DELIVERED");
+                      }}
+                    >
+                      <LocalShippingIcon />
+                      Đã giao
+                    </Button>
+                  )}
+                  {item.status === "DELIVERED" && (
                     <Stack direction="row">
                       <Button
                         size="small"
@@ -355,15 +378,11 @@ function MyOrderBuyPage() {
                           color: "white",
                         }}
                         onClick={() => {
-                          // handleChangeStatusOrderPost(item.id, "DELIVERED");
-                          handleChangeStatusOrderByBuyder(
-                            item.Post.id,
-                            "RECEIVED"
-                          );
+                          handleChangeStatusOrderPost(item.id, "DELIVERED");
                         }}
                       >
-                        <TakeoutDiningIcon />
-                        Đã nhận hàng
+                        <LocalShippingIcon />
+                        Xác nhận
                       </Button>
                       {/* <Button
                         size="small"
@@ -373,11 +392,11 @@ function MyOrderBuyPage() {
                           color: "white",
                         }}
                         onClick={() => {
-                          // handleChangeStatusOrderPost(item.id, "DELIVERED");
+                          handleChangeStatusOrderPost(item.id, "DELIVERED");
                         }}
                       >
                         <LocalShippingIcon />
-                        
+                        Đã giao
                       </Button> */}
                     </Stack>
                   )}
@@ -397,15 +416,85 @@ function MyOrderBuyPage() {
       >
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            Chi tiết
+            Chuẩn bị hàng
           </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-          </Typography>
+          <Stack direction="column" spacing={2} paddingTop={2}>
+            <TextField
+              SelectProps={{ MenuProps: { disableScrollLock: true } }}
+              name="cateParentId"
+              id="standard-size-small"
+              select
+              color="secondary"
+              label="Đơn vị vận chuyển"
+              // size="small"
+              variant="outlined"
+              // onChange={(e) => {
+              //   setCateParentId(e.target.value);
+              // }}
+            >
+              {listShipping.map((item) => (
+                <MenuItem key={item.id} value={item.id}>
+                  <div
+                    onClick={() => {
+                      // setCateId(item.id);
+                      // getAllCategoryChild(item.id);
+                      // setShowCateInput(true);
+                      setShipping(item.name);
+                    }}
+                    style={{ color: "black" }}
+                  >
+                    {item.name}
+                  </div>
+                </MenuItem>
+              ))}
+            </TextField>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DesktopDateTimePicker
+                // size="small"
+                label="Date desktop"
+                inputFormat="MM/DD/YYYY"
+                value={valueTime}
+                onChange={handleChange}
+                renderInput={(params) => (
+                  <TextField {...params} color="secondary" />
+                )}
+              />
+            </LocalizationProvider>
+            <TextField
+              id="outlined-basic"
+              label="Lưu ý"
+              color="secondary"
+              variant="outlined"
+            />
+            <p>Địa chỉ lấy hàng: {address} </p>
+            <Stack direction="row" justifyContent="flex-end" spacing={1}>
+              <Button
+                style={{
+                  textTransform: "none",
+                  border: "0.5px solid black",
+                }}
+              >
+                Huỷ
+              </Button>
+              <Button
+                style={{
+                  backgroundColor: "#F50057",
+                  textTransform: "none",
+                  color: "white",
+                }}
+                onClick={() => {
+                  handleChangeStatusOrderPost(postId, "DELIVERING");
+                  setOpenModal(false);
+                }}
+              >
+                Xác nhận
+              </Button>
+            </Stack>
+          </Stack>
         </Box>
       </Modal>
     </Grid>
   );
 }
 
-export default MyOrderBuyPage;
+export default MyOrderSellPage;
