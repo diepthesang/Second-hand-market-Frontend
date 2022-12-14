@@ -299,6 +299,8 @@ function MyHeader() {
 
                 <div>
                   <Button
+                    hidden
+                    disable
                     style={{
                       color: "white",
                       textTransform: "none",
@@ -306,7 +308,7 @@ function MyHeader() {
                       // marginLeft: -70,
                     }}
                     onClick={() => {
-                      handleBtnChat();
+                      // handleBtnChat();
                     }}
                     size="small"
                   >
@@ -373,14 +375,22 @@ function MyHeader() {
                       handleClickBiddingPost(item.postId);
                     }}
                   >
-                    <Stack direction="row" spacing={2} alignItems="center">
+                    <Stack
+                      direction="row"
+                      spacing={2}
+                      alignItems="center"
+                      style={{ margin: -8 }}
+                    >
                       <img
                         alt=""
                         width={30}
                         height={30}
                         src={item.Post.PostImages[0].imagePath}
                       ></img>
-                      <p style={{ fontSize: 14 }}> {item.Post.title}</p>
+                      <p style={{ fontSize: 14, color: "#7b35ba" }}>
+                        {" "}
+                        {item.Post.title}
+                      </p>
                     </Stack>
                   </MenuItem>
                 </>

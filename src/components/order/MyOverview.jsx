@@ -1,11 +1,20 @@
-import { Box, Button, Grid, Modal, Paper, Typography } from "@material-ui/core";
+import {
+  Box,
+  Button,
+  Grid,
+  makeStyles,
+  Modal,
+  Paper,
+  Typography,
+} from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { formatCash } from "../../helps/common";
 import WalletIcon from "@mui/icons-material/Wallet";
-import { Stack, Tab, Tabs, TextField } from "@mui/material";
+import { Divider, Stack, Tab, Tabs, TextField } from "@mui/material";
 import MyChart from "./MyChart";
 import { getRevenueByUser } from "../../API/user_api";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
+import axios from "axios";
 
 const style = {
   position: "absolute",
@@ -20,19 +29,68 @@ const style = {
   p: 4,
 };
 
+const styleTran = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 800,
+  bgcolor: "#F1ECF5",
+  // border: "2px solid #000",
+  boxShadow: 24,
+  borderRadius: 8,
+  p: 4,
+};
+
+const useStyles = makeStyles((theme) => ({
+  row: {
+    display: "flex",
+    alignItems: "center",
+    // justifyContent: "center",
+    height: 40,
+    alignContent: "center",
+    borderRadius: 8,
+    marginLeft: 8,
+  },
+}));
+
 function MyOverview() {
+  const classes = useStyles();
   const [tabValue, setTabValue] = useState(1);
   const [listRevenue, setListRevenue] = useState([]);
   const [revenue, setRevenue] = useState(0);
   const [openModal, setOpenModal] = useState(false);
+  const [listTransaction, setListtransaction] = useState([]);
 
-  const handleChangeTab = (event, newValue) => {
-    setTabValue(newValue);
-    console.log(newValue);
+  const [openModalTran, setOpenModalTran] = React.useState(false);
+  const handleOpen = () => setOpenModalTran(true);
+  const handleClose = () => setOpenModalTran(false);
+
+  // const handleChangeTab = (event, newValue) => {
+  //   setTabValue(newValue);
+  //   console.log(newValue);
+  // };
+
+  const handleViewTransaction = async () => {
+    try {
+      setOpenModalTran(true);
+      await getListTransaction();
+    } catch (error) {}
   };
 
   const handleWithdrewBtn = () => {
     setOpenModal(true);
+  };
+
+  const getListTransaction = async () => {
+    try {
+      const { data } = await axios.get("/user/transaction", {
+        headers: {
+          Authorization: localStorage["access_token"],
+        },
+      });
+      setListtransaction(data.data);
+    } catch (error) {}
   };
 
   const getRevenue = async () => {
@@ -64,7 +122,7 @@ function MyOverview() {
               // width: "100%",
               justifyItems: "center",
               alignContent: "center",
-              margin: 12,
+              margin: 20,
             }}
           >
             <div
@@ -72,8 +130,8 @@ function MyOverview() {
                 display: "flex",
               }}
             >
-              <p style={{ marginTop: 33 }}>Số dư </p>
-              <p style={{ color: "#7b35ba", fontSize: 70 }}>
+              <p style={{ marginTop: 23 }}>Số dư </p>
+              <p style={{ color: "#7b35ba", fontSize: 50 }}>
                 {formatCash(String(revenue))} đ
               </p>
             </div>
@@ -91,6 +149,22 @@ function MyOverview() {
                   width: 220,
                   textTransform: "none",
                   color: "white",
+                  marginRight: 4,
+                }}
+                onClick={() => {
+                  handleViewTransaction();
+                }}
+              >
+                <WalletIcon style={{ color: "white" }} />
+                <p style={{ paddingLeft: 8 }}>Xem lịch sử giao dịch</p>
+              </Button>
+              <Button
+                style={{
+                  backgroundColor: "#7b35ba",
+                  height: 40,
+                  width: 220,
+                  textTransform: "none",
+                  color: "white",
                 }}
                 onClick={() => {
                   handleWithdrewBtn();
@@ -101,7 +175,7 @@ function MyOverview() {
               </Button>
             </div>
           </Paper>
-          <Paper style={{ margin: 12 }}>
+          {/* <Paper style={{ margin: 12 }}>
             <Tabs
               TabIndicatorProps={{
                 sx: { backgroundColor: "#7b35ba" },
@@ -143,7 +217,7 @@ function MyOverview() {
                 label="Item Three"
               />
             </Tabs>
-          </Paper>
+          </Paper> */}
           {tabValue === 1 && <MyChart />}
         </Grid>
       </Grid>
@@ -202,6 +276,53 @@ function MyOverview() {
                 Gửi yêu cầu
               </Button>
             </Stack>
+          </Box>
+        </Modal>
+        <Modal
+          open={openModalTran}
+          onClose={() => {
+            setOpenModalTran(false);
+          }}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={styleTran}>
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+              Lịch sử giao dịch
+            </Typography>
+            <Paper style={{ marginTop: 4 }}>
+              <Grid container>
+                <Grid item xs={3} className={classes.row}>
+                  <div>Người gửi</div>
+                </Grid>
+                <Grid item xs={4} className={classes.row}>
+                  Số tiền
+                </Grid>
+                <Grid item xs={4} className={classes.row}>
+                  Thời gian gửi
+                </Grid>
+              </Grid>
+            </Paper>
+            <Paper style={{ marginTop: 4 }}>
+              {listTransaction.map((item) => {
+                return (
+                  <div>
+                    <Grid container>
+                      <Grid item xs={3} className={classes.row}>
+                        {/* <div>Người gửi</div> */}
+                      </Grid>
+                      <Grid item xs={4} className={classes.row}>
+                        {formatCash(String(item.revenue))}
+                      </Grid>
+                      <Grid item xs={4} className={classes.row}>
+                        {item.createdAt}
+                      </Grid>
+                    </Grid>
+                    <Divider />
+                  </div>
+                );
+              })}
+            </Paper>
           </Box>
         </Modal>
       </div>

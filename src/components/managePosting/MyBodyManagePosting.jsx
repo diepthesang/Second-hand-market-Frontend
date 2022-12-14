@@ -251,7 +251,10 @@ function MyBodyManagePosting() {
           >
             <Stack direction="row" spacing={4}>
               <img
-                src={userInfo.avatarImg}
+                src={
+                  userInfo.avatarImg ||
+                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNL_ZnOTpXSvhf1UaK7beHey2BX42U6solRA&usqp=CAU"
+                }
                 alt="Avatar"
                 style={{
                   // border: "2px solid #7b35ba",

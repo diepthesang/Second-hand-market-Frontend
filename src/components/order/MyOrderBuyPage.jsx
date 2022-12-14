@@ -16,62 +16,76 @@ import { Tab, Tabs } from "@mui/material";
 import { getPostingBuyByUser } from "../../API/user_api";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import TakeoutDiningIcon from "@mui/icons-material/TakeoutDining";
-
+import ArticleIcon from "@mui/icons-material/Article";
 const style = {
   position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 400,
+  width: 800,
+  height: 300,
   bgcolor: "background.paper",
-  border: "2px solid #000",
+  // border: "2px solid #000",
   boxShadow: 24,
+  borderRadius: 8,
   p: 4,
 };
+
+// const styleFl = {
+//   position: "absolute",
+//   top: "50%",
+//   left: "50%",
+//   transform: "translate(-50%, -50%)",
+//   width: 400,
+//   bgcolor: "background.paper",
+//   border: "2px solid #000",
+//   boxShadow: 24,
+//   p: 4,
+// };
 
 function MyOrderBuyPage() {
   const [value, setValue] = useState("ALL");
   const [listPost, setListPost] = useState([]);
   const [tapButton, setTapButton] = useState(false);
   const [openModal, setOpenModal] = useState(false);
+  // const [openModalFl, setOpenModalFl] = useState(false);
+  const [status, setStatus] = useState("");
+  const [confirm, setConfirm] = useState("gray");
+  const [pending, setPending] = useState("gray");
+  const [delivering, setDelivering] = useState("gray");
+  const [delivered, setDelivered] = useState("gray");
 
   const handleChangeTab = (event, newValue) => {
     setValue(newValue);
   };
 
-  // const getListOrderBuyPost = async () => {
-  //   try {
-  //     const { data } = await axios.get(`/user/orderBuyPost/${value}`, {
-  //       headers: {
-  //         Authorization: localStorage["access_token"],
-  //       },
-  //     });
-  //     console.log("listPost:::", data.data);
-  //     setListPost(data.data);
-  //   } catch (error) {
-  //     console.log("err_getListOrderBuyPost:::", error);
-  //   }
-  // };
-
-  // const handleChangeStatusOrderPost = async (id, status) => {
-  //   try {
-  //     const { data } = await axios.put(
-  //       "/user/updateConfirmOrderPost",
-  //       {
-  //         id,
-  //         status,
-  //       },
-  //       {
-  //         headers: {
-  //           Authorization: localStorage["access_token"],
-  //         },
-  //       }
-  //     );
-  //     setTapButton(data.data);
-  //   } catch (error) {
-  //     console.log("err_handleConfirm:::", error);
-  //   }
-  // };
+  const handleClickImg = (status) => {
+    setOpenModal(true);
+    if (status === "CONFIRM") {
+      setConfirm("#2DC258");
+      setPending("gray");
+      setDelivering("gray");
+      setDelivered("gray");
+    }
+    if (status === "PENDING") {
+      setConfirm("#2DC258");
+      setPending("#2DC258");
+      setDelivering("gray");
+      setDelivered("gray");
+    }
+    if (status === "DELIVERING") {
+      setConfirm("#2DC258");
+      setPending("#2DC258");
+      setDelivering("#2DC258");
+      setDelivered("gray");
+    }
+    if (status === "DELIVERED") {
+      setConfirm("#2DC258");
+      setPending("#2DC258");
+      setDelivering("#2DC258");
+      setDelivered("#2DC258");
+    }
+  };
 
   const handleChangeStatusOrderByBuyder = async (postId, status) => {
     console.log("hello");
@@ -242,12 +256,12 @@ function MyOrderBuyPage() {
 
         {listPost.map((item) => {
           return (
-            <Paper style={{ padding: 8, marginTop: 4 }}>
-              <div>
-                {/* {item.Post.User.firstName + " " + item.Post.User.lastName} */}
+            <Paper style={{ padding: 8, marginTop: 4, margin: 12 }}>
+              <div style={{ marginBottom: 4 }}>
+                {item.Post.User.firstName + " " + item.Post.User.lastName}
               </div>
               <Divider></Divider>
-              <Grid container justifyContent="center">
+              <Grid container justifyContent="center" style={{ marginTop: 8 }}>
                 <Grid
                   item
                   xs={4}
@@ -262,6 +276,9 @@ function MyOrderBuyPage() {
                     src={item.Post.PostImages[0].imagePath}
                     width={80}
                     height={80}
+                    onClick={() => {
+                      handleClickImg(item.status);
+                    }}
                   ></img>
                   <p style={{ marginLeft: 8 }}>{item.Post.title}</p>
                 </Grid>
@@ -303,7 +320,7 @@ function MyOrderBuyPage() {
                     justifyContent: "center",
                   }}
                 >
-                  Vận chuyển
+                  {/* Vận chuyển */}
                 </Grid>
                 <Grid
                   item
@@ -399,11 +416,215 @@ function MyOrderBuyPage() {
           <Typography id="modal-modal-title" variant="h6" component="h2">
             Chi tiết
           </Typography>
+
+          <Grid container style={{ marginLeft: 30, marginTop: 12 }}>
+            <Grid item xs={2.4}>
+              <Stack
+                direction="row"
+                justifyContent="center"
+                justifyItems="center"
+                paddingBottom={1}
+                alignItems="center"
+              >
+                <div
+                  style={{
+                    borderRadius: "50%",
+                    width: 80,
+                    height: 80,
+                    border: `5px solid ${confirm} `,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <ArticleIcon
+                    style={{ width: 50, height: 50, fill: `${confirm}` }}
+                  />
+                </div>
+                <div
+                  style={{
+                    width: 70,
+                    height: 4,
+                    backgroundColor: `${confirm}`,
+                  }}
+                ></div>
+              </Stack>
+              <p>Đơn đã đặt</p>
+            </Grid>
+            <Grid item xs={2.4}>
+              <Stack
+                direction="row"
+                justifyContent="center"
+                justifyItems="center"
+                paddingBottom={1}
+                alignItems="center"
+              >
+                <div
+                  style={{
+                    borderRadius: "50%",
+                    width: 80,
+                    height: 80,
+                    border: `5px solid  ${pending}`,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <ArticleIcon
+                    style={{ width: 50, height: 50, fill: `${pending}` }}
+                  />
+                </div>
+                <div
+                  style={{
+                    width: 70,
+                    height: 4,
+                    backgroundColor: `${pending}`,
+                  }}
+                ></div>
+              </Stack>
+              <p>Xác nhận</p>
+            </Grid>
+
+            <Grid item xs={2.4}>
+              <Stack
+                direction="row"
+                justifyContent="center"
+                justifyItems="center"
+                paddingBottom={1}
+                alignItems="center"
+              >
+                <div
+                  style={{
+                    borderRadius: "50%",
+                    width: 80,
+                    height: 80,
+                    border: `5px solid ${delivering} `,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <ArticleIcon
+                    style={{ width: 50, height: 50, fill: `${delivering}` }}
+                  />
+                </div>
+                <div
+                  style={{
+                    width: 70,
+                    height: 4,
+                    backgroundColor: `${delivering}`,
+                  }}
+                ></div>
+              </Stack>
+              <p>Chờ lấy hàng</p>
+            </Grid>
+            <Grid item xs={2.4}>
+              <Stack
+                direction="row"
+                justifyContent="center"
+                justifyItems="center"
+                alignItems="center"
+                paddingBottom={1}
+              >
+                <div
+                  style={{
+                    borderRadius: "50%",
+                    width: 80,
+                    height: 80,
+                    border: `5px solid ${delivered} `,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <ArticleIcon
+                    style={{ width: 50, height: 50, fill: `${delivered}` }}
+                  />
+                </div>
+                <div
+                  style={{
+                    width: 70,
+                    height: 4,
+                    backgroundColor: `${delivered}`,
+                  }}
+                ></div>
+              </Stack>
+              <p>Đang giao</p>
+            </Grid>
+            <Grid item xs={2.4}>
+              <div
+                style={{
+                  borderRadius: "50%",
+                  width: 80,
+                  height: 80,
+                  border: `5px solid ${delivered} `,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginBottom: 8,
+                }}
+              >
+                <ArticleIcon
+                  style={{ width: 50, height: 50, fill: `${delivered}` }}
+                />
+              </div>
+              <p>Chờ lấy hàng</p>
+            </Grid>
+          </Grid>
+          {/* <Grid container style={{ backgroundColor: "red" }}>
+            <Grid
+              item
+              xs={2.4}
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                alignContent: "center",
+              }}
+            >
+              <div>sfsadf</div>
+            </Grid>
+            <Grid
+              item
+              xs={2.4}
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                alignContent: "center",
+              }}
+            >
+              <div> wrwe</div>
+            </Grid>
+            <Grid item xs={2.4}>
+              wer
+            </Grid>
+            <Grid item xs={2.4}>
+              wer
+            </Grid>
+            <Grid item xs={2.4}>
+              wer
+            </Grid> */}
+          {/* </Grid> */}
+        </Box>
+      </Modal>
+      {/* <Modal
+        open={openModalFl}
+        onClose={() => {
+          setOpenModal(false);
+        }}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={styleFl}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Chi tiết
+          </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
             Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
           </Typography>
         </Box>
-      </Modal>
+      </Modal> */}
     </Grid>
   );
 }

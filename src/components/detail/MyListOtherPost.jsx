@@ -135,6 +135,7 @@ function MyListOtherPost({ userId }) {
                           style={{
                             width: width / 11,
                             height: width / 11,
+                            // margin: 1,
                           }}
                         />
                         <div></div>

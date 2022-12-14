@@ -159,8 +159,11 @@ export default function MySearchBar() {
             <Stack direction="row" spacing={5}>
               <div style={{ width: 12, height: 12, marginTop: -4 }}>
                 <Avatar
-                  alt="Remy Sharp"
-                  src={avt}
+                  alt=""
+                  src={
+                    avt ||
+                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNL_ZnOTpXSvhf1UaK7beHey2BX42U6solRA&usqp=CAU"
+                  }
                   sx={{ width: 12, height: 12 }}
                 />
               </div>
@@ -174,8 +177,8 @@ export default function MySearchBar() {
             <Stack direction="row" spacing={5}>
               <div style={{ width: 12, height: 12, marginTop: -4 }}>
                 <Avatar
-                  alt="Remy Sharp"
-                  src="/static/images/avatar/1.jpg"
+                  alt=""
+                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNL_ZnOTpXSvhf1UaK7beHey2BX42U6solRA&usqp=CAU"
                   sx={{ width: 12, height: 12 }}
                 />
               </div>

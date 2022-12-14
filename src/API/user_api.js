@@ -5,6 +5,7 @@ import axios from "axios";
 export const getUsers = async () => {
   try {
     const { data } = await axios.get('/admin/user');
+    // console.log('getUser:::;', data.data)
     return data.data;
   } catch (error) {
     console.log('error_getUserInfo:::', error);
@@ -155,7 +156,7 @@ export const getPostingBuyByUser = async (status) => {
         Authorization: localStorage["access_token"],
       },
     });
-    console.log(data.data);
+    console.log('listPostingbuy', data.data);
     return data.data
   } catch (error) {
     console.log('err_getOrderPostingByUsr:::', error);
@@ -175,6 +176,23 @@ export const updateStatusPostingCart = async (status) => {
     return data.data;
   } catch (error) {
     console.log('err_updateStatusPostingCart:::', error);
+
+  }
+}
+
+export const createOrder = async () => {
+  try {
+    const { data } = await axios.get('/user/order/create',
+      {
+        headers: {
+          Authorization: localStorage["access_token"],
+        }
+      }
+    );
+
+    return !!data.data;
+
+  } catch (error) {
 
   }
 }

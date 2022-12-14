@@ -21,6 +21,7 @@ import { formatCash } from "../../helps/common";
 import ErrorIcon from "@mui/icons-material/Error";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import {
+  createOrder,
   getPostIdsCheckoutbyUser,
   updateStatusPostingCart,
 } from "../../API/user_api";
@@ -64,7 +65,9 @@ function MyCheckoutPage() {
     } else {
       setOpen(false);
     }
-    const isSuccess = await updateStatusPostingCart("ORDER");
+    // console.log("111111");
+    const isSuccess = await createOrder();
+    console.log("isSuccess:::", isSuccess);
     if (isSuccess) {
       navigate("/order/buy");
     } else {

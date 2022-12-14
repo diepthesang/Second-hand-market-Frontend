@@ -249,14 +249,17 @@ function MyOrderSellPage() {
 
         {listPost.map((item) => {
           return (
-            <Paper key={item.id} style={{ padding: 8, marginTop: 4 }}>
-              <div>
+            <Paper
+              key={item.id}
+              style={{ padding: 8, marginTop: 4, margin: 12 }}
+            >
+              <div style={{ marginBottom: 4 }}>
                 {item.Transaction.User.firstName +
                   " " +
                   item.Transaction.User.lastName}
               </div>
               <Divider></Divider>
-              <Grid container justifyContent="center">
+              <Grid container justifyContent="center" style={{ marginTop: 8 }}>
                 <Grid
                   item
                   xs={4}
@@ -272,7 +275,7 @@ function MyOrderSellPage() {
                     width={80}
                     height={80}
                   ></img>
-                  <p style={{ marginLeft: 8 }}>{item.Post.title}</p>
+                  <p style={{ marginLeft: 16 }}>{item.Post.title}</p>
                 </Grid>
                 <Grid
                   item
@@ -283,7 +286,12 @@ function MyOrderSellPage() {
                     justifyContent: "center",
                   }}
                 >
-                  <p> {item.Post.price}</p>
+                  <p>
+                    {" "}
+                    {(item.Post.price === -1 &&
+                      item.Post.PostAuction.priceEnd) ||
+                      item.Post.price}
+                  </p>
                 </Grid>
                 <Grid
                   item

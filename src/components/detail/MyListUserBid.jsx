@@ -92,7 +92,10 @@ function MyListUserBid({ postId, postAuctionId }) {
               }}
             >
               <img
-                src={item.User.avatarImg}
+                src={
+                  item.User.avatarImg ||
+                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNL_ZnOTpXSvhf1UaK7beHey2BX42U6solRA&usqp=CAU"
+                }
                 alt=""
                 width={30}
                 height={30}
